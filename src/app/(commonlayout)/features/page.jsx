@@ -27,11 +27,6 @@ export default function FeaturesPage() {
       description:
         "Generate professional PDF certificates automatically after successful exam completion.",
     },
-    {
-      title: "Smart Scheduling",
-      description:
-        "Schedule exams for specific groups or make them open to all students with precise timing control.",
-    },
   ];
 
   return (
@@ -62,6 +57,7 @@ export default function FeaturesPage() {
                 <h2 className="card-title text-[var(--color-primary-dark)]">
                   {feature.title}
                 </h2>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
             </div>
           ))}
