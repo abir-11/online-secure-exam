@@ -23,7 +23,7 @@ export default function FeaturesPage() {
         "Track performance, question-wise accuracy, and export detailed reports instantly.",
     },
     {
-      title: "Automated Certificate",
+      title: "Automated Certificates",
       description:
         "Generate professional PDF certificates automatically after successful exam completion.",
     },
