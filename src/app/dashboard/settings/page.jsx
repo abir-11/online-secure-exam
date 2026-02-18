@@ -64,10 +64,7 @@ export default function SettingsPage() {
 
           <div className="mt-4">
             <label className="label">Profile Image</label>
-            <input
-              type="file"
-              className="file-input file-input-bordered w-full"
-            />
+            <input type="file" className="file-input file-input-bordered " />
           </div>
         </div>
 
