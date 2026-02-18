@@ -27,6 +27,11 @@ export default function FeaturesPage() {
       description:
         "Generate professional PDF certificates automatically after successful exam completion.",
     },
+    {
+      title: "Smart Scheduling",
+      description:
+        "Schedule exams for specific groups or make them open to all students with precise timing control.",
+    },
   ];
 
   return (
