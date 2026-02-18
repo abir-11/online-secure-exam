@@ -62,7 +62,6 @@ export default function FeaturesPage() {
                 <h2 className="card-title text-[var(--color-primary-dark)]">
                   {feature.title}
                 </h2>
-                <p className="text-gray-600">{feature.description}</p>
               </div>
             </div>
           ))}
