@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }) {
                 href="/dashboard"
                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
               >
-                Dashboard
+                Dashboard Overview
               </Link>
             </li>
             <li>
@@ -33,6 +33,27 @@ export default function DashboardLayout({ children }) {
                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
               >
                 Profile
+              </Link>
+
+              <Link
+                href="/dashboard/settings"
+                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+              >
+                Settings
+              </Link>
+
+              <Link
+                href="/dashboard/settings"
+                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+              >
+                Help
+              </Link>
+
+              <Link
+                href="/dashboard/settings"
+                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+              >
+                Logout
               </Link>
             </li>
             {/* Add more links here */}
