@@ -14,7 +14,9 @@ export default function Footer() {
           {/* Logo & Description */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 font-bold text-primary">
-              <span className="text-primary gradient-badge p-2 rounded-lg"><IoShield /></span> 
+              <span className="text-primary gradient-badge p-2 rounded-lg">
+                <IoShield />
+              </span>
               SecureExam
             </div>
             <p className="text-gray-400 text-[1.3rem]">
@@ -26,9 +28,21 @@ export default function Footer() {
           <div>
             <h3 className="text-gray-100 font-semibold mb-2">Product</h3>
             <ul className="space-y-1 text-gray-400 text-2xl">
-              <li><a href="#" className="hover:text-green-700">Features</a></li>
-              <li><a href="#" className="hover:text-green-700">Pricing</a></li>
-              <li><a href="#" className="hover:text-green-700">Demo</a></li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Demo
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -36,9 +50,21 @@ export default function Footer() {
           <div>
             <h3 className="text-gray-100 font-semibold mb-2">Company</h3>
             <ul className="space-y-1 text-gray-400 text-2xl">
-              <li><a href="#" className="hover:text-green-700">About</a></li>
-              <li><a href="#" className="hover:text-green-700">Blog</a></li>
-              <li><a href="#" className="hover:text-green-700">Contact</a></li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -46,8 +72,16 @@ export default function Footer() {
           <div>
             <h3 className="text-gray-100 font-semibold mb-2">Legal</h3>
             <ul className="space-y-1 text-gray-400 text-2xl">
-              <li><a href="#" className="hover:text-green-700">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-green-700">Terms of Service</a></li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-green-700">
+                  Terms of Service
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -56,7 +90,7 @@ export default function Footer() {
 
         {/* Bottom copyright */}
         <div className="text-center text-gray-500 text-2xl flex flex-col sm:flex-row items-center justify-center gap-1 text-[1.2rem] sm:text-[1.2rem] md:text-[1.5rem] lg:text-2xl">
-          <span>© 2024 SecureExam. All rights reserved.</span>
+          <span>© 2026 SecureExam. All rights reserved.</span>
           <span className="flex items-center gap-1">
             Made with <FaHeart className="text-primary" /> for education
           </span>
