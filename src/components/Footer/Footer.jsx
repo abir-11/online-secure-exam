@@ -4,6 +4,7 @@
 import { FaHeart } from "react-icons/fa";
 import { BsShieldFillCheck } from "react-icons/bs";
 import { IoShield } from "react-icons/io5";
+import Link from "daisyui/components/link";
 
 export default function Footer() {
   return (
@@ -51,9 +52,9 @@ export default function Footer() {
             <h3 className="text-gray-100 font-semibold mb-2">Company</h3>
             <ul className="space-y-1 text-gray-400 text-2xl">
               <li>
-                <a href="#" className="hover:text-green-700">
+                <Link to={"/about"} className="hover:text-green-700">
                   About
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-green-700">
