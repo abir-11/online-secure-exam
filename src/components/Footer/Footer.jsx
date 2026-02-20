@@ -40,9 +40,9 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-green-700">
+                <Link href="/demo" className="hover:text-green-700">
                   Demo
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -74,14 +74,14 @@ export default function Footer() {
             <h3 className="text-gray-100 font-semibold mb-2">Legal</h3>
             <ul className="space-y-1 text-gray-400 text-2xl">
               <li>
-                <a href="#" className="hover:text-green-700">
+                <Link href="/privacy" className="hover:text-green-700">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-green-700">
+                <Link href="/terms" className="hover:text-green-700">
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

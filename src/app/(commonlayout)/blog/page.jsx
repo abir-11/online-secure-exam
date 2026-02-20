@@ -28,7 +28,7 @@ const blogPosts = [
 
 export default function BlogPage() {
   return (
-    <main className="bg-gray-900 min-h-screen text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
+    <main className="mt-20  min-h-screen text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-8 text-center">
           SecureExam Blog
