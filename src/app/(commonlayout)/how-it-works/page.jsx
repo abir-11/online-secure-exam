@@ -36,9 +36,9 @@ export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-base-100 py-16 px-6">
       {/* Header */}
-      <div className="text-center mb-16">
+      <div className="text-center py-20 px-6 bg-[#0D7C66] text-white">
         <h1 className="text-4xl font-bold mb-4">How SecureExam Works</h1>
-        <p className="text-base-content/70 max-w-2xl mx-auto">
+        <p className="text-base-content/70 max-w-2xl mx-auto text-white">
           SecureExam simplifies the online examination process for students,
           teachers, and institutions with a secure and reliable platform.
         </p>
