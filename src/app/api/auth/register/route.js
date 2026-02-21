@@ -1,27 +1,48 @@
+import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { getCollection } from "@/lib/dbConnect";
 
 export async function POST(req) {
-  const body = await req.json();
-  const { name, email, password, role } = body;
+  try {
+    const body = await req.json();
 
-  const usersCollection = await getCollection("users");
+    const { name, email, password, role, phone } = body;
 
-  const existingUser = await usersCollection.findOne({ email });
+    if (!name || !email || !password || !role) {
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 },
+      );
+    }
 
-  if (existingUser) {
-    return Response.json({ message: "User exists" });
+    const usersCollection = await getCollection("users");
+
+    const existingUser = await usersCollection.findOne({ email });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 400 },
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await usersCollection.insertOne({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      phone,
+      image: "",
+      createdAt: new Date(),
+    });
+
+    return NextResponse.json({
+      success: true,
+      insertedId: result.insertedId,
+    });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  await usersCollection.insertOne({
-    name,
-    email,
-    password: hashedPassword,
-    role: role || "student",
-    createdAt: new Date(),
-  });
-
-  return Response.json({ message: "User created" });
 }

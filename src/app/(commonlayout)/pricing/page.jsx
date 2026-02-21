@@ -40,15 +40,15 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-base-100 py-16 px-6">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold mb-4">Pricing Plans</h1>
-        <p className="text-base-content/70">
+      <div className="text-center py-20 px-6 bg-[#0D7C66] text-white">
+        <h1 className="text-4xl font-bold mb-4 text-white">Pricing Plans</h1>
+        <p className="text-base-content/70 text-white">
           Choose the best plan for your institution or classroom.
         </p>
       </div>
 
       {/* Pricing Cards */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 mt-10">
         {plans.map((plan, index) => (
           <div
             key={index}
