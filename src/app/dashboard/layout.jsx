@@ -1,3 +1,94 @@
+// "use client";
+
+// import React, { useState } from "react";
+// import Link from "next/link";
+
+// export default function DashboardLayout({ children }) {
+//   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+//   return (
+//     <div className="flex h-screen bg-gray-50">
+//       {/* Sidebar */}
+//       <aside
+//         className={`bg-[var(--color-primary-dark)] text-white w-64 flex-shrink-0 transition-all duration-300 ${
+//           sidebarOpen ? "block" : "hidden"
+//         } md:block`}
+//       >
+//         <div className="p-6 text-center text-xl font-bold border-b border-[var(--color-primary)]">
+//           SecureExam
+//         </div>
+//         <nav className="mt-6">
+//           <ul>
+//             <li>
+//               <Link
+//                 href="/dashboard"
+//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+//               >
+//                 Dashboard Overview
+//               </Link>
+//             </li>
+//             <li>
+//               <Link
+//                 href="/dashboard/profile"
+//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+//               >
+//                 Profile
+//               </Link>
+
+//               <Link
+//                 href="/dashboard/settings"
+//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+//               >
+//                 Settings
+//               </Link>
+
+//               <Link
+//                 href="/dashboard/settings"
+//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+//               >
+//                 Help
+//               </Link>
+
+//               <Link
+//                 href="/dashboard/settings"
+//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+//               >
+//                 Logout
+//               </Link>
+//             </li>
+//             {/* Add more links here */}
+//           </ul>
+//         </nav>
+//       </aside>
+
+//       {/* Main content */}
+//       <div className="flex-1 flex flex-col overflow-auto">
+//         {/* Topbar */}
+//         <header className="flex items-center justify-between bg-white p-4 shadow-md">
+//           <button
+//             className="md:hidden text-[var(--color-primary-dark)]"
+//             onClick={() => setSidebarOpen(!sidebarOpen)}
+//           >
+//             ☰
+//           </button>
+//           <h1 className="text-xl font-semibold text-[var(--color-primary-dark)]">
+//             Dashboard
+//           </h1>
+//           <div>
+//             <span className="text-gray-600 font-medium">Hi, User 👋</span>
+//           </div>
+//         </header>
+
+//         {/* Content */}
+//         <main className="p-6 bg-gray-50 flex-1">{children}</main>
+//       </div>
+//     </div>
+//   );
+// }
+
+//-----------------------------
+//--------color combination-----------
+
 "use client";
 
 import React, { useState } from "react";
@@ -7,14 +98,14 @@ export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside
-        className={`bg-[var(--color-primary-dark)] text-white w-64 flex-shrink-0 transition-all duration-300 ${
+        className={`bg-[#0D7C66] text-white w-64 flex-shrink-0 transition-all duration-300 ${
           sidebarOpen ? "block" : "hidden"
         } md:block`}
       >
-        <div className="p-6 text-center text-xl font-bold border-b border-[var(--color-primary)]">
+        <div className="p-6 text-center text-xl font-bold border-b border-[#41B3A2]">
           SecureExam
         </div>
         <nav className="mt-6">
@@ -22,7 +113,7 @@ export default function DashboardLayout({ children }) {
             <li>
               <Link
                 href="/dashboard"
-                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
               >
                 Dashboard Overview
               </Link>
@@ -30,33 +121,35 @@ export default function DashboardLayout({ children }) {
             <li>
               <Link
                 href="/dashboard/profile"
-                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
               >
                 Profile
               </Link>
-
+            </li>
+            <li>
               <Link
                 href="/dashboard/settings"
-                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
               >
                 Settings
               </Link>
-
+            </li>
+            <li>
               <Link
-                href="/dashboard/settings"
-                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+                href="/dashboard/help"
+                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
               >
                 Help
               </Link>
-
+            </li>
+            <li>
               <Link
-                href="/dashboard/settings"
-                className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
+                href="/api/auth/signout"
+                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
               >
                 Logout
               </Link>
             </li>
-            {/* Add more links here */}
           </ul>
         </nav>
       </aside>
@@ -66,21 +159,19 @@ export default function DashboardLayout({ children }) {
         {/* Topbar */}
         <header className="flex items-center justify-between bg-white p-4 shadow-md">
           <button
-            className="md:hidden text-[var(--color-primary-dark)]"
+            className="md:hidden text-[#0D7C66] font-bold text-xl"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             ☰
           </button>
-          <h1 className="text-xl font-semibold text-[var(--color-primary-dark)]">
-            Dashboard
-          </h1>
+          <h1 className="text-xl font-semibold text-[#0D7C66]">Dashboard</h1>
           <div>
-            <span className="text-gray-600 font-medium">Hi, User 👋</span>
+            <span className="text-gray-700 font-medium">Hi, User 👋</span>
           </div>
         </header>
 
         {/* Content */}
-        <main className="p-6 bg-gray-50 flex-1">{children}</main>
+        <main className="p-6 bg-gray-100 flex-1">{children}</main>
       </div>
     </div>
   );

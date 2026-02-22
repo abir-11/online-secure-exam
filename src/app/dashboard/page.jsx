@@ -1,128 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    role: "student", // change to: student | teacher | admin
-  });
+  const stats = [
+    { title: "Total Exams", value: 24 },
+    { title: "Students", value: 320 },
+    { title: "Completed Exams", value: 180 },
+    { title: "Pending Exams", value: 12 },
+  ];
 
-  // Example stats (replace with API data later)
-  const stats = {
-    student: [
-      { title: "Upcoming Exams", value: 3 },
-      { title: "Active Exams", value: 1 },
-      { title: "Completed Exams", value: 12 },
-      { title: "Certificates Earned", value: 5 },
-    ],
-    teacher: [
-      { title: "Total Exams Created", value: 8 },
-      { title: "Active Exams", value: 2 },
-      { title: "Total Students", value: 120 },
-      { title: "Question Bank Size", value: 340 },
-    ],
-    admin: [
-      { title: "Total Users", value: 540 },
-      { title: "Total Exams", value: 42 },
-      { title: "Active Exams", value: 6 },
-      { title: "Platform Engagement", value: "78%" },
-    ],
-  };
-
-  const recentActivity = [
-    "Math Exam completed by 25 students",
-    "New exam scheduled for Physics",
-    "User Ahmed registered",
-    "System maintenance completed",
+  const activities = [
+    "New exam created: Web Development Midterm",
+    "Student Rahim submitted Database Exam",
+    "Admin updated question bank",
+    "New student registered",
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Section */}
-      <div>
-        <h2 className="text-2xl font-bold text-[var(--color-primary-dark)]">
-          Welcome back, {user.name} 👋
-        </h2>
-        <p className="text-gray-600 capitalize">
-          {user.role} Dashboard Overview
-        </p>
-      </div>
+    <main className="min-h-screen bg-gray-900 text-gray-200 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats[user.role].map((item, index) => (
-          <div
-            key={index}
-            className="card bg-base-100 shadow-md hover:shadow-lg transition-all"
-          >
-            <div className="card-body">
-              <h3 className="text-gray-500 text-sm">{item.title}</h3>
-              <p className="text-3xl font-bold text-[var(--color-primary)]">
-                {item.value}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Role Specific Section */}
-      {user.role === "student" && (
-        <div className="card bg-base-100 shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-          <div className="flex flex-wrap gap-4">
-            <button className="btn bg-[var(--color-primary)] text-white">
-              View My Exams
-            </button>
-            <button className="btn btn-outline border-[var(--color-primary)] text-[var(--color-primary)]">
-              View Results
-            </button>
-          </div>
-        </div>
-      )}
-
-      {user.role === "teacher" && (
-        <div className="card bg-base-100 shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Teacher Actions</h3>
-          <div className="flex flex-wrap gap-4">
-            <button className="btn bg-[var(--color-primary)] text-white">
-              Create New Exam
-            </button>
-            <button className="btn btn-outline border-[var(--color-primary)] text-[var(--color-primary)]">
-              Manage Question Bank
-            </button>
-          </div>
-        </div>
-      )}
-
-      {user.role === "admin" && (
-        <div className="card bg-base-100 shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Admin Controls</h3>
-          <div className="flex flex-wrap gap-4">
-            <button className="btn bg-[var(--color-primary)] text-white">
-              Manage Users
-            </button>
-            <button className="btn btn-outline border-[var(--color-primary)] text-[var(--color-primary)]">
-              System Reports
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Recent Activity */}
-      <div className="card bg-base-100 shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-        <ul className="space-y-2">
-          {recentActivity.map((activity, index) => (
-            <li
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {stats.map((stat, index) => (
+            <div
               key={index}
-              className="p-3 bg-gray-50 rounded-md border border-gray-100"
+              className="bg-gray-800 p-6 rounded-xl shadow hover:scale-105 transition"
             >
-              {activity}
-            </li>
+              <h2 className="text-lg text-gray-400">{stat.title}</h2>
+              <p className="text-2xl font-bold mt-2">{stat.value}</p>
+            </div>
           ))}
-        </ul>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-gray-800 p-6 rounded-xl mb-10">
+          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              href="/create-exam"
+              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-black font-medium"
+            >
+              Create Exam
+            </Link>
+
+            <Link
+              href="/students"
+              className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-black font-medium"
+            >
+              View Students
+            </Link>
+
+            <Link
+              href="/question-bank"
+              className="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-lg text-black font-medium"
+            >
+              Question Bank
+            </Link>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-gray-800 p-6 rounded-xl">
+          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+          <ul className="space-y-3">
+            {activities.map((activity, index) => (
+              <li
+                key={index}
+                className="border-b border-gray-700 pb-2 text-gray-300"
+              >
+                {activity}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -2,27 +2,41 @@
 
 // import { useState } from "react";
 // import { signIn } from "next-auth/react";
-// import { useRouter } from "next/navigation";
 
 // export default function LoginPage() {
-//   const [role, setRole] = useState("admin");
+//   const [role, setRole] = useState("student"); // default role
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
-//   const router = useRouter();
+//   const [loading, setLoading] = useState(false);
 
 //   const handleLogin = async (e) => {
 //     e.preventDefault();
+//     setLoading(true);
 
-//     const res = await signIn("credentials", {
+//     // Credentials signIn
+//     const result = await signIn("credentials", {
+//       redirect: false,
 //       email,
 //       password,
-//       redirect: false,
 //     });
 
-//     if (res?.ok) {
-//       router.push("/dashboard");
+//     if (result?.error) {
+//       alert(result.error);
+//       setLoading(false);
 //     } else {
-//       alert("Login failed");
+//       // Get session info to fetch role
+//       const sessionRes = await fetch("/api/auth/session");
+//       const sessionData = await sessionRes.json();
+
+//       if (sessionData?.user?.role) {
+//         const role = sessionData.user.role;
+//         if (role === "admin") window.location.href = "/dashboard/admin";
+//         else if (role === "instructor")
+//           window.location.href = "/dashboard/instructor";
+//         else window.location.href = "/dashboard/student";
+//       } else {
+//         window.location.href = "/dashboard";
+//       }
 //     }
 //   };
 
@@ -44,6 +58,7 @@
 //         {["admin", "instructor", "student"].map((item) => (
 //           <button
 //             key={item}
+//             type="button"
 //             onClick={() => setRole(item)}
 //             className={`px-4 py-1 rounded-full text-sm font-medium transition-all ${
 //               role === item
@@ -65,8 +80,10 @@
 //           <input
 //             type="email"
 //             placeholder="Enter your email"
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200"
+//             value={email}
 //             onChange={(e) => setEmail(e.target.value)}
+//             required
+//             className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-slate-800 placeholder-slate-400"
 //           />
 //         </div>
 
@@ -75,16 +92,36 @@
 //           <input
 //             type="password"
 //             placeholder="Enter your password"
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200"
+//             value={password}
 //             onChange={(e) => setPassword(e.target.value)}
+//             required
+//             className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-slate-800 placeholder-slate-400"
 //           />
+//         </div>
+
+//         <div className="flex justify-between items-center text-sm">
+//           <label className="flex items-center gap-2 text-slate-600">
+//             <input
+//               type="checkbox"
+//               className="w-4 h-4 border-slate-300 rounded focus:ring-[#41B3A2] checked:bg-[#0D7C66]"
+//             />
+//             Remember me
+//           </label>
+
+//           <a
+//             href="#"
+//             className="text-slate-500 hover:text-[#0D7C66] transition"
+//           >
+//             Forgot password?
+//           </a>
 //         </div>
 
 //         <button
 //           type="submit"
-//           className="w-full py-2 rounded-lg bg-[#0D7C66] text-white font-medium hover:bg-[#41B3A2]"
+//           disabled={loading}
+//           className="w-full py-2 rounded-lg bg-[#0D7C66] text-white font-medium hover:bg-[#41B3A2] transition-all transform hover:-translate-y-0.5"
 //         >
-//           Login to Dashboard
+//           {loading ? "Logging in..." : "Login to Dashboard"}
 //         </button>
 //       </form>
 
@@ -95,27 +132,21 @@
 //         <div className="flex-1 h-px bg-slate-200"></div>
 //       </div>
 
-//       {/* Google Login */}
+//       {/* Google Button */}
 //       <button
 //         onClick={() => signIn("google")}
-//         className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 border border-slate-200"
+//         className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-[#41B3A2] hover:bg-white transition"
 //       >
 //         <span className="text-[#DB4437] font-bold">G</span>
-//         Continue with Google
-//       </button>
-
-//       {/* GitHub Login */}
-//       <button
-//         onClick={() => signIn("github")}
-//         className="w-full mt-3 flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 border border-slate-200"
-//       >
-//         Continue with GitHub
+//         <span className="text-slate-600 hover:text-slate-800">
+//           Continue with Google
+//         </span>
 //       </button>
 
 //       <p className="mt-6 text-center text-sm text-slate-500">
 //         Don't have an account?{" "}
 //         <a
-//           href="/auth/register"
+//           href="/auth/registration"
 //           className="text-[#0D7C66] hover:text-[#41B3A2] font-medium"
 //         >
 //           Sign up
@@ -125,13 +156,16 @@
 //   );
 // }
 
+// --------role
+
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
-  const [role, setRole] = useState("admin"); // default role
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -140,30 +174,86 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Credentials signIn
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    try {
+      // Step 1: Sign in
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
 
-    if (result?.error) {
-      alert(result.error);
-      setLoading(false);
-    } else {
-      // Get session info to fetch role
+      // If login failed
+      if (!result || result.error) {
+        setLoading(false);
+
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: "Invalid email or password",
+          confirmButtonColor: "#0D7C66",
+        });
+
+        return;
+      }
+
+      // Step 2: Get session data
       const sessionRes = await fetch("/api/auth/session");
       const sessionData = await sessionRes.json();
 
-      if (sessionData?.user?.role) {
-        const role = sessionData.user.role;
-        if (role === "admin") window.location.href = "/dashboard/admin";
-        else if (role === "instructor")
+      const dbRole = sessionData?.user?.role;
+
+      if (!dbRole) {
+        setLoading(false);
+
+        Swal.fire({
+          icon: "error",
+          title: "Login Error",
+          text: "User role not found.",
+          confirmButtonColor: "#0D7C66",
+        });
+
+        return;
+      }
+
+      // Step 3: Role validation
+      if (dbRole !== role) {
+        setLoading(false);
+
+        Swal.fire({
+          icon: "warning",
+          title: "Wrong Role Selected",
+          text: `Your account role is "${dbRole}". Please select the correct role.`,
+          confirmButtonColor: "#0D7C66",
+        });
+
+        return;
+      }
+
+      // Step 4: Success
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful",
+        text: "Welcome back!",
+        confirmButtonColor: "#0D7C66",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+      setTimeout(() => {
+        if (dbRole === "admin") window.location.href = "/dashboard/admin";
+        else if (dbRole === "instructor")
           window.location.href = "/dashboard/instructor";
         else window.location.href = "/dashboard/student";
-      } else {
-        window.location.href = "/dashboard";
-      }
+      }, 1200);
+    } catch (error) {
+      setLoading(false);
+
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: "Something went wrong.",
+        confirmButtonColor: "#0D7C66",
+      });
     }
   };
 
@@ -273,7 +363,7 @@ export default function LoginPage() {
       <p className="mt-6 text-center text-sm text-slate-500">
         Don't have an account?{" "}
         <a
-          href="/auth/register"
+          href="/auth/registration"
           className="text-[#0D7C66] hover:text-[#41B3A2] font-medium"
         >
           Sign up

@@ -21,11 +21,51 @@
 //   );
 // }
 
+//--------------------------------------ok below-------------------
+// import { Geist, Geist_Mono } from "next/font/google";
+// import "./globals.css";
+// import Navbar from "@/Components/Navbar/Navbar";
+// import Footer from "@/Components/Footer/Footer";
+// import Script from "next/script";
+
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+
+// export const metadata = {
+//   title: "SecureExam",
+//   description: "Secure Online Examination Platform",
+// };
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body
+//         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+//       >
+//         <Navbar />
+//         {children}
+//         <Footer />
+//       </body>
+
+//       <Script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></Script>
+//     </html>
+//   );
+// }
+
+// src/app/layout.jsx
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/Components/Navbar/Navbar";
 import Footer from "@/Components/Footer/Footer";
 import Script from "next/script";
+import Providers from "./Providers"; // <-- import the wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,7 +89,8 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        {children}
+        <Providers>{children}</Providers>{" "}
+        {/* wrap everything with SessionProvider */}
         <Footer />
       </body>
 
