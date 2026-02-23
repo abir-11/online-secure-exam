@@ -1,4 +1,3 @@
-// // Navbar.jsx
 // "use client";
 
 // import Link from "next/link";
@@ -12,9 +11,14 @@
 //   const router = useRouter();
 
 //   const handleLogout = async () => {
-//     await signOut({ redirect: false }); // ✅ no redirect
-//     router.refresh(); // ✅ refresh the page to update navbar session state
+//     await signOut({
+//       redirect: false,
+//     });
+
+//     router.refresh(); // important
 //   };
+
+//   if (status === "loading") return null;
 
 //   const nav = (
 //     <>
@@ -36,6 +40,7 @@
 //   return (
 //     <div className="drawer">
 //       <input id="mobile-drawer" type="checkbox" className="drawer-toggle" />
+
 //       <div className="drawer-content">
 //         <div className="navbar bg-base-100 px-4 lg:px-8 fixed top-0 left-0 right-0 z-50">
 //           <div className="navbar-start">
@@ -63,6 +68,7 @@
 //                 >
 //                   Dashboard
 //                 </Link>
+
 //                 <button
 //                   onClick={handleLogout}
 //                   className="btn btn-primary text-white hidden lg:inline-flex"
@@ -78,6 +84,7 @@
 //                 >
 //                   Login
 //                 </Link>
+
 //                 <Link
 //                   href="/auth/registration"
 //                   className="btn btn-primary text-white hidden lg:inline-flex"
@@ -86,6 +93,7 @@
 //                 </Link>
 //               </>
 //             )}
+
 //             <label htmlFor="mobile-drawer" className="btn btn-ghost lg:hidden">
 //               <HiBars3BottomLeft size={25} />
 //             </label>
@@ -95,7 +103,8 @@
 
 //       <div className="drawer-side z-[60]">
 //         <label htmlFor="mobile-drawer" className="drawer-overlay"></label>
-//         <div className="menu p-6 w-[80%] sm:w-[80%] md:w-[50%] lg:w-72 min-h-full bg-base-100 text-base-content">
+
+//         <div className="menu p-6 w-[80%] md:w-[50%] lg:w-72 min-h-full bg-base-100">
 //           <div className="mb-8 flex items-center gap-2 text-xl font-bold">
 //             <span className="text-primary gradient-badge p-2 rounded-lg">
 //               <IoShield />
@@ -111,6 +120,7 @@
 //                 <Link href="/dashboard" className="btn btn-ghost w-full">
 //                   Dashboard
 //                 </Link>
+
 //                 <button
 //                   onClick={handleLogout}
 //                   className="btn btn-primary w-full text-white"
@@ -119,12 +129,18 @@
 //                 </button>
 //               </>
 //             ) : (
-//               <Link
-//                 href="/auth/registration"
-//                 className="btn btn-primary w-full text-white"
-//               >
-//                 Get Started
-//               </Link>
+//               <>
+//                 <Link href="/auth/login" className="btn btn-ghost w-full">
+//                   Login
+//                 </Link>
+
+//                 <Link
+//                   href="/auth/registration"
+//                   className="btn btn-primary w-full text-white"
+//                 >
+//                   Get Started
+//                 </Link>
+//               </>
 //             )}
 //           </div>
 //         </div>
@@ -172,6 +188,14 @@ export default function Navbar() {
     </>
   );
 
+  // Determine role-based dashboard link
+  const dashboardLink =
+    session?.user?.role === "admin"
+      ? "/dashboard/admin"
+      : session?.user?.role === "instructor"
+        ? "/dashboard/instructor"
+        : "/dashboard/student";
+
   return (
     <div className="drawer">
       <input id="mobile-drawer" type="checkbox" className="drawer-toggle" />
@@ -198,7 +222,7 @@ export default function Navbar() {
             {session ? (
               <>
                 <Link
-                  href="/dashboard"
+                  href={dashboardLink}
                   className="btn btn-ghost hidden lg:inline-flex"
                 >
                   Dashboard
@@ -252,7 +276,7 @@ export default function Navbar() {
           <div className="mt-6 flex flex-col gap-2">
             {session ? (
               <>
-                <Link href="/dashboard" className="btn btn-ghost w-full">
+                <Link href={dashboardLink} className="btn btn-ghost w-full">
                   Dashboard
                 </Link>
 

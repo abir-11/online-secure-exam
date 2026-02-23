@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }) {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="w-64 bg-[#0D7C66] text-white p-4 flex flex-col justify-between">
-        <div>
+        <div className="mt-20">
           <h2 className="text-2xl font-bold mb-6">SecureExam</h2>
           <nav className="flex flex-col gap-3">
             <a href="/dashboard/profile" className="hover:underline">
