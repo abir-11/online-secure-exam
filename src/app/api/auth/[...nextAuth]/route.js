@@ -1,54 +1,3 @@
-// import NextAuth from "next-auth";
-// import GoogleProvider from "next-auth/providers/google";
-// import CredentialsProvider from "next-auth/providers/credentials";
-// import { getCollection } from "@/lib/dbConnect";
-// import bcrypt from "bcrypt";
-
-// export const authOptions = {
-//   providers: [
-//     GoogleProvider({
-//       clientId: process.env.GOOGLE_ID,
-//       clientSecret: process.env.GOOGLE_SECRET,
-//     }),
-//     CredentialsProvider({
-//       name: "Credentials",
-//       credentials: { email: {}, password: {} },
-//       async authorize(credentials) {
-//         const usersCollection = await getCollection("users");
-//         const user = await usersCollection.findOne({
-//           email: credentials.email,
-//         });
-//         if (!user) throw new Error("User not found");
-//         const isValid = await bcrypt.compare(
-//           credentials.password,
-//           user.password,
-//         );
-//         if (!isValid) throw new Error("Invalid password");
-//         return user;
-//       },
-//     }),
-//   ],
-//   session: { strategy: "jwt" },
-//   callbacks: {
-//     async jwt({ token, user }) {
-//       if (user) token.role = user.role;
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.user.role = token.role;
-//       return session;
-//     },
-//   },
-//   pages: {
-//     signIn: "/auth/login",
-//     error: "/auth/login",
-//   },
-// };
-
-// const handler = NextAuth(authOptions);
-
-// export { handler as GET, handler as POST };
-
 //----------- role added
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -115,13 +64,33 @@ export const authOptions = {
     }),
   ],
 
+  // callbacks: {
+  //   async jwt({ token, user }) {
+  //     if (user) token.role = user.role;
+  //     return token;
+  //   },
+  //   async session({ session, token }) {
+  //     session.user.role = token.role;
+  //     return session;
+  //   },
+  // },
+
   callbacks: {
+    // This runs whenever a JWT token is created or updated
     async jwt({ token, user }) {
-      if (user) token.role = user.role;
+      if (user) {
+        // Save role and image from user to token
+        token.role = user.role;
+        token.image = user.image; // <- add this
+      }
       return token;
     },
+
+    // This runs whenever a session is checked (client receives session)
     async session({ session, token }) {
+      // Add role and image from token to session.user
       session.user.role = token.role;
+      session.user.image = token.image; // <- add this
       return session;
     },
   },
