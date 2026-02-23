@@ -1,178 +1,281 @@
+// // // src/app/dashboard/layout.jsx
+// // "use client";
+
+// // import { useSession } from "next-auth/react";
+// // import { useEffect } from "react";
+// // import { useRouter } from "next/navigation";
+
+// // export default function DashboardLayout({ children }) {
+// //   const { data: session, status } = useSession();
+// //   const router = useRouter();
+
+// //   useEffect(() => {
+// //     if (status === "loading") return;
+// //     if (!session) {
+// //       router.push("/auth/login");
+// //     }
+// //   }, [session, status]);
+
+// //   if (status === "loading" || !session) return <p>Loading...</p>;
+
+// //   return (
+// //     <div className="flex min-h-screen">
+// //       {/* Sidebar */}
+// //       <aside className="w-64 bg-[#0D7C66] text-white p-4">
+// //         <h2 className="text-2xl font-bold mb-6">SecureExam</h2>
+// //         <nav className="flex flex-col gap-3">
+// //           <a href="/dashboard/profile" className="hover:underline">
+// //             Profile
+// //           </a>
+// //           <a href="/dashboard/help" className="hover:underline">
+// //             Help / Support
+// //           </a>
+// //           {session.user.role === "admin" && (
+// //             <>
+// //               <a
+// //                 href="/dashboard/admin/manage-users"
+// //                 className="hover:underline"
+// //               >
+// //                 Manage Users
+// //               </a>
+// //               <a href="/dashboard/admin/reports" className="hover:underline">
+// //                 Reports
+// //               </a>
+// //             </>
+// //           )}
+// //           {session.user.role === "instructor" && (
+// //             <>
+// //               <a
+// //                 href="/dashboard/instructor/courses"
+// //                 className="hover:underline"
+// //               >
+// //                 My Courses
+// //               </a>
+// //               <a href="/dashboard/instructor/exams" className="hover:underline">
+// //                 Exams
+// //               </a>
+// //             </>
+// //           )}
+// //           {session.user.role === "student" && (
+// //             <>
+// //               <a href="/dashboard/student/my-exams" className="hover:underline">
+// //                 My Exams
+// //               </a>
+// //               <a href="/dashboard/student/results" className="hover:underline">
+// //                 Results
+// //               </a>
+// //             </>
+// //           )}
+// //         </nav>
+// //       </aside>
+
+// //       {/* Main content */}
+// //       <main className="flex-1 p-6 bg-gray-50">{children}</main>
+// //     </div>
+// //   );
+// // }
+
+// // src/app/dashboard/layout.jsx
 // "use client";
 
-// import React, { useState } from "react";
-// import Link from "next/link";
+// import { useSession, signOut } from "next-auth/react";
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation";
 
 // export default function DashboardLayout({ children }) {
-//   const [sidebarOpen, setSidebarOpen] = useState(true);
+//   const { data: session, status } = useSession();
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     if (status === "loading") return;
+//     if (!session) {
+//       router.push("/auth/login");
+//     }
+//   }, [session, status]);
+
+//   if (status === "loading" || !session) return <p>Loading...</p>;
 
 //   return (
-//     <div className="flex h-screen bg-gray-50">
+//     <div className="flex min-h-screen">
 //       {/* Sidebar */}
-//       <aside
-//         className={`bg-[var(--color-primary-dark)] text-white w-64 flex-shrink-0 transition-all duration-300 ${
-//           sidebarOpen ? "block" : "hidden"
-//         } md:block`}
-//       >
-//         <div className="p-6 text-center text-xl font-bold border-b border-[var(--color-primary)]">
-//           SecureExam
+//       <aside className="w-64 bg-[#0D7C66] text-white p-4 flex flex-col justify-between">
+//         <div>
+//           <h2 className="text-2xl font-bold mb-6">SecureExam</h2>
+//           <nav className="flex flex-col gap-3">
+//             <a href="/dashboard/profile" className="hover:underline">
+//               Profile
+//             </a>
+//             <a href="/dashboard/help" className="hover:underline">
+//               Help / Support
+//             </a>
+//             {session.user.role === "admin" && (
+//               <>
+//                 <a
+//                   href="/dashboard/admin/manage-users"
+//                   className="hover:underline"
+//                 >
+//                   Manage Users
+//                 </a>
+//                 <a href="/dashboard/admin/reports" className="hover:underline">
+//                   Reports
+//                 </a>
+//               </>
+//             )}
+//             {session.user.role === "instructor" && (
+//               <>
+//                 <a
+//                   href="/dashboard/instructor/courses"
+//                   className="hover:underline"
+//                 >
+//                   My Courses
+//                 </a>
+//                 <a
+//                   href="/dashboard/instructor/exams"
+//                   className="hover:underline"
+//                 >
+//                   Exams
+//                 </a>
+//               </>
+//             )}
+//             {session.user.role === "student" && (
+//               <>
+//                 <a
+//                   href="/dashboard/student/my-exams"
+//                   className="hover:underline"
+//                 >
+//                   My Exams
+//                 </a>
+//                 <a
+//                   href="/dashboard/student/results"
+//                   className="hover:underline"
+//                 >
+//                   Results
+//                 </a>
+//               </>
+//             )}
+//           </nav>
 //         </div>
-//         <nav className="mt-6">
-//           <ul>
-//             <li>
-//               <Link
-//                 href="/dashboard"
-//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
-//               >
-//                 Dashboard Overview
-//               </Link>
-//             </li>
-//             <li>
-//               <Link
-//                 href="/dashboard/profile"
-//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
-//               >
-//                 Profile
-//               </Link>
 
-//               <Link
-//                 href="/dashboard/settings"
-//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
-//               >
-//                 Settings
-//               </Link>
-
-//               <Link
-//                 href="/dashboard/settings"
-//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
-//               >
-//                 Help
-//               </Link>
-
-//               <Link
-//                 href="/dashboard/settings"
-//                 className="block px-6 py-3 hover:bg-[var(--color-primary)] transition-colors rounded"
-//               >
-//                 Logout
-//               </Link>
-//             </li>
-//             {/* Add more links here */}
-//           </ul>
-//         </nav>
+//         {/* Logout Button */}
+//         <button
+//           onClick={() =>
+//             signOut({
+//               callbackUrl: "/auth/login",
+//             })
+//           }
+//           className="mt-6 w-full py-2 rounded-lg bg-white text-[#0D7C66] font-medium hover:bg-[#41B3A2] hover:text-white transition-all"
+//         >
+//           Logout
+//         </button>
 //       </aside>
 
 //       {/* Main content */}
-//       <div className="flex-1 flex flex-col overflow-auto">
-//         {/* Topbar */}
-//         <header className="flex items-center justify-between bg-white p-4 shadow-md">
-//           <button
-//             className="md:hidden text-[var(--color-primary-dark)]"
-//             onClick={() => setSidebarOpen(!sidebarOpen)}
-//           >
-//             ☰
-//           </button>
-//           <h1 className="text-xl font-semibold text-[var(--color-primary-dark)]">
-//             Dashboard
-//           </h1>
-//           <div>
-//             <span className="text-gray-600 font-medium">Hi, User 👋</span>
-//           </div>
-//         </header>
-
-//         {/* Content */}
-//         <main className="p-6 bg-gray-50 flex-1">{children}</main>
-//       </div>
+//       <main className="flex-1 p-6 bg-gray-50">{children}</main>
 //     </div>
 //   );
 // }
 
-//-----------------------------
-//--------color combination-----------
-
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.push("/auth/login");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading" || !session) return <p>Loading...</p>;
+
+  const handleLogout = async () => {
+    await signOut({
+      redirect: false,
+    });
+    router.push("/");
+  };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside
-        className={`bg-[#0D7C66] text-white w-64 flex-shrink-0 transition-all duration-300 ${
-          sidebarOpen ? "block" : "hidden"
-        } md:block`}
-      >
-        <div className="p-6 text-center text-xl font-bold border-b border-[#41B3A2]">
-          SecureExam
+      <aside className="w-64 bg-[#0D7C66] text-white p-4 flex flex-col justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-6">SecureExam</h2>
+          <nav className="flex flex-col gap-3">
+            <a href="/dashboard/profile" className="hover:underline">
+              Profile
+            </a>
+            <a href="/dashboard/help" className="hover:underline">
+              Help / Support
+            </a>
+
+            {session.user.role === "admin" && (
+              <>
+                <a
+                  href="/dashboard/admin/manage-users"
+                  className="hover:underline"
+                >
+                  Manage Users
+                </a>
+                <a href="/dashboard/admin/reports" className="hover:underline">
+                  Reports
+                </a>
+              </>
+            )}
+
+            {session.user.role === "instructor" && (
+              <>
+                <a
+                  href="/dashboard/instructor/courses"
+                  className="hover:underline"
+                >
+                  My Courses
+                </a>
+                <a
+                  href="/dashboard/instructor/exams"
+                  className="hover:underline"
+                >
+                  Exams
+                </a>
+              </>
+            )}
+
+            {session.user.role === "student" && (
+              <>
+                <a
+                  href="/dashboard/student/my-exams"
+                  className="hover:underline"
+                >
+                  My Exams
+                </a>
+                <a
+                  href="/dashboard/student/results"
+                  className="hover:underline"
+                >
+                  Results
+                </a>
+              </>
+            )}
+          </nav>
         </div>
-        <nav className="mt-6">
-          <ul>
-            <li>
-              <Link
-                href="/dashboard"
-                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
-              >
-                Dashboard Overview
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/profile"
-                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
-              >
-                Profile
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/settings"
-                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
-              >
-                Settings
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/help"
-                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
-              >
-                Help
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/api/auth/signout"
-                className="block px-6 py-3 hover:bg-[#41B3A2] transition-colors rounded"
-              >
-                Logout
-              </Link>
-            </li>
-          </ul>
-        </nav>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="mt-6 w-full py-2 rounded-lg bg-white text-[#0D7C66] font-medium hover:bg-[#41B3A2] hover:text-white transition-all"
+        >
+          Logout
+        </button>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-auto">
-        {/* Topbar */}
-        <header className="flex items-center justify-between bg-white p-4 shadow-md">
-          <button
-            className="md:hidden text-[#0D7C66] font-bold text-xl"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            ☰
-          </button>
-          <h1 className="text-xl font-semibold text-[#0D7C66]">Dashboard</h1>
-          <div>
-            <span className="text-gray-700 font-medium">Hi, User 👋</span>
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="p-6 bg-gray-100 flex-1">{children}</main>
-      </div>
+      <main className="flex-1 p-6 bg-gray-50">{children}</main>
     </div>
   );
 }

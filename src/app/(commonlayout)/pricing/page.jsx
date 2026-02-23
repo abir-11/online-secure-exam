@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { FiCheck } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 export default function PricingPage() {
   const plans = [
@@ -11,7 +15,6 @@ export default function PricingPage() {
         "Basic Analytics",
         "Email Support",
       ],
-      highlight: false,
     },
     {
       name: "Pro",
@@ -22,7 +25,6 @@ export default function PricingPage() {
         "Detailed Analytics",
         "Priority Support",
       ],
-      highlight: true,
     },
     {
       name: "Enterprise",
@@ -33,9 +35,41 @@ export default function PricingPage() {
         "Custom Features",
         "24/7 Support",
       ],
-      highlight: false,
     },
   ];
+
+  const [selectedPlan, setSelectedPlan] = useState(null);
+
+  const handleChoosePlan = (index) => {
+    if (selectedPlan !== index) {
+      Swal.fire({
+        icon: "info",
+        title: "Plan Selected",
+        text: `You selected the ${plans[index].name} plan. Click again to confirm.`,
+        confirmButtonColor: "#0D7C66",
+      });
+      setSelectedPlan(index);
+      return;
+    }
+
+    // Confirm plan choice
+    Swal.fire({
+      icon: "success",
+      title: "Plan Confirmed",
+      text: `You have chosen the ${plans[index].name} plan!`,
+      confirmButtonColor: "#0D7C66",
+    }).then(() => {
+      const plan = plans[index];
+      // Redirect based on plan
+      if (plan.price !== "Free") {
+        // Replace with actual payment page
+        window.location.href = `/checkout/${plan.name.toLowerCase()}`;
+      } else {
+        // Free plan, redirect to dashboard
+        window.location.href = "/dashboard/student";
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-base-100 py-16 px-6">
@@ -49,43 +83,50 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 mt-10">
-        {plans.map((plan, index) => (
-          <div
-            key={index}
-            className={`card border ${
-              plan.highlight
-                ? "border-primary shadow-xl scale-105"
-                : "border-base-300 shadow-lg"
-            }`}
-          >
-            <div className="card-body">
-              <h2 className="text-2xl font-bold">{plan.name}</h2>
+        {plans.map((plan, index) => {
+          const isSelected = selectedPlan === index;
+          return (
+            <div
+              key={index}
+              className={`card border shadow-lg transform transition-all duration-300 cursor-pointer ${
+                isSelected
+                  ? "border-primary scale-105 shadow-xl"
+                  : "border-base-300"
+              }`}
+            >
+              <div className="card-body">
+                <h2 className="text-2xl font-bold">{plan.name}</h2>
 
-              <p className="text-3xl font-extrabold text-primary">
-                {plan.price}
-              </p>
+                <p className="text-3xl font-extrabold text-primary">
+                  {plan.price}
+                </p>
 
-              <div className="divider"></div>
+                <div className="divider"></div>
 
-              <ul className="space-y-3">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <FiCheck className="text-primary" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-3">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <FiCheck className="text-primary" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
 
-              <button
-                className={`btn mt-6 ${
-                  plan.highlight ? "btn-primary" : "btn-outline btn-primary"
-                }`}
-              >
-                Choose Plan
-              </button>
+                <button
+                  className={`btn mt-6 w-full ${
+                    isSelected ? "btn-primary" : "btn-outline btn-primary"
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click from firing
+                    handleChoosePlan(index);
+                  }}
+                >
+                  Choose Plan
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
