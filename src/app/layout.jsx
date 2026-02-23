@@ -85,8 +85,8 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavbarWrapper from "@/Components/Navbar/NavbarWrapper";
-import Footer from "@/Components/Footer/Footer";
+import NavbarWrapper from "@/components/Navbar/NavbarWrapper";
+import Footer from "@/components/Footer/Footer";
 import Script from "next/script";
 import Providers from "./Providers";
 
