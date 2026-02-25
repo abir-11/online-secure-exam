@@ -40,7 +40,12 @@ export async function POST(request) {
     await usersCollection.updateOne(
       { email },
       {
-        $set: { password: hashedPassword },
+        $set: {
+          password: hashedPassword,
+          // Reset lock state on successful password reset
+          failedLoginAttempts: 0,
+          isLocked: false,
+        },
         $unset: { resetPasswordOTP: "", resetPasswordExpires: "" },
       },
     );
