@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,13 +9,13 @@ import dynamic from "next/dynamic";
 import { FcGoogle } from "react-icons/fc";
 import { IoShield } from "react-icons/io5";
 
-// Lottie dynamic import (SSR বন্ধ রাখার জন্য)
+// Disable SSR for Lottie
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
-import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
-import studentAnimation from "@/assets/Student.json";   // Student এর জন্য
-import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
+// Import animations
+import learningAnimation from "@/assets/learning.json";
+import studentAnimation from "@/assets/Student.json";
+import educationAnimation from "@/assets/Educatin.json";
 
 export default function LoginContent() {
   const router = useRouter();
@@ -27,8 +27,21 @@ export default function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Safe animation selection
+  const animationData = useMemo(() => {
+    const animations = {
+      admin: educationAnimation,
+      instructor: learningAnimation,
+      student: studentAnimation,
+    };
+
+    return animations[role] || studentAnimation;
+  }, [role]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
 
     try {
@@ -105,46 +118,40 @@ export default function LoginContent() {
     }
   };
 
-  // কমন ইনপুট স্টাইল
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
-
-  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
-  const getAnimationForRole = {
-    admin: educationAnimation,
-    instructor: learningAnimation,
-    student: studentAnimation,
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-        
-        {/* Left Side: Lottie Animation (Hidden on Mobile) */}
+        {/* LEFT SIDE ANIMATION */}
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
           <div className="z-10 flex flex-col items-center">
-            {/* Lottie Animation Rendering */}
-            <Lottie
-              key={role}
-              animationData={getAnimationForRole[role]}
-              loop={true}
-              className="w-[80%] max-w-md transition-all duration-500"
-            />
+            {animationData && (
+              <Lottie
+                key={role}
+                animationData={animationData}
+                loop
+                className="w-[80%] max-w-md"
+              />
+            )}
+
             <h2 className="mt-8 text-3xl font-bold text-[#0D7C66] text-center capitalize">
               Welcome back, {role}
             </h2>
+
             <p className="mt-4 text-gray-600 text-center max-w-sm">
-              Log in to your account to continue your secure and reliable educational journey.
+              Log in to your account to continue your secure and reliable
+              educational journey.
             </p>
           </div>
-          {/* Background Decorative Circles */}
+
           <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#0D7C66]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-[#41B3A2]/10 rounded-full blur-3xl"></div>
         </div>
 
-        {/* Right Side: Login Form */}
+        {/* RIGHT SIDE FORM */}
         <div className="w-full md:w-1/2 p-8 lg:p-14">
-          
           {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
@@ -154,13 +161,15 @@ export default function LoginContent() {
           </div>
 
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-gray-800">Login to your account</h3>
+            <h3 className="text-2xl font-bold text-gray-800">
+              Login to your account
+            </h3>
             <p className="text-gray-500 mt-2 text-sm">
               Please enter your credentials to access your dashboard.
             </p>
           </div>
 
-          {/* Role Selection */}
+          {/* ROLE SELECTOR */}
           <div className="flex gap-2 mb-8 bg-gray-50 p-1.5 rounded-2xl">
             {["admin", "instructor", "student"].map((item) => (
               <button
@@ -180,10 +189,12 @@ export default function LoginContent() {
             ))}
           </div>
 
-          {/* Form */}
+          {/* FORM */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Email Address</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Email Address
+              </label>
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -193,9 +204,11 @@ export default function LoginContent() {
                 className={inputStyles}
               />
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Password
+              </label>
               <input
                 type="password"
                 placeholder="Enter your password"
@@ -204,22 +217,6 @@ export default function LoginContent() {
                 required
                 className={inputStyles}
               />
-            </div>
-
-            <div className="flex items-center justify-between text-sm pt-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
-                />
-                <label htmlFor="remember" className="text-gray-600 cursor-pointer">
-                  Remember me
-                </label>
-              </div>
-              <Link href="/forgot-password" className="text-[#0D7C66] hover:underline font-medium">
-                Forgot password?
-              </Link>
             </div>
 
             <button
@@ -231,16 +228,22 @@ export default function LoginContent() {
             </button>
           </form>
 
-          {/* Divider */}
+          {/* DIVIDER */}
           <div className="my-8 flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <span className="text-gray-400 text-sm font-medium">
+              or continue with
+            </span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
-          {/* Google Button */}
+          {/* GOOGLE LOGIN */}
           <button
-            onClick={() => signIn("google")}
+            onClick={() =>
+              signIn("google", {
+                callbackUrl: callbackUrl || "/dashboard/student",
+              })
+            }
             className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 text-gray-700 font-semibold"
           >
             <FcGoogle size={24} />
