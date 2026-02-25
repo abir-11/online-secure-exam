@@ -12,10 +12,14 @@ import { IoShield } from "react-icons/io5";
 // Disable SSR for Lottie
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// Import animations
-import learningAnimation from "@/assets/learning.json";
-import studentAnimation from "@/assets/Student.json";
-import educationAnimation from "@/assets/Educatin.json";
+
+
+
+import learningAnimation from "@/assets/learning.json"; 
+import studentAnimation from "@/assets/Student.json";   
+import educationAnimation from "@/assets/Educatin.json"; 
+
+
 
 export default function LoginContent() {
   const router = useRouter();
@@ -26,6 +30,7 @@ export default function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   // Safe animation selection
   const animationData = useMemo(() => {
@@ -53,12 +58,17 @@ export default function LoginContent() {
 
       if (!result || result.error) {
         setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: "Invalid email or password",
-          confirmButtonColor: "#0D7C66",
-        });
+        // Check if backend reported locked profile
+        if (result?.error?.toLowerCase().includes("profile is locked")) {
+          setIsLocked(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login Failed",
+            text: "Invalid email or password",
+            confirmButtonColor: "#0D7C66",
+          });
+        }
         return;
       }
 
@@ -118,13 +128,23 @@ export default function LoginContent() {
     }
   };
 
+
+  // common input styles for email and password fields
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
+//role base animation mapping for Lottie
+  const getAnimationForRole = {
+    admin: educationAnimation,
+    instructor: learningAnimation,
+    student: studentAnimation,
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-        {/* LEFT SIDE ANIMATION */}
+
+        {/* Left Side: Lottie Animation (Hidden on Mobile) */}
+
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
           <div className="z-10 flex flex-col items-center">
             {animationData && (
@@ -219,6 +239,28 @@ export default function LoginContent() {
               />
             </div>
 
+            <div className="flex items-center justify-between text-sm pt-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
+                />
+                <label
+                  htmlFor="remember"
+                  className="text-gray-600 cursor-pointer"
+                >
+                  Remember me
+                </label>
+              </div>
+              <Link
+                href="/forgot-password"
+                className="text-[#0D7C66] hover:underline font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -251,7 +293,7 @@ export default function LoginContent() {
           </button>
 
           <p className="mt-8 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               href="/auth/registration"
               className="text-[#0D7C66] hover:underline font-bold"
@@ -261,6 +303,41 @@ export default function LoginContent() {
           </p>
         </div>
       </div>
+
+      {/* Profile Locked Modal */}
+      {isLocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full flex flex-col items-center shadow-2xl">
+            <Lottie
+              animationData={educationAnimation}
+              loop
+              className="w-40 h-40"
+            />
+            <h2 className="mt-4 text-2xl font-bold text-gray-800 text-center">
+              Oh no, profile is locked!
+            </h2>
+            <p className="mt-2 text-gray-500 text-center">
+              For your security, your account has been locked after 3 failed
+              login attempts.
+            </p>
+
+            <button
+              onClick={() => router.push("/forgot-password")}
+              className="mt-6 w-full py-3 rounded-xl bg-[#0D7C66] text-white font-semibold hover:bg-[#0b6654] transition-all"
+            >
+              Retrieve account
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsLocked(false)}
+              className="mt-3 text-sm text-gray-500 hover:text-gray-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

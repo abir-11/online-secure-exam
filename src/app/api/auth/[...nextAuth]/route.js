@@ -137,18 +137,61 @@ export const authOptions = {
             throw new Error("User not found");
           }
 
+          // If profile is already locked, block login immediately
+          if (user.isLocked) {
+            throw new Error("Your profile is locked. Please reset your password.");
+          }
+
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
             user.password,
           );
 
+          // Wrong password: increment failed attempts and lock after 3 tries
           if (!isPasswordCorrect) {
+            const failedAttempts = user.failedLoginAttempts || 0;
+            const updatedAttempts = failedAttempts + 1;
+
+            const updateDoc = {
+              $set: {
+                failedLoginAttempts: updatedAttempts,
+              },
+            };
+
+            if (updatedAttempts >= 3) {
+              updateDoc.$set.isLocked = true;
+            }
+
+            await usersCollection.updateOne(
+              { _id: user._id },
+              updateDoc,
+            );
+
+            if (updatedAttempts >= 3) {
+              throw new Error(
+                "Your profile is locked. Please reset your password.",
+              );
+            }
+
             throw new Error("Wrong password");
           }
 
           // Role check
           if (credentials.role && credentials.role !== user.role) {
             throw new Error("Role mismatch");
+          }
+
+          // Successful login: reset failed attempts and unlock if needed
+          if (user.failedLoginAttempts || user.isLocked) {
+            await usersCollection.updateOne(
+              { _id: user._id },
+              {
+                $set: {
+                  failedLoginAttempts: 0,
+                  isLocked: false,
+                },
+              },
+            );
           }
 
           return {
