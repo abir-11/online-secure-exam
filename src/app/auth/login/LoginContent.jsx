@@ -28,6 +28,7 @@ export default function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -42,12 +43,17 @@ export default function LoginContent() {
 
       if (!result || result.error) {
         setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: "Invalid email or password",
-          confirmButtonColor: "#0D7C66",
-        });
+        // Check if backend reported locked profile
+        if (result?.error?.toLowerCase().includes("profile is locked")) {
+          setIsLocked(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login Failed",
+            text: "Invalid email or password",
+            confirmButtonColor: "#0D7C66",
+          });
+        }
         return;
       }
 
@@ -272,6 +278,41 @@ export default function LoginContent() {
           </p>
         </div>
       </div>
+
+      {/* Profile Locked Modal */}
+      {isLocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full flex flex-col items-center shadow-2xl">
+            <Lottie
+              animationData={educationAnimation}
+              loop
+              className="w-40 h-40"
+            />
+            <h2 className="mt-4 text-2xl font-bold text-gray-800 text-center">
+              Oh no, profile is locked!
+            </h2>
+            <p className="mt-2 text-gray-500 text-center">
+              For your security, your account has been locked after 3 failed
+              login attempts.
+            </p>
+
+            <button
+              onClick={() => router.push("/forgot-password")}
+              className="mt-6 w-full py-3 rounded-xl bg-[#0D7C66] text-white font-semibold hover:bg-[#0b6654] transition-all"
+            >
+              Retrieve account
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsLocked(false)}
+              className="mt-3 text-sm text-gray-500 hover:text-gray-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
