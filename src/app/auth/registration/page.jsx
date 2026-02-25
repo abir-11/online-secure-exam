@@ -10,13 +10,11 @@ import { IoShield } from "react-icons/io5";
 // Lottie dynamic import for client-side rendering only
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// 3 animations for different roles
 import learningAnimation from "@/assets/learning.json"; // Instructor 
 import studentAnimation from "@/assets/Student.json";   // Student 
 import educationAnimation from "@/assets/Educatin.json"; // Admin 
-
 export default function RegisterPage() {
-  const [role, setRole] = useState("instructor");
+  const [role, setRole] = useState("student");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,7 +81,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-        
         {/* Left Side: Lottie Animation (Hidden on Mobile) */}
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
           <div className="z-10 flex flex-col items-center">
@@ -97,7 +94,8 @@ export default function RegisterPage() {
               Join as {role}
             </h2>
             <p className="mt-4 text-gray-600 text-center max-w-sm">
-              Empower your educational journey with our secure and reliable online examination platform.
+              Empower your educational journey with our secure and reliable
+              online examination platform.
             </p>
           </div>
           {/* Background Decorative Circles */}
@@ -107,7 +105,6 @@ export default function RegisterPage() {
 
         {/* Right Side: Registration Form */}
         <div className="w-full md:w-1/2 p-8 lg:p-14">
-          
           {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
@@ -117,7 +114,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-gray-800">Create an account</h3>
+            <h3 className="text-2xl font-bold text-gray-800">
+              Create an account
+            </h3>
             <p className="text-gray-500 mt-2 text-sm">
               Please fill in your details to get started.
             </p>
@@ -160,7 +159,7 @@ export default function RegisterPage() {
                 className={inputStyles}
               />
             </div>
-            
+
             <input
               type="email"
               placeholder="Email Address"
@@ -168,7 +167,7 @@ export default function RegisterPage() {
               required
               className={inputStyles}
             />
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="password"
@@ -194,7 +193,10 @@ export default function RegisterPage() {
               />
               <span className="text-gray-600">
                 I agree to the{" "}
-                <Link href="/terms" className="text-[#0D7C66] hover:underline font-medium">
+                <Link
+                  href="/terms"
+                  className="text-[#0D7C66] hover:underline font-medium"
+                >
                   Terms & Conditions
                 </Link>
               </span>
@@ -212,7 +214,9 @@ export default function RegisterPage() {
           {/* Divider */}
           <div className="my-8 flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <span className="text-gray-400 text-sm font-medium">
+              or continue with
+            </span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 

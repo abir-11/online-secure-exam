@@ -28,7 +28,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto mt-20">
       <h2 className="text-2xl font-bold text-[var(--color-primary-dark)] mb-6">
         General Settings
       </h2>
