@@ -12,10 +12,12 @@ import { IoShield } from "react-icons/io5";
 // Lottie dynamic import (SSR বন্ধ রাখার জন্য)
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
-import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
-import studentAnimation from "@/assets/Student.json"; // Student এর জন্য
-import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
+
+
+import learningAnimation from "@/assets/learning.json"; 
+import studentAnimation from "@/assets/Student.json";   
+import educationAnimation from "@/assets/Educatin.json"; 
+
 
 export default function LoginContent() {
   const router = useRouter();
@@ -105,11 +107,10 @@ export default function LoginContent() {
     }
   };
 
-  // কমন ইনপুট স্টাইল
+  // common input styles for email and password fields
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
-
-  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
+//role base animation mapping for Lottie
   const getAnimationForRole = {
     admin: educationAnimation,
     instructor: learningAnimation,

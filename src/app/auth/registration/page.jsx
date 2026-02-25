@@ -70,12 +70,12 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
-  // কমন ইনপুট স্টাইল
+  // common input styles for email and password fields
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
 
-  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
-  const getAnimationForRole = {
+  //role base animation mapping for Lottie
+    const getAnimationForRole = {
     admin: educationAnimation,
     instructor: learningAnimation,
     student: studentAnimation,
@@ -90,7 +90,7 @@ export default function RegisterPage() {
           <div className="z-10 flex flex-col items-center">
             {/* Lottie Animation Rendering */}
             <Lottie
-              key={role} // Key দেওয়া হয়েছে যাতে রোল চেঞ্জ হলে অ্যানিমেশন নতুন করে লোড হয়
+              key={role} // Key to re-render animation on role change
               animationData={getAnimationForRole[role]}
               loop={true}
               className="w-[80%] max-w-md transition-all duration-500"

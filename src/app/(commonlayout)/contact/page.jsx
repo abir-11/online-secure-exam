@@ -1,11 +1,74 @@
-import { FiPhone, FiMail, FiMapPin, FiSend } from "react-icons/fi";
+"use client";
 
-export default function ContactPage() {
+import { useState } from "react";
+import { FiPhone, FiMail, FiMapPin, FiSend } from "react-icons/fi";
+import Swal from "sweetalert2";
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    role: "", // ডিফল্টভাবে খালি করে দেওয়া হলো
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/contactdb", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          text: "Your message has been sent successfully.",
+          icon: "success",
+          confirmButtonColor: "#00a96e",
+        });
+        
+        // সাবমিট হওয়ার পর রোল আবার খালি করে দেওয়া হলো
+        setFormData({ name: "", role: "", email: "", subject: "", message: "" });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: result.error || "Failed to send message.",
+          icon: "error",
+          confirmButtonColor: "#ff5861",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Oops...",
+        text: "Something went wrong. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ff5861",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-100 py-16 px-6">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
+        <h1 className="text-4xl font-bold mb-2 mt-10">Get in Touch</h1>
         <p className="text-base-content/70">
           Have questions about{" "}
           <span className="text-primary font-semibold">SecureExam</span>? We are
@@ -61,23 +124,35 @@ export default function ContactPage() {
 
         {/* Right Side Form */}
         <div className="p-10 bg-base-100">
-          <form className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="label">Full Name</label>
                 <input
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="John Doe"
                   className="input input-bordered w-full"
+                  required
                 />
               </div>
 
               <div>
                 <label className="label">I am a..</label>
-                <select className="select select-bordered w-full">
-                  <option>Student</option>
-                  <option>Teacher</option>
-                  <option>Admin</option>
+                <select 
+                  name="role" 
+                  value={formData.role} 
+                  onChange={handleChange} 
+                  className="select select-bordered w-full"
+                  required // এটি যুক্ত করা হয়েছে যাতে রোল সিলেক্ট না করে সাবমিট করা না যায়
+                >
+                  {/* ডিফল্ট অপশন যুক্ত করা হয়েছে */}
+                  <option value="" disabled>Select your role</option>
+                  <option value="Student">Student</option>
+                  <option value="Teacher">Teacher</option>
+                  <option value="Admin">Admin</option>
                 </select>
               </div>
             </div>
@@ -86,8 +161,12 @@ export default function ContactPage() {
               <label className="label">Email Address</label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="you@example.com"
                 className="input input-bordered w-full"
+                required
               />
             </div>
 
@@ -95,21 +174,33 @@ export default function ContactPage() {
               <label className="label">Subject</label>
               <input
                 type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
                 placeholder="Exam Issue / Technical Support"
                 className="input input-bordered w-full"
+                required
               />
             </div>
 
             <div>
               <label className="label">Message</label>
               <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 className="textarea textarea-bordered w-full h-28"
                 placeholder="How can we help you?"
+                required
               ></textarea>
             </div>
 
-            <button className="btn btn-primary w-full">
-              Send Message <FiSend />
+            <button 
+              type="submit" 
+              className="btn btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Send Message"} <FiSend />
             </button>
           </form>
         </div>
