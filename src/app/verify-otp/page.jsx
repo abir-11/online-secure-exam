@@ -31,7 +31,7 @@ export default function VerifyOTPPage() {
 
     // Auto focus next input
     if (value && index < 5) {
-      document.getElementById(`otp-${index + 0}`)?.focus();
+      document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
