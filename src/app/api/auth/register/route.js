@@ -36,6 +36,9 @@ export async function POST(req) {
       phone,
       image: "",
       createdAt: new Date(),
+      // Track login attempts and lock state
+      failedLoginAttempts: 0,
+      isLocked: false,
     });
 
     return NextResponse.json({
