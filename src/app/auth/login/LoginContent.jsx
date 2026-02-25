@@ -12,10 +12,12 @@ import { IoShield } from "react-icons/io5";
 // Lottie dynamic import (SSR বন্ধ রাখার জন্য)
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
-import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
-import studentAnimation from "@/assets/Student.json";   // Student এর জন্য
-import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
+
+
+import learningAnimation from "@/assets/learning.json"; 
+import studentAnimation from "@/assets/Student.json";   
+import educationAnimation from "@/assets/Educatin.json"; 
+
 
 export default function LoginContent() {
   const router = useRouter();
@@ -26,6 +28,7 @@ export default function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -40,12 +43,17 @@ export default function LoginContent() {
 
       if (!result || result.error) {
         setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: "Invalid email or password",
-          confirmButtonColor: "#0D7C66",
-        });
+        // Check if backend reported locked profile
+        if (result?.error?.toLowerCase().includes("profile is locked")) {
+          setIsLocked(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login Failed",
+            text: "Invalid email or password",
+            confirmButtonColor: "#0D7C66",
+          });
+        }
         return;
       }
 
@@ -105,11 +113,10 @@ export default function LoginContent() {
     }
   };
 
-  // কমন ইনপুট স্টাইল
+  // common input styles for email and password fields
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
-
-  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
+//role base animation mapping for Lottie
   const getAnimationForRole = {
     admin: educationAnimation,
     instructor: learningAnimation,
@@ -119,7 +126,6 @@ export default function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-        
         {/* Left Side: Lottie Animation (Hidden on Mobile) */}
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
           <div className="z-10 flex flex-col items-center">
@@ -134,7 +140,8 @@ export default function LoginContent() {
               Welcome back, {role}
             </h2>
             <p className="mt-4 text-gray-600 text-center max-w-sm">
-              Log in to your account to continue your secure and reliable educational journey.
+              Log in to your account to continue your secure and reliable
+              educational journey.
             </p>
           </div>
           {/* Background Decorative Circles */}
@@ -144,7 +151,6 @@ export default function LoginContent() {
 
         {/* Right Side: Login Form */}
         <div className="w-full md:w-1/2 p-8 lg:p-14">
-          
           {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
@@ -154,7 +160,9 @@ export default function LoginContent() {
           </div>
 
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-gray-800">Login to your account</h3>
+            <h3 className="text-2xl font-bold text-gray-800">
+              Login to your account
+            </h3>
             <p className="text-gray-500 mt-2 text-sm">
               Please enter your credentials to access your dashboard.
             </p>
@@ -183,7 +191,9 @@ export default function LoginContent() {
           {/* Form */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Email Address</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Email Address
+              </label>
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -193,9 +203,11 @@ export default function LoginContent() {
                 className={inputStyles}
               />
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Password
+              </label>
               <input
                 type="password"
                 placeholder="Enter your password"
@@ -213,11 +225,17 @@ export default function LoginContent() {
                   id="remember"
                   className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
                 />
-                <label htmlFor="remember" className="text-gray-600 cursor-pointer">
+                <label
+                  htmlFor="remember"
+                  className="text-gray-600 cursor-pointer"
+                >
                   Remember me
                 </label>
               </div>
-              <Link href="/forgot-password" className="text-[#0D7C66] hover:underline font-medium">
+              <Link
+                href="/forgot-password"
+                className="text-[#0D7C66] hover:underline font-medium"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -234,7 +252,9 @@ export default function LoginContent() {
           {/* Divider */}
           <div className="my-8 flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <span className="text-gray-400 text-sm font-medium">
+              or continue with
+            </span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
@@ -248,7 +268,7 @@ export default function LoginContent() {
           </button>
 
           <p className="mt-8 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               href="/auth/registration"
               className="text-[#0D7C66] hover:underline font-bold"
@@ -258,6 +278,41 @@ export default function LoginContent() {
           </p>
         </div>
       </div>
+
+      {/* Profile Locked Modal */}
+      {isLocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full flex flex-col items-center shadow-2xl">
+            <Lottie
+              animationData={educationAnimation}
+              loop
+              className="w-40 h-40"
+            />
+            <h2 className="mt-4 text-2xl font-bold text-gray-800 text-center">
+              Oh no, profile is locked!
+            </h2>
+            <p className="mt-2 text-gray-500 text-center">
+              For your security, your account has been locked after 3 failed
+              login attempts.
+            </p>
+
+            <button
+              onClick={() => router.push("/forgot-password")}
+              className="mt-6 w-full py-3 rounded-xl bg-[#0D7C66] text-white font-semibold hover:bg-[#0b6654] transition-all"
+            >
+              Retrieve account
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsLocked(false)}
+              className="mt-3 text-sm text-gray-500 hover:text-gray-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
