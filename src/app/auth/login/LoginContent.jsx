@@ -32,6 +32,7 @@ export default function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
+
   // Safe animation selection
   const animationData = useMemo(() => {
     const animations = {
@@ -42,6 +43,7 @@ export default function LoginContent() {
 
     return animations[role] || studentAnimation;
   }, [role]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
