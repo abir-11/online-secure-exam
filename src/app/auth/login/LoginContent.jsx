@@ -4,6 +4,18 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { FcGoogle } from "react-icons/fc";
+import { IoShield } from "react-icons/io5";
+
+// Lottie dynamic import (SSR বন্ধ রাখার জন্য)
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
+import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
+import studentAnimation from "@/assets/Student.json";   // Student এর জন্য
+import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
 
 export default function LoginContent() {
   const router = useRouter();
@@ -93,88 +105,159 @@ export default function LoginContent() {
     }
   };
 
+  // কমন ইনপুট স্টাইল
+  const inputStyles =
+    "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
+
+  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
+  const getAnimationForRole = {
+    admin: educationAnimation,
+    instructor: learningAnimation,
+    student: studentAnimation,
+  };
+
   return (
-    <div className="w-full my-30 max-w-md bg-white rounded-2xl shadow-[0_20px_40px_-15px_rgba(13,124,102,0.15)] hover:shadow-[0_25px_50px_-12px_rgba(13,124,102,0.25)] transition-all duration-300 p-8">
-      {/* Your UI stays exactly the same */}
-
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-14 h-14 rounded-full bg-[#0D7C66] flex items-center justify-center text-white text-xl font-bold">
-          SE
+    <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
+      <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
+        
+        {/* Left Side: Lottie Animation (Hidden on Mobile) */}
+        <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
+          <div className="z-10 flex flex-col items-center">
+            {/* Lottie Animation Rendering */}
+            <Lottie
+              key={role}
+              animationData={getAnimationForRole[role]}
+              loop={true}
+              className="w-[80%] max-w-md transition-all duration-500"
+            />
+            <h2 className="mt-8 text-3xl font-bold text-[#0D7C66] text-center capitalize">
+              Welcome back, {role}
+            </h2>
+            <p className="mt-4 text-gray-600 text-center max-w-sm">
+              Log in to your account to continue your secure and reliable educational journey.
+            </p>
+          </div>
+          {/* Background Decorative Circles */}
+          <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#0D7C66]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-[#41B3A2]/10 rounded-full blur-3xl"></div>
         </div>
-        <h2 className="mt-3 text-2xl font-bold text-[#0D7C66]">SecureExam</h2>
-        <p className="text-sm text-slate-500">
-          Secure Online Examination Platform
-        </p>
-      </div>
 
-      <div className="flex justify-center gap-2 mb-6">
-        {["admin", "instructor", "student"].map((item) => (
+        {/* Right Side: Login Form */}
+        <div className="w-full md:w-1/2 p-8 lg:p-14">
+          
+          {/* Mobile Logo */}
+          <div className="md:hidden flex flex-col items-center mb-8">
+            <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
+              <IoShield size={28} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#0D7C66]">SecureExam</h2>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-gray-800">Login to your account</h3>
+            <p className="text-gray-500 mt-2 text-sm">
+              Please enter your credentials to access your dashboard.
+            </p>
+          </div>
+
+          {/* Role Selection */}
+          <div className="flex gap-2 mb-8 bg-gray-50 p-1.5 rounded-2xl">
+            {["admin", "instructor", "student"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setRole(item)}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                  role === item
+                    ? "bg-white text-[#0D7C66] shadow-sm border border-gray-100"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {item === "admin" && "👑 Admin"}
+                {item === "instructor" && "📚 Instructor"}
+                {item === "student" && "🎓 Student"}
+              </button>
+            ))}
+          </div>
+
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleLogin}>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Email Address</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={inputStyles}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={inputStyles}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-sm pt-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
+                />
+                <label htmlFor="remember" className="text-gray-600 cursor-pointer">
+                  Remember me
+                </label>
+              </div>
+              <Link href="/forgot-password" className="text-[#0D7C66] hover:underline font-medium">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 mt-4 rounded-xl bg-[#0D7C66] text-white font-bold text-lg hover:bg-[#0b6654] hover:shadow-lg hover:shadow-[#0D7C66]/30 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? "Logging in..." : "Login to Dashboard"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="my-8 flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200"></div>
+            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <div className="flex-1 h-px bg-gray-200"></div>
+          </div>
+
+          {/* Google Button */}
           <button
-            key={item}
-            type="button"
-            onClick={() => setRole(item)}
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-all ${
-              role === item
-                ? "bg-[#0D7C66] text-white"
-                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-            }`}
+            onClick={() => signIn("google")}
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 text-gray-700 font-semibold"
           >
-            {item === "admin" && "👑 Admin"}
-            {item === "instructor" && "📚 Instructor"}
-            {item === "student" && "🎓 Student"}
+            <FcGoogle size={24} />
+            <span>Sign in with Google</span>
           </button>
-        ))}
-      </div>
 
-      <form className="space-y-4" onSubmit={handleLogin}>
-        <div>
-          <label className="text-sm text-slate-600">Email Address</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-slate-800 placeholder-slate-400"
-          />
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              href="/auth/registration"
+              className="text-[#0D7C66] hover:underline font-bold"
+            >
+              Sign up
+            </Link>
+          </p>
         </div>
-
-        <div>
-          <label className="text-sm text-slate-600">Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-slate-800 placeholder-slate-400"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 rounded-lg bg-[#0D7C66] text-white font-medium hover:bg-[#41B3A2] transition-all transform hover:-translate-y-0.5"
-        >
-          {loading ? "Logging in..." : "Login to Dashboard"}
-        </button>
-      </form>
-
-      <div className="my-6 flex items-center gap-2">
-        <div className="flex-1 h-px bg-slate-200"></div>
-        <span className="text-slate-400 text-sm">or continue with</span>
-        <div className="flex-1 h-px bg-slate-200"></div>
       </div>
-
-      <button
-        onClick={() => signIn("google")}
-        className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-[#41B3A2] hover:bg-white transition"
-      >
-        <span className="text-[#DB4437] font-bold">G</span>
-        <span className="text-slate-600 hover:text-slate-800">
-          Continue with Google
-        </span>
-      </button>
     </div>
   );
 }

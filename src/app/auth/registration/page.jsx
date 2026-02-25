@@ -1,214 +1,19 @@
-// "use client";
-
-// import { useState } from "react";
-// import { signIn } from "next-auth/react";
-
-// export default function RegisterPage() {
-//   const [role, setRole] = useState("instructor");
-
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirmPassword, setConfirmPassword] = useState("");
-//   const [phone, setPhone] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   const handleRegister = async (e) => {
-//     e.preventDefault();
-
-//     if (password !== confirmPassword) {
-//       alert("Passwords do not match");
-//       return;
-//     }
-
-//     setLoading(true);
-
-//     try {
-//       const res = await fetch("/api/auth/registration", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({
-//           name,
-//           email,
-//           password,
-//           role,
-//           phone,
-//         }),
-//       });
-
-//       const data = await res.json();
-
-//       if (res.ok) {
-//         alert("Registration successful");
-//         window.location.href = "/auth/login";
-//       } else {
-//         alert(data.message || "Registration failed");
-//       }
-//     } catch (error) {
-//       console.log(error);
-//       alert("Something went wrong");
-//     }
-
-//     setLoading(false);
-//   };
-
-//   return (
-//     <div className="w-full my-30 max-w-md bg-white rounded-2xl shadow-[0_20px_40px_-15px_rgba(13,124,102,0.15)] hover:shadow-[0_25px_50px_-12px_rgba(13,124,102,0.25)] transition-all duration-300 p-8">
-//       {/* Logo */}
-//       <div className="flex flex-col items-center mb-6">
-//         <div className="w-14 h-14 rounded-full bg-[#0D7C66] flex items-center justify-center text-white text-xl font-bold">
-//           SE
-//         </div>
-//         <h2 className="mt-3 text-2xl font-bold text-[#0D7C66]">SecureExam</h2>
-//         <p className="text-sm text-[#4B5563]">
-//           Create your account to get started
-//         </p>
-//       </div>
-
-//       {/* Role Pills */}
-//       <div className="flex justify-center gap-2 mb-6">
-//         {["admin", "instructor", "student"].map((item) => (
-//           <button
-//             key={item}
-//             type="button"
-//             onClick={() => setRole(item)}
-//             className={`px-4 py-1 rounded-full text-sm font-medium transition-all ${
-//               role === item
-//                 ? "bg-[#0D7C66] text-white"
-//                 : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0] hover:text-[#334155]"
-//             }`}
-//           >
-//             {item === "admin" && "👑 Admin"}
-//             {item === "instructor" && "📚 Instructor"}
-//             {item === "student" && "🎓 Student"}
-//           </button>
-//         ))}
-//       </div>
-
-//       {/* Form */}
-//       <form className="space-y-4" onSubmit={handleRegister}>
-//         {/* Name */}
-//         <div>
-//           <label className="text-sm text-[#4B5563]">Full Name</label>
-//           <input
-//             type="text"
-//             placeholder="Enter your full name"
-//             onChange={(e) => setName(e.target.value)}
-//             required
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-[#1e293b] placeholder-[#94a3b8]"
-//           />
-//         </div>
-
-//         {/* Email */}
-//         <div>
-//           <label className="text-sm text-[#4B5563]">Email Address</label>
-//           <input
-//             type="email"
-//             placeholder="Enter your email"
-//             onChange={(e) => setEmail(e.target.value)}
-//             required
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-[#1e293b] placeholder-[#94a3b8]"
-//           />
-//         </div>
-
-//         {/* Password */}
-//         <div>
-//           <label className="text-sm text-[#4B5563]">Password</label>
-//           <input
-//             type="password"
-//             placeholder="Enter your password"
-//             onChange={(e) => setPassword(e.target.value)}
-//             required
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-[#1e293b] placeholder-[#94a3b8]"
-//           />
-//         </div>
-
-//         {/* Confirm Password */}
-//         <div>
-//           <label className="text-sm text-[#4B5563]">Confirm Password</label>
-//           <input
-//             type="password"
-//             placeholder="Re-enter your password"
-//             onChange={(e) => setConfirmPassword(e.target.value)}
-//             required
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-[#1e293b] placeholder-[#94a3b8]"
-//           />
-//         </div>
-
-//         {/* Phone Number */}
-//         <div>
-//           <label className="text-sm text-[#4B5563]">Phone Number</label>
-//           <input
-//             type="tel"
-//             placeholder="Enter your phone number"
-//             onChange={(e) => setPhone(e.target.value)}
-//             className="w-full mt-1 px-4 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#41B3A2] focus:outline-none focus:ring-2 focus:ring-[#41B3A2]/20 text-[#1e293b] placeholder-[#94a3b8]"
-//           />
-//         </div>
-
-//         {/* Terms */}
-//         <div className="flex items-center gap-2 text-sm">
-//           <input
-//             type="checkbox"
-//             required
-//             className="w-4 h-4 border-[#cbd5e1] rounded focus:ring-[#41B3A2] checked:bg-[#0D7C66]"
-//           />
-//           <span className="text-[#475569]">
-//             I agree to the{" "}
-//             <a href="/terms" className="text-[#0D7C66] hover:text-[#41B3A2]">
-//               Terms & Conditions
-//             </a>
-//           </span>
-//         </div>
-
-//         {/* Register Button */}
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full py-2 rounded-lg bg-[#0D7C66] text-white font-medium hover:bg-[#41B3A2] transition-all transform hover:-translate-y-0.5"
-//         >
-//           {loading ? "Creating Account..." : "Register"}
-//         </button>
-//       </form>
-
-//       {/* Divider */}
-//       <div className="my-6 flex items-center gap-2">
-//         <div className="flex-1 h-px bg-[#e2e8f0]"></div>
-//         <span className="text-[#94a3b8] text-sm">or continue with</span>
-//         <div className="flex-1 h-px bg-[#e2e8f0]"></div>
-//       </div>
-
-//       {/* Google Button */}
-//       <button
-//         onClick={() => signIn("google")}
-//         className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] hover:border-[#41B3A2] hover:bg-white transition"
-//       >
-//         <span className="text-[#DB4437] font-bold">G</span>
-//         <span className="text-[#475569] hover:text-[#1e293b]">
-//           Continue with Google
-//         </span>
-//       </button>
-
-//       {/* Sign In Link */}
-//       <p className="mt-6 text-center text-sm text-[#64748b]">
-//         Already have an account?{" "}
-//         <a
-//           href="/auth/login"
-//           className="text-[#0D7C66] hover:text-[#41B3A2] font-medium"
-//         >
-//           Sign in
-//         </a>
-//       </p>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { FcGoogle } from "react-icons/fc";
+import { IoShield } from "react-icons/io5";
+
+// Lottie dynamic import (SSR বন্ধ রাখার জন্য)
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
+import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
+import studentAnimation from "@/assets/Student.json";   // Student এর জন্য
+import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
 
 export default function RegisterPage() {
   const [role, setRole] = useState("instructor");
@@ -246,9 +51,9 @@ export default function RegisterPage() {
         const sessionData = await sessionRes.json();
 
         if (sessionData?.user?.role) {
-          const role = sessionData.user.role;
-          if (role === "admin") window.location.href = "/dashboard/admin";
-          else if (role === "instructor")
+          const userRole = sessionData.user.role;
+          if (userRole === "admin") window.location.href = "/dashboard/admin";
+          else if (userRole === "instructor")
             window.location.href = "/dashboard/instructor";
           else window.location.href = "/dashboard/student";
         } else {
@@ -265,124 +70,174 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
+  // কমন ইনপুট স্টাইল
+  const inputStyles =
+    "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
+
+  // রোলের উপর ভিত্তি করে অ্যানিমেশন সিলেক্ট করার জন্য অবজেক্ট
+  const getAnimationForRole = {
+    admin: educationAnimation,
+    instructor: learningAnimation,
+    student: studentAnimation,
+  };
+
   return (
-    <div className="w-full my-30 max-w-md bg-white rounded-2xl shadow-[0_20px_40px_-15px_rgba(13,124,102,0.15)] hover:shadow-[0_25px_50px_-12px_rgba(13,124,102,0.25)] transition-all duration-300 p-8">
-      {/* Logo */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-14 h-14 rounded-full bg-[#0D7C66] flex items-center justify-center text-white text-xl font-bold">
-          SE
+    <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
+      <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
+        
+        {/* Left Side: Lottie Animation (Hidden on Mobile) */}
+        <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
+          <div className="z-10 flex flex-col items-center">
+            {/* Lottie Animation Rendering */}
+            <Lottie
+              key={role} // Key দেওয়া হয়েছে যাতে রোল চেঞ্জ হলে অ্যানিমেশন নতুন করে লোড হয়
+              animationData={getAnimationForRole[role]}
+              loop={true}
+              className="w-[80%] max-w-md transition-all duration-500"
+            />
+            <h2 className="mt-8 text-3xl font-bold text-[#0D7C66] text-center capitalize">
+              Join as {role}
+            </h2>
+            <p className="mt-4 text-gray-600 text-center max-w-sm">
+              Empower your educational journey with our secure and reliable online examination platform.
+            </p>
+          </div>
+          {/* Background Decorative Circles */}
+          <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#0D7C66]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-[#41B3A2]/10 rounded-full blur-3xl"></div>
         </div>
-        <h2 className="mt-3 text-2xl font-bold text-[#0D7C66]">SecureExam</h2>
-        <p className="text-sm text-[#4B5563]">
-          Create your account to get started
-        </p>
-      </div>
 
-      {/* Role Pills */}
-      <div className="flex justify-center gap-2 mb-6">
-        {["admin", "instructor", "student"].map((item) => (
+        {/* Right Side: Registration Form */}
+        <div className="w-full md:w-1/2 p-8 lg:p-14">
+          
+          {/* Mobile Logo */}
+          <div className="md:hidden flex flex-col items-center mb-8">
+            <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
+              <IoShield size={28} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#0D7C66]">SecureExam</h2>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-gray-800">Create an account</h3>
+            <p className="text-gray-500 mt-2 text-sm">
+              Please fill in your details to get started.
+            </p>
+          </div>
+
+          {/* Role Selection */}
+          <div className="flex gap-2 mb-8 bg-gray-50 p-1.5 rounded-2xl">
+            {["admin", "instructor", "student"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setRole(item)}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                  role === item
+                    ? "bg-white text-[#0D7C66] shadow-sm border border-gray-100"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {item === "admin" && "👑 Admin"}
+                {item === "instructor" && "📚 Instructor"}
+                {item === "student" && "🎓 Student"}
+              </button>
+            ))}
+          </div>
+
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleRegister}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                onChange={(e) => setName(e.target.value)}
+                required
+                className={inputStyles}
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                onChange={(e) => setPhone(e.target.value)}
+                className={inputStyles}
+              />
+            </div>
+            
+            <input
+              type="email"
+              placeholder="Email Address"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={inputStyles}
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="password"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={inputStyles}
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className={inputStyles}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 text-sm pt-2">
+              <input
+                type="checkbox"
+                required
+                className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
+              />
+              <span className="text-gray-600">
+                I agree to the{" "}
+                <Link href="/terms" className="text-[#0D7C66] hover:underline font-medium">
+                  Terms & Conditions
+                </Link>
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 mt-4 rounded-xl bg-[#0D7C66] text-white font-bold text-lg hover:bg-[#0b6654] hover:shadow-lg hover:shadow-[#0D7C66]/30 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? "Creating Account..." : "Register"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="my-8 flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200"></div>
+            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <div className="flex-1 h-px bg-gray-200"></div>
+          </div>
+
+          {/* Google Button */}
           <button
-            key={item}
-            type="button"
-            onClick={() => setRole(item)}
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-all ${
-              role === item
-                ? "bg-[#0D7C66] text-white"
-                : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0] hover:text-[#334155]"
-            }`}
+            onClick={() => signIn("google")}
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 text-gray-700 font-semibold"
           >
-            {item === "admin" && "👑 Admin"}
-            {item === "instructor" && "📚 Instructor"}
-            {item === "student" && "🎓 Student"}
+            <FcGoogle size={24} />
+            <span>Sign in with Google</span>
           </button>
-        ))}
-      </div>
 
-      {/* Form */}
-      <form className="space-y-4" onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="Full Name"
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full mt-1 px-4 py-2 rounded-lg ..."
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full mt-1 px-4 py-2 rounded-lg ..."
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full mt-1 px-4 py-2 rounded-lg ..."
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          className="w-full mt-1 px-4 py-2 rounded-lg ..."
-        />
-        <input
-          type="tel"
-          placeholder="Phone Number"
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full mt-1 px-4 py-2 rounded-lg ..."
-        />
-
-        <div className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            required
-            className="w-4 h-4 border-[#cbd5e1] rounded focus:ring-[#41B3A2] checked:bg-[#0D7C66]"
-          />
-          <span className="text-[#475569]">
-            I agree to the{" "}
-            <a href="/terms" className="text-[#0D7C66] hover:text-[#41B3A2]">
-              Terms & Conditions
-            </a>
-          </span>
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/auth/login"
+              className="text-[#0D7C66] hover:underline font-bold"
+            >
+              Log in
+            </Link>
+          </p>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 rounded-lg bg-[#0D7C66] text-white font-medium hover:bg-[#41B3A2]"
-        >
-          {loading ? "Creating Account..." : "Register"}
-        </button>
-      </form>
-
-      {/* Divider & Google */}
-      <div className="my-6 flex items-center gap-2">
-        <div className="flex-1 h-px bg-[#e2e8f0]"></div>
-        <span className="text-[#94a3b8] text-sm">or continue with</span>
-        <div className="flex-1 h-px bg-[#e2e8f0]"></div>
       </div>
-      <button
-        onClick={() => signIn("google")}
-        className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] hover:border-[#41B3A2] hover:bg-white transition"
-      >
-        <span className="text-[#DB4437] font-bold">G</span>
-        <span className="text-[#475569] hover:text-[#1e293b]">
-          Continue with Google
-        </span>
-      </button>
-
-      <p className="mt-6 text-center text-sm text-[#64748b]">
-        Already have an account?{" "}
-        <a
-          href="/auth/login"
-          className="text-[#0D7C66] hover:text-[#41B3A2] font-medium"
-        >
-          Sign in
-        </a>
-      </p>
     </div>
   );
 }
