@@ -13,9 +13,11 @@ import { IoShield } from "react-icons/io5";
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 
+
 import learningAnimation from "@/assets/learning.json"; 
 import studentAnimation from "@/assets/Student.json";   
 import educationAnimation from "@/assets/Educatin.json"; 
+
 
 export default function LoginContent() {
   const router = useRouter();
@@ -118,7 +120,6 @@ export default function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-        
         {/* Left Side: Lottie Animation (Hidden on Mobile) */}
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
           <div className="z-10 flex flex-col items-center">
@@ -133,7 +134,8 @@ export default function LoginContent() {
               Welcome back, {role}
             </h2>
             <p className="mt-4 text-gray-600 text-center max-w-sm">
-              Log in to your account to continue your secure and reliable educational journey.
+              Log in to your account to continue your secure and reliable
+              educational journey.
             </p>
           </div>
           {/* Background Decorative Circles */}
@@ -143,7 +145,6 @@ export default function LoginContent() {
 
         {/* Right Side: Login Form */}
         <div className="w-full md:w-1/2 p-8 lg:p-14">
-          
           {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center text-[#0D7C66] mb-3">
@@ -153,7 +154,9 @@ export default function LoginContent() {
           </div>
 
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-gray-800">Login to your account</h3>
+            <h3 className="text-2xl font-bold text-gray-800">
+              Login to your account
+            </h3>
             <p className="text-gray-500 mt-2 text-sm">
               Please enter your credentials to access your dashboard.
             </p>
@@ -182,7 +185,9 @@ export default function LoginContent() {
           {/* Form */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Email Address</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Email Address
+              </label>
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -192,9 +197,11 @@ export default function LoginContent() {
                 className={inputStyles}
               />
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Password
+              </label>
               <input
                 type="password"
                 placeholder="Enter your password"
@@ -212,11 +219,17 @@ export default function LoginContent() {
                   id="remember"
                   className="w-4 h-4 border-gray-300 rounded text-[#0D7C66] focus:ring-[#0D7C66] cursor-pointer"
                 />
-                <label htmlFor="remember" className="text-gray-600 cursor-pointer">
+                <label
+                  htmlFor="remember"
+                  className="text-gray-600 cursor-pointer"
+                >
                   Remember me
                 </label>
               </div>
-              <Link href="/forgot-password" className="text-[#0D7C66] hover:underline font-medium">
+              <Link
+                href="/forgot-password"
+                className="text-[#0D7C66] hover:underline font-medium"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -233,7 +246,9 @@ export default function LoginContent() {
           {/* Divider */}
           <div className="my-8 flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-gray-400 text-sm font-medium">or continue with</span>
+            <span className="text-gray-400 text-sm font-medium">
+              or continue with
+            </span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
@@ -247,7 +262,7 @@ export default function LoginContent() {
           </button>
 
           <p className="mt-8 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               href="/auth/registration"
               className="text-[#0D7C66] hover:underline font-bold"
