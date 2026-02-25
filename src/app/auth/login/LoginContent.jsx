@@ -218,6 +218,14 @@ export default function LoginContent() {
                 className={inputStyles}
               />
             </div>
+            <div>
+              <Link
+                href="/forgot-password"
+                className="text-[#0D7C66] hover:underline font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             <button
               type="submit"
