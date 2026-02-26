@@ -1,73 +1,73 @@
 // import { NextResponse } from "next/server";
-// import { getCollection } from "@/lib/dbConnect"; // ✅ use your existing dbConnect.js
+// import { getCollection } from "@/lib/dbConnect";
 // import { ObjectId } from "mongodb";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "../../auth/[...nextauth]/route";
 
 // export async function POST(req) {
 //   try {
-//     const body = await req.json();
-//     const { batchId, studentEmails } = body;
+//     const session = await getServerSession(authOptions);
+//     if (!session || session.user.role !== "instructor") {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//     }
 
-//     // Validate request
-//     if (!batchId || !studentEmails || studentEmails.length === 0) {
+//     const { batchId, studentEmails } = await req.json();
+//     if (!batchId || !studentEmails?.length) {
 //       return NextResponse.json(
-//         { message: "BatchId and studentEmails are required" },
+//         { message: "batchId and studentEmails required" },
 //         { status: 400 },
 //       );
 //     }
 
-//     // Trim emails and remove duplicates
 //     const emails = [...new Set(studentEmails.map((e) => e.trim()))];
-
-//     // Get collections
 //     const batchesCollection = await getCollection("batches");
 //     const usersCollection = await getCollection("users");
 //     const messagesCollection = await getCollection("messages");
 
-//     // Find students that exist in users collection
-//     const students = await usersCollection
-//       .find({ email: { $in: emails } })
-//       .toArray();
-
-//     const foundEmails = students.map((s) => s.email);
-
-//     if (foundEmails.length === 0) {
+//     // Find batch owned by instructor
+//     const batch = await batchesCollection.findOne({
+//       _id: new ObjectId(batchId),
+//       instructorEmail: session.user.email,
+//     });
+//     if (!batch) {
 //       return NextResponse.json(
-//         { message: "No valid student accounts found for these emails" },
+//         { message: "Batch not found or unauthorized" },
 //         { status: 404 },
 //       );
 //     }
 
-//     // Add students to batch (avoiding duplicates)
+//     const students = await usersCollection
+//       .find({ email: { $in: emails } })
+//       .toArray();
+//     const foundEmails = students.map((s) => s.email);
+//     if (!foundEmails.length)
+//       return NextResponse.json(
+//         { message: "No valid students" },
+//         { status: 404 },
+//       );
+
 //     await batchesCollection.updateOne(
 //       { _id: new ObjectId(batchId) },
-//       {
-//         $addToSet: { students: { $each: foundEmails } },
-//       },
+//       { $addToSet: { students: { $each: foundEmails } } },
 //     );
 
-//     // Create notifications/messages for each student
-//     const batch = await batchesCollection.findOne({
-//       _id: new ObjectId(batchId),
-//     });
-
+//     // Send notifications
 //     const notifications = foundEmails.map((email) => ({
 //       to: email,
 //       message: `You have been added to batch: ${batch.name}`,
-//       type: "batch", // type can be batch, exam, etc.
+//       type: "batch",
 //       read: false,
 //       createdAt: new Date(),
 //     }));
-
-//     if (notifications.length > 0) {
+//     if (notifications.length)
 //       await messagesCollection.insertMany(notifications);
-//     }
 
 //     return NextResponse.json({
-//       message: "Students added successfully and notified",
+//       message: "Students added & notified",
 //       addedStudents: foundEmails,
 //     });
 //   } catch (error) {
-//     console.error("Error adding students:", error);
+//     console.error("POST add-students error:", error);
 //     return NextResponse.json(
 //       { message: "Failed to add students" },
 //       { status: 500 },
@@ -75,78 +75,76 @@
 //   }
 // }
 
-// File: src/app/api/batches/add-students/route.js
 import { NextResponse } from "next/server";
-import { getCollection } from "@/lib/dbConnect"; // your existing dbConnect.js
+import { getCollection } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { batchId, studentEmails } = body;
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "instructor") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    // Validate request
-    if (
-      !batchId ||
-      !studentEmails ||
-      !Array.isArray(studentEmails) ||
-      studentEmails.length === 0
-    ) {
+    const { batchId, studentEmails } = await req.json();
+    if (!batchId || !studentEmails?.length) {
       return NextResponse.json(
-        { message: "BatchId and studentEmails are required" },
+        { message: "batchId and studentEmails required" },
         { status: 400 },
       );
     }
 
-    // Trim emails and remove duplicates
     const emails = [...new Set(studentEmails.map((e) => e.trim()))];
-
-    // Get collections
     const batchesCollection = await getCollection("batches");
     const usersCollection = await getCollection("users");
     const messagesCollection = await getCollection("messages");
 
-    // Find valid student accounts
-    const students = await usersCollection
-      .find({ email: { $in: emails } })
-      .toArray();
-    const foundEmails = students.map((s) => s.email);
-
-    if (foundEmails.length === 0) {
+    // Find batch owned by instructor
+    const batch = await batchesCollection.findOne({
+      _id: new ObjectId(batchId),
+      instructorEmail: session.user.email,
+    });
+    if (!batch) {
       return NextResponse.json(
-        { message: "No valid student accounts found for these emails" },
+        { message: "Batch not found or unauthorized" },
         { status: 404 },
       );
     }
 
-    // Add students to batch (avoid duplicates)
+    const students = await usersCollection
+      .find({ email: { $in: emails } })
+      .toArray();
+    const foundEmails = students.map((s) => s.email);
+    if (!foundEmails.length)
+      return NextResponse.json(
+        { message: "No valid students" },
+        { status: 404 },
+      );
+
     await batchesCollection.updateOne(
       { _id: new ObjectId(batchId) },
       { $addToSet: { students: { $each: foundEmails } } },
     );
 
     // Send notifications
-    const batch = await batchesCollection.findOne({
-      _id: new ObjectId(batchId),
-    });
     const notifications = foundEmails.map((email) => ({
-      to: email, // matches your working frontend
+      to: email,
       message: `You have been added to batch: ${batch.name}`,
       type: "batch",
       read: false,
       createdAt: new Date(),
     }));
-
-    if (notifications.length > 0) {
+    if (notifications.length)
       await messagesCollection.insertMany(notifications);
-    }
 
     return NextResponse.json({
-      message: "Students added successfully and notified",
+      message: "Students added & notified",
       addedStudents: foundEmails,
     });
   } catch (error) {
-    console.error("Error adding students:", error);
+    console.error("POST add-students error:", error);
     return NextResponse.json(
       { message: "Failed to add students" },
       { status: 500 },
