@@ -1,37 +1,31 @@
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
-export async function POST(req) {
+export async function GET() {
   try {
-    const { batchId, studentEmail } = await req.json();
-
-    if (!batchId || !studentEmail) {
-      return NextResponse.json(
-        { message: "batchId and studentEmail are required" },
-        { status: 400 },
-      );
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "instructor") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const batchesCollection = await getCollection("batches");
+    const batches = await batchesCollection
+      .find({
+        $or: [
+          { instructorEmail: session.user.email },
+          { instructorEmail: { $exists: false } },
+        ],
+      })
+      .toArray();
 
-    const result = await batchesCollection.updateOne(
-      { _id: new ObjectId(batchId) },
-      { $pull: { students: studentEmail } },
-    );
-
-    if (result.modifiedCount === 0) {
-      return NextResponse.json(
-        { message: "Student not found in batch" },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json({ message: "Student removed successfully" });
+    return NextResponse.json(batches);
   } catch (error) {
-    console.error("Remove student error:", error);
+    console.error("GET batches error:", error);
     return NextResponse.json(
-      { message: "Failed to remove student" },
+      { message: "Failed to fetch batches" },
       { status: 500 },
     );
   }
