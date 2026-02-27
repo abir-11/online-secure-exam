@@ -7,14 +7,12 @@ import dynamic from "next/dynamic";
 import { FcGoogle } from "react-icons/fc";
 import { IoShield } from "react-icons/io5";
 
-// Lottie dynamic import (SSR বন্ধ রাখার জন্য)
+// Lottie dynamic import for client-side rendering only
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-// ৩টি ভিন্ন অ্যানিমেশন ফাইল ইম্পোর্ট করা হলো
-import learningAnimation from "@/assets/learning.json"; // Instructor এর জন্য
-import studentAnimation from "@/assets/Student.json"; // Student এর জন্য
-import educationAnimation from "@/assets/Educatin.json"; // Admin এর জন্য
-
+import learningAnimation from "@/assets/learning.json"; // Instructor 
+import studentAnimation from "@/assets/Student.json";   // Student 
+import educationAnimation from "@/assets/Educatin.json"; // Admin 
 export default function RegisterPage() {
   const [role, setRole] = useState("student");
   const [name, setName] = useState("");
@@ -70,11 +68,15 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
-
+  // animation mapping based on role selection
+  const getAnimationForRole = {
     admin: educationAnimation,
     instructor: learningAnimation,
     student: studentAnimation,
   };
+
+  // input styles for consistency
+  const inputStyles = "w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 outline-none transition-all duration-300 text-gray-700 placeholder:text-gray-400";
 
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
@@ -84,7 +86,6 @@ export default function RegisterPage() {
           <div className="z-10 flex flex-col items-center">
             {/* Lottie Animation Rendering */}
             <Lottie
-
               animationData={getAnimationForRole[role]}
               loop={true}
               className="w-[80%] max-w-md transition-all duration-500"
