@@ -1,317 +1,280 @@
 // // import { NextResponse } from "next/server";
 // // import { getCollection } from "@/lib/dbConnect";
-
-// // // Helper function to send a message/notification to students
-// // async function sendBatchNotification(studentEmails, batchName) {
-// //   try {
-// //     const messagesCollection = await getCollection("messages");
-
-// //     const messages = studentEmails.map((email) => ({
-// //       to: email,
-// //       message: `You have been added to batch "${batchName}".`,
-// //       createdAt: new Date(),
-// //       read: false,
-// //     }));
-
-// //     if (messages.length > 0) {
-// //       await messagesCollection.insertMany(messages);
-// //     }
-// //   } catch (err) {
-// //     console.error("Failed to send batch notifications:", err);
-// //   }
-// // }
+// // import { ObjectId } from "mongodb";
+// // import { getServerSession } from "next-auth";
+// // import { authOptions } from "../auth/[...nextauth]/route";
 
 // // export async function GET() {
 // //   try {
-// //     const batchesCollection = await getCollection("batches");
-// //     const batches = await batchesCollection.find({}).toArray();
+// //     const session = await getServerSession(authOptions);
+// //     if (!session || session.user.role !== "instructor") {
+// //       return NextResponse.json([], { status: 401 });
+// //     }
 
-// //     return NextResponse.json(batches);
+// //     const batchesCollection = await getCollection("batches");
+// //     const batches = await batchesCollection
+// //       .find({ instructorEmail: session.user.email })
+// //       .toArray();
+
+// //     return NextResponse.json(batches || []);
 // //   } catch (error) {
-// //     console.error(error);
-// //     return NextResponse.json(
-// //       { error: "Failed to fetch batches" },
-// //       { status: 500 },
-// //     );
+// //     console.error("GET batches error:", error);
+// //     return NextResponse.json([], { status: 500 });
 // //   }
 // // }
 
 // // export async function POST(req) {
 // //   try {
-// //     const data = await req.json();
-// //     const { name, studentEmails = [] } = data;
+// //     const session = await getServerSession(authOptions);
+// //     if (!session || session.user.role !== "instructor") {
+// //       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+// //     }
 
+// //     const { name } = await req.json();
 // //     if (!name) {
 // //       return NextResponse.json(
-// //         { error: "Batch name is required" },
+// //         { message: "Batch name required" },
 // //         { status: 400 },
 // //       );
 // //     }
 
-// //     // Ensure batch name is unique
 // //     const batchesCollection = await getCollection("batches");
-// //     const existing = await batchesCollection.findOne({ name: name.trim() });
-// //     if (existing) {
+// //     const existingBatch = await batchesCollection.findOne({
+// //       name: name.trim(),
+// //       instructorEmail: session.user.email,
+// //     });
+
+// //     if (existingBatch) {
 // //       return NextResponse.json(
-// //         { error: "Batch name already exists" },
+// //         { message: "Batch already exists" },
 // //         { status: 400 },
 // //       );
 // //     }
 
-// //     const batch = {
+// //     const newBatch = {
 // //       name: name.trim(),
-// //       students: studentEmails.map((email) => email.trim()),
+// //       students: [],
+// //       instructorEmail: session.user.email,
 // //       createdAt: new Date(),
 // //     };
 
-// //     const result = await batchesCollection.insertOne(batch);
-
-// //     // Send notification to students
-// //     await sendBatchNotification(batch.students, batch.name);
-
+// //     const result = await batchesCollection.insertOne(newBatch);
 // //     return NextResponse.json({
-// //       message: "Batch created successfully",
-// //       batchId: result.insertedId,
+// //       message: "Batch created",
+// //       insertedId: result.insertedId,
 // //     });
 // //   } catch (error) {
-// //     console.error(error);
+// //     console.error("POST batch error:", error);
 // //     return NextResponse.json(
-// //       { error: "Failed to create batch" },
+// //       { message: "Failed to create batch" },
 // //       { status: 500 },
 // //     );
 // //   }
 // // }
 
-// // export async function DELETE(req) {
-// //   try {
-// //     const { searchParams } = new URL(req.url);
-// //     const batchId = searchParams.get("id");
-
-// //     if (!batchId) {
-// //       return NextResponse.json(
-// //         { error: "Batch ID is required" },
-// //         { status: 400 },
-// //       );
-// //     }
-
-// //     const batchesCollection = await getCollection("batches");
-// //     const result = await batchesCollection.deleteOne({
-// //       _id: new ObjectId(batchId),
-// //     });
-
-// //     if (result.deletedCount === 0) {
-// //       return NextResponse.json({ error: "Batch not found" }, { status: 404 });
-// //     }
-
-// //     return NextResponse.json({ message: "Batch deleted successfully" });
-// //   } catch (error) {
-// //     console.error(error);
-// //     return NextResponse.json(
-// //       { error: "Failed to delete batch" },
-// //       { status: 500 },
-// //     );
-// //   }
-// // }
-
+// // File: app/api/exams/route.js
 // import { NextResponse } from "next/server";
-// import { ObjectId } from "mongodb";
 // import { getCollection } from "@/lib/dbConnect";
+// import { ObjectId } from "mongodb";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "../auth/[...nextauth]/route";
 
-// // Send notification to students
-// async function sendBatchNotification(studentEmails, batchName) {
-//   try {
-//     const messagesCollection = await getCollection("messages");
-
-//     const messages = studentEmails.map((email) => ({
-//       to: email,
-//       message: `You have been added to batch "${batchName}".`,
-//       createdAt: new Date(),
-//       read: false,
-//     }));
-
-//     if (messages.length > 0) {
-//       await messagesCollection.insertMany(messages);
-//     }
-//   } catch (error) {
-//     console.error("Notification error:", error);
-//   }
-// }
-
-// // Get all batches
+// /* ================= GET EXAMS (Instructor Scoped) ================= */
 // export async function GET() {
 //   try {
-//     const batchesCollection = await getCollection("batches");
-//     const batches = await batchesCollection.find({}).toArray();
-//     return NextResponse.json(batches);
+//     const session = await getServerSession(authOptions);
+//     if (!session) {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//     }
+
+//     const examsCollection = await getCollection("exams");
+
+//     let query = {};
+//     if (session.user.role === "instructor") {
+//       query = { instructorEmail: session.user.email };
+//     } else if (session.user.role === "student") {
+//       // Student: exams assigned to their batch
+//       const batchesCollection = await getCollection("batches");
+//       const userBatches = await batchesCollection
+//         .find({ students: session.user.email })
+//         .toArray();
+//       const batchIds = userBatches.map((b) => b._id);
+//       query = { batchIds: { $in: batchIds } };
+//     }
+
+//     const exams = await examsCollection.find(query).toArray();
+//     return NextResponse.json(exams);
 //   } catch (error) {
-//     console.error(error);
+//     console.error("GET exams error:", error);
 //     return NextResponse.json(
-//       { error: "Failed to fetch batches" },
+//       { message: "Failed to fetch exams" },
 //       { status: 500 },
 //     );
 //   }
 // }
 
-// // Create batch OR add students
+// /* ================= CREATE EXAM ================= */
 // export async function POST(req) {
 //   try {
-//     const body = await req.json();
-//     const { name, studentEmails } = body;
-
-//     const batchesCollection = await getCollection("batches");
-
-//     // Create new batch
-//     if (name && !studentEmails) {
-//       const existing = await batchesCollection.findOne({ name });
-
-//       if (existing) {
-//         return NextResponse.json(
-//           { error: "Batch name already exists" },
-//           { status: 400 },
-//         );
-//       }
-
-//       const result = await batchesCollection.insertOne({
-//         name,
-//         students: [],
-//         createdAt: new Date(),
-//       });
-
-//       return NextResponse.json({
-//         message: "Batch created successfully",
-//         batchId: result.insertedId,
-//       });
+//     const session = await getServerSession(authOptions);
+//     if (!session || session.user.role !== "instructor") {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 //     }
 
-//     // Add students to batch
-//     if (name && studentEmails) {
-//       let emailsArray = [];
+//     const data = await req.json();
+//     const { title, duration, batchIds, startTime, endTime } = data;
 
-//       // allow string input like "ronita@gmail.com, tania@gmail.com"
-//       if (typeof studentEmails === "string") {
-//         emailsArray = studentEmails
-//           .split(",")
-//           .map((email) => email.trim())
-//           .filter(Boolean);
-//       } else if (Array.isArray(studentEmails)) {
-//         emailsArray = studentEmails;
-//       }
-
-//       if (emailsArray.length === 0) {
-//         return NextResponse.json(
-//           { error: "No valid emails provided" },
-//           { status: 400 },
-//         );
-//       }
-
-//       const batch = await batchesCollection.findOne({ name });
-
-//       if (!batch) {
-//         return NextResponse.json({ error: "Batch not found" }, { status: 404 });
-//       }
-
-//       await batchesCollection.updateOne(
-//         { name },
-//         {
-//           $addToSet: {
-//             students: { $each: emailsArray },
-//           },
-//         },
+//     if (!title || !duration || !batchIds?.length || !startTime || !endTime) {
+//       return NextResponse.json(
+//         { message: "All exam fields are required" },
+//         { status: 400 },
 //       );
-
-//       await sendBatchNotification(emailsArray, name);
-
-//       return NextResponse.json({
-//         message: "Students added successfully",
-//       });
 //     }
 
-//     return NextResponse.json(
-//       { error: "Invalid request data" },
-//       { status: 400 },
-//     );
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json(
-//       { error: "Server error while processing request" },
-//       { status: 500 },
-//     );
-//   }
-// }
-
-// // Delete batch
-// export async function DELETE(req) {
-//   try {
-//     const { searchParams } = new URL(req.url);
-//     const id = searchParams.get("id");
-
-//     if (!id) {
-//       return NextResponse.json({ error: "Batch id required" }, { status: 400 });
-//     }
-
+//     const examsCollection = await getCollection("exams");
 //     const batchesCollection = await getCollection("batches");
+//     const messagesCollection = await getCollection("messages");
 
-//     const result = await batchesCollection.deleteOne({
-//       _id: new ObjectId(id),
-//     });
+//     const exam = {
+//       title,
+//       duration,
+//       batchIds: batchIds.map((id) => new ObjectId(id)),
+//       startTime: new Date(startTime),
+//       endTime: new Date(endTime),
+//       questions: [],
+//       published: false,
+//       instructorEmail: session.user.email, // 🔐 Instructor scoping
+//       createdAt: new Date(),
+//     };
+
+//     const result = await examsCollection.insertOne(exam);
+
+//     // Notify students in batches
+//     const batches = await batchesCollection
+//       .find({
+//         _id: { $in: exam.batchIds },
+//         instructorEmail: session.user.email,
+//       })
+//       .toArray();
+
+//     let students = [];
+//     batches.forEach((b) => b.students && students.push(...b.students));
+//     students = [...new Set(students)];
+
+//     if (students.length) {
+//       await messagesCollection.insertMany(
+//         students.map((email) => ({
+//           to: email,
+//           message: `New exam scheduled: ${title}`,
+//           type: "exam",
+//           read: false,
+//           createdAt: new Date(),
+//         })),
+//       );
+//     }
 
 //     return NextResponse.json({
-//       message: "Batch deleted successfully",
-//       result,
+//       message: "Exam created successfully",
+//       examId: result.insertedId,
 //     });
 //   } catch (error) {
-//     console.error(error);
+//     console.error("POST exam error:", error);
 //     return NextResponse.json(
-//       { error: "Failed to delete batch" },
+//       { message: "Failed to create exam" },
 //       { status: 500 },
 //     );
 //   }
 // }
 
+// /* ================= PUBLISH EXAM ================= */
+// export async function PATCH(req) {
+//   try {
+//     const session = await getServerSession(authOptions);
+//     if (!session || session.user.role !== "instructor") {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//     }
+
+//     const { examId } = await req.json();
+//     if (!examId) {
+//       return NextResponse.json(
+//         { message: "examId is required" },
+//         { status: 400 },
+//       );
+//     }
+
+//     const examsCollection = await getCollection("exams");
+//     const result = await examsCollection.updateOne(
+//       { _id: new ObjectId(examId), instructorEmail: session.user.email },
+//       { $set: { published: true } },
+//     );
+
+//     if (result.matchedCount === 0) {
+//       return NextResponse.json(
+//         { message: "Exam not found or unauthorized" },
+//         { status: 404 },
+//       );
+//     }
+
+//     return NextResponse.json({ message: "Exam published successfully" });
+//   } catch (error) {
+//     console.error("PATCH exam error:", error);
+//     return NextResponse.json(
+//       { message: "Failed to publish exam" },
+//       { status: 500 },
+//     );
+//   }
+// }
+
+// File: app/api/batches/route.js
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
-// GET all batches (IMPORTANT: return array so old pages work)
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "instructor") {
+      return NextResponse.json([], { status: 401 });
+    }
+
     const batchesCollection = await getCollection("batches");
+    const batches = await batchesCollection
+      .find({ instructorEmail: session.user.email })
+      .toArray();
 
-    const batches = await batchesCollection.find({}).toArray();
-
-    return NextResponse.json(batches); // return array directly
+    return NextResponse.json(batches || []);
   } catch (error) {
     console.error("GET batches error:", error);
-    return NextResponse.json(
-      { message: "Failed to fetch batches" },
-      { status: 500 },
-    );
+    return NextResponse.json([], { status: 500 });
   }
 }
 
-// CREATE batch (only batch name required)
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { name } = body;
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "instructor") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
+    const { name } = await req.json();
     if (!name) {
       return NextResponse.json(
-        { message: "Batch name is required" },
+        { message: "Batch name required" },
         { status: 400 },
       );
     }
 
     const batchesCollection = await getCollection("batches");
-
-    // prevent duplicate batch name
     const existingBatch = await batchesCollection.findOne({
       name: name.trim(),
+      instructorEmail: session.user.email,
     });
 
     if (existingBatch) {
       return NextResponse.json(
-        { message: "Batch with this name already exists" },
+        { message: "Batch already exists" },
         { status: 400 },
       );
     }
@@ -319,50 +282,19 @@ export async function POST(req) {
     const newBatch = {
       name: name.trim(),
       students: [],
+      instructorEmail: session.user.email,
       createdAt: new Date(),
     };
 
     const result = await batchesCollection.insertOne(newBatch);
-
     return NextResponse.json({
-      message: "Batch created successfully",
+      message: "Batch created",
       insertedId: result.insertedId,
     });
   } catch (error) {
-    console.error("Create batch error:", error);
+    console.error("POST batch error:", error);
     return NextResponse.json(
       { message: "Failed to create batch" },
-      { status: 500 },
-    );
-  }
-}
-
-// DELETE batch
-export async function DELETE(req) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        { message: "Batch ID required" },
-        { status: 400 },
-      );
-    }
-
-    const batchesCollection = await getCollection("batches");
-
-    await batchesCollection.deleteOne({
-      _id: new ObjectId(id),
-    });
-
-    return NextResponse.json({
-      message: "Batch deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete batch error:", error);
-    return NextResponse.json(
-      { message: "Failed to delete batch" },
       { status: 500 },
     );
   }
