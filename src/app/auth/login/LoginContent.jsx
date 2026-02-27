@@ -240,6 +240,14 @@ export default function LoginContent() {
                 className={inputStyles}
               />
             </div>
+            <div>
+              <Link
+                href="/forgot-password"
+                className="text-[#0D7C66] hover:underline font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             <div className="flex items-center justify-between text-sm pt-2">
               <div className="flex items-center gap-2">

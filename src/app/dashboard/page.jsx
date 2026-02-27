@@ -1,82 +1,83 @@
 // "use client";
 
 // import Link from "next/link";
+// import { useSession } from "next-auth/react";
 
 // export default function DashboardPage() {
-//   const stats = [
-//     { title: "Total Exams", value: 24 },
-//     { title: "Students", value: 320 },
-//     { title: "Completed Exams", value: 180 },
-//     { title: "Pending Exams", value: 12 },
-//   ];
-
-//   const activities = [
-//     "New exam created: Web Development Midterm",
-//     "Student Rahim submitted Database Exam",
-//     "Admin updated question bank",
-//     "New student registered",
-//   ];
+//   const { data: session } = useSession();
 
 //   return (
 //     <main className="min-h-screen bg-gray-900 text-gray-200 p-2 mt-10">
 //       <div className="max-w-7xl mx-auto">
-//         {/* Header */}
-//         <h1 className="text-3xl font-bold mb-6">Common Static Dashboard</h1>
+//         <h1 className="text-3xl font-bold mb-10">
+//           Welcome to SecureExam Dashboard
+//         </h1>
 
-//         {/* Stats Section */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-//           {stats.map((stat, index) => (
-//             <div
-//               key={index}
-//               className="bg-gray-800 p-6 rounded-xl shadow hover:scale-105 transition"
-//             >
-//               <h2 className="text-lg text-gray-400">{stat.title}</h2>
-//               <p className="text-2xl font-bold mt-2">{stat.value}</p>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Quick Actions */}
-//         <div className="bg-gray-800 p-6 rounded-xl mb-10">
-//           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-//           <div className="flex flex-wrap gap-4">
+//         {/* Instructor Testing Panel */}
+//         {session?.user?.role === "instructor" && (
+//           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 //             <Link
-//               href="/create-exam"
-//               className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-black font-medium"
+//               href="/dashboard/instructor/create-batch"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
+//             >
+//               Create Batch
+//             </Link>
+
+//             <Link
+//               href="/dashboard/instructor/add-students"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
+//             >
+//               Add Students to Batch
+//             </Link>
+
+//             <Link
+//               href="/dashboard/instructor/create-exam"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
 //             >
 //               Create Exam
 //             </Link>
 
 //             <Link
-//               href="/students"
-//               className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-black font-medium"
+//               href="/dashboard/instructor/question-bank"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
 //             >
-//               View Students
+//               Add Questions
 //             </Link>
 
 //             <Link
-//               href="/question-bank"
-//               className="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-lg text-black font-medium"
+//               href="/dashboard/instructor/exam-list"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
 //             >
-//               Question Bank
+//               Publish Exam
+//             </Link>
+
+//             <Link
+//               href="/dashboard/instructor/analytics"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
+//             >
+//               View Analytics
 //             </Link>
 //           </div>
-//         </div>
+//         )}
 
-//         {/* Recent Activity */}
-//         <div className="bg-gray-800 p-6 rounded-xl">
-//           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-//           <ul className="space-y-3">
-//             {activities.map((activity, index) => (
-//               <li
-//                 key={index}
-//                 className="border-b border-gray-700 pb-2 text-gray-300"
-//               >
-//                 {activity}
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
+//         {/* Student Panel */}
+//         {session?.user?.role === "student" && (
+//           <div className="grid md:grid-cols-2 gap-6">
+//             <Link
+//               href="/dashboard/student/my-exams"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
+//             >
+//               View Available Exams
+//             </Link>
+
+//             <Link
+//               href="/dashboard/student/results"
+//               className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
+//             >
+//               View Results
+//             </Link>
+//           </div>
+//         )}
 //       </div>
 //     </main>
 //   );
@@ -91,78 +92,63 @@ export default function DashboardPage() {
   const { data: session } = useSession();
 
   return (
-    <main className="min-h-screen bg-gray-900 text-gray-200 p-2 mt-10">
+    <main className="min-h-screen bg-gray-50 text-gray-800 p-6 mt-12">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-10">
-          Welcome to SecureExam Dashboard
+        <h1 className="text-4xl font-extrabold mb-12 text-center text-[#0D7C66]">
+          SecureExam Dashboard
         </h1>
 
-        {/* Instructor Testing Panel */}
+        {/* Instructor Panel */}
         {session?.user?.role === "instructor" && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Link
+          <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card
               href="/dashboard/instructor/create-batch"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              Create Batch
-            </Link>
-
-            <Link
+              title="Create Batch"
+            />
+            <Card
               href="/dashboard/instructor/add-students"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              Add Students to Batch
-            </Link>
-
-            <Link
+              title="Add Students"
+            />
+            <Card
               href="/dashboard/instructor/create-exam"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              Create Exam
-            </Link>
-
-            <Link
+              title="Create Exam"
+            />
+            <Card
               href="/dashboard/instructor/question-bank"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              Add Questions
-            </Link>
-
-            <Link
+              title="Question Bank"
+            />
+            <Card
               href="/dashboard/instructor/exam-list"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              Publish Exam
-            </Link>
-
-            <Link
-              href="/dashboard/instructor/analytics"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              View Analytics
-            </Link>
-          </div>
+              title="Publish Exams"
+            />
+            <Card href="/dashboard/instructor/analytics" title="Analytics" />
+          </section>
         )}
 
         {/* Student Panel */}
         {session?.user?.role === "student" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <Link
-              href="/dashboard/student/my-exams"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              View Available Exams
-            </Link>
-
-            <Link
-              href="/dashboard/student/results"
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
-            >
-              View Results
-            </Link>
-          </div>
+          <section className="grid md:grid-cols-2 gap-8">
+            <Card href="/dashboard/student/my-exams" title="Available Exams" />
+            <Card href="/dashboard/student/results" title="View Results" />
+          </section>
         )}
       </div>
     </main>
+  );
+}
+
+/* ====================== Reusable Card Component ====================== */
+function Card({ href, title }) {
+  return (
+    <Link
+      href={href}
+      className="bg-white shadow-lg border border-gray-200 rounded-xl p-8 flex flex-col justify-between 
+                 hover:shadow-2xl hover:scale-105 transition-transform duration-300 ease-in-out"
+    >
+      <h2 className="text-xl font-semibold text-gray-800 mb-2">{title}</h2>
+      <p className="text-gray-500 text-sm">
+        Click to manage <span className="font-medium">{title}</span>.
+      </p>
+    </Link>
   );
 }
