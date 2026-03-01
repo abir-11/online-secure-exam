@@ -97,6 +97,33 @@ export default function DashboardPage() {
         <h1 className="text-4xl font-extrabold mb-12 text-center text-[#0D7C66]">
           SecureExam Dashboard
         </h1>
+        {/* <div className="mx-auto">
+          <h2>{session.user.role} Dashboard</h2>
+          <p>Welcome, {session.user.name}!</p>
+          <p>Role: {session.user.role}</p>
+        </div> */}
+
+        <div className="flex flex-col justify-center  p-4 bg-gray-50">
+          <div
+            className="max-w-md w-full mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-200 
+                  transform transition-all duration-700 ease-in-out hover:scale-105 hover:shadow-2xl animate-fadeIn"
+          >
+            <h2 className="text-3xl font-bold mb-4 text-teal-600">
+              {session.user.role.charAt(0).toUpperCase() +
+                session.user.role.slice(1) +
+                " " +
+                "Dashboard"}
+            </h2>
+            <p className="text-lg mb-2">
+              Welcome,{" "}
+              <span className="font-semibold">{session.user.name}</span>!
+            </p>
+            <p className="text-md text-gray-500">
+              <span className="font-bold">Role:</span>{" "}
+              <span className="font-medium">{session.user.role}</span>
+            </p>
+          </div>
+        </div>
 
         {/* Instructor Panel */}
         {session?.user?.role === "instructor" && (

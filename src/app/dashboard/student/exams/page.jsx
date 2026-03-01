@@ -1,90 +1,75 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import Link from "next/link";
-
-// export default function StudentExamsPage() {
-//   const [exams, setExams] = useState([]);
-
-//   useEffect(() => {
-//     fetch("/api/exams")
-//       .then((res) => res.json())
-//       .then((data) => {
-//         const published = data.filter((e) => e.published);
-//         setExams(published);
-//       });
-//   }, []);
-
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-2xl font-bold mb-4">Available Exams</h1>
-
-//       {exams.map((exam) => (
-//         <div key={exam._id} className="border p-4 rounded mb-3">
-//           <h2 className="text-lg font-semibold">{exam.title}</h2>
-//           <p>Duration: {exam.duration} minutes</p>
-
-//           <Link
-//             href={`/dashboard/student/exam-attempt?examId=${exam._id}`}
-//             className="text-blue-600"
-//           >
-//             Start Exam
-//           </Link>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
-export default function ExamPage({ examId, totalMarks, questions }) {
-  const [score, setScore] = useState(0);
+export default function StudentExamsPage() {
+  const [exams, setExams] = useState([]);
 
-  // Example: function to calculate score from answers
-  const calculateScore = () => {
-    let s = 0;
-    // your logic to calculate correct answers
-    questions.forEach((q) => {
-      if (q.selectedAnswer === q.correctAnswer) s++;
-    });
-    setScore(s);
-    return s;
-  };
+  useEffect(() => {
+    async function fetchExams() {
+      const res = await fetch("/api/exams");
+      const data = await res.json();
 
-  const handleSubmit = async () => {
-    const finalScore = calculateScore();
-
-    const res = await fetch("/api/results", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        examId,
-        score: finalScore,
-        totalMarks,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message); // e.g., "You have already submitted this exam"
-    } else {
-      alert(
-        `Exam submitted successfully! Marks: ${finalScore} / ${totalMarks}`,
+      const now = new Date();
+      // Only show published exams that are ongoing or upcoming
+      const visibleExams = data.filter(
+        (e) =>
+          e.published &&
+          new Date(e.startTime) <= new Date(e.endTime) && // started or will start
+          new Date(e.endTime) > now, // not ended
       );
+
+      setExams(visibleExams);
     }
-  };
+
+    fetchExams();
+    const interval = setInterval(fetchExams, 60000); // refresh every minute
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Exam: {examId}</h1>
-      {/* Render your questions here */}
-      <button onClick={handleSubmit} className="btn btn-primary mt-4">
-        Submit Exam
-      </button>
+    <div className="p-6 mt-20">
+      <h1 className="text-2xl font-bold mb-4">Available Exams</h1>
+
+      {exams.length === 0 ? (
+        <p>No exams available currently.</p>
+      ) : (
+        exams.map((exam) => {
+          const now = new Date();
+          const start = new Date(exam.startTime);
+          const end = new Date(exam.endTime);
+
+          const status =
+            now < start
+              ? `Starts at ${start.toLocaleString()}`
+              : now > end
+                ? "Ended"
+                : "Ongoing";
+
+          return (
+            <div
+              key={exam._id}
+              className="border p-4 rounded mb-3 flex justify-between items-center"
+            >
+              <div>
+                <h2 className="text-lg font-semibold">{exam.title}</h2>
+                <p>Duration: {exam.duration} minutes</p>
+                <p className="text-sm text-gray-600">{status}</p>
+              </div>
+
+              {now >= start && now <= end && (
+                <Link
+                  href={`/student/exam-attempt?examId=${exam._id}`}
+                  className="text-blue-600 font-medium"
+                >
+                  Start Exam
+                </Link>
+              )}
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }

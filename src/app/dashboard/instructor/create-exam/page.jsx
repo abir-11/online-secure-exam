@@ -4,6 +4,8 @@
 
 // export default function CreateExamPage() {
 //   const [title, setTitle] = useState("");
+//   const [type, setType] = useState("mcq");
+//   const [totalQuestions, setTotalQuestions] = useState(0);
 //   const [duration, setDuration] = useState(60);
 //   const [startTime, setStartTime] = useState("");
 //   const [endTime, setEndTime] = useState("");
@@ -11,145 +13,179 @@
 //   const [selectedBatches, setSelectedBatches] = useState([]);
 
 //   useEffect(() => {
-//     async function fetchBatches() {
-//       const res = await fetch("/api/batches");
-//       const data = await res.json();
-//       setBatches(data);
-//     }
-//     fetchBatches();
+//     fetch("/api/batches")
+//       .then((r) => r.json())
+//       .then(setBatches)
+//       .catch((err) => console.error("Failed to fetch batches:", err));
 //   }, []);
 
-//   // Helper: format date for datetime-local min attribute
 //   const getMinDateTime = () => {
 //     const now = new Date();
-//     const tzOffset = now.getTimezoneOffset() * 60000; // local time offset
-//     const localISOTime = new Date(now - tzOffset).toISOString().slice(0, 16);
-//     return localISOTime;
+//     const tzOffset = now.getTimezoneOffset() * 60000;
+//     return new Date(now - tzOffset).toISOString().slice(0, 16);
 //   };
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
-//     // Check required fields
-//     if (
-//       !title ||
-//       !duration ||
-//       !startTime ||
-//       !endTime ||
-//       selectedBatches.length === 0
-//     ) {
-//       alert("All fields are required");
-//       return;
-//     }
+//     // 🟢 Frontend validation
+//     if (!title.trim()) return alert("Please enter exam title");
+//     if (!duration || duration <= 0) return alert("Duration must be > 0");
+//     if (!startTime || !endTime) return alert("Start and end time required");
+//     if (new Date(startTime) < new Date())
+//       return alert("Start time cannot be in the past");
+//     if (new Date(endTime) <= new Date(startTime))
+//       return alert("End time must be after start time");
+//     if (selectedBatches.length === 0) return alert("Select at least one batch");
 
-//     const now = new Date();
-//     const start = new Date(startTime);
-//     const end = new Date(endTime);
+//     try {
+//       const res = await fetch("/api/exams", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           title,
+//           type,
+//           totalQuestions: type === "mcq" ? Number(totalQuestions) : 0,
+//           duration,
+//           startTime,
+//           endTime,
+//           batchIds: selectedBatches,
+//         }),
+//       });
 
-//     // Prevent past start times
-//     if (start < now) {
-//       alert("Start time cannot be in the past");
-//       return;
-//     }
+//       // 🟢 Safely parse JSON
+//       let data;
+//       try {
+//         data = await res.json();
+//       } catch (err) {
+//         console.error("Failed to parse JSON:", err);
+//         alert("Server returned invalid response");
+//         return;
+//       }
 
-//     // Ensure end time is strictly after start time
-//     if (end <= start) {
-//       alert("End time must be after start time");
-//       return;
-//     }
+//       // 🟢 Handle server errors
+//       if (!res.ok) {
+//         alert(data.message || "Failed to create exam");
+//         return;
+//       }
 
-//     if (duration <= 0) {
-//       alert("Duration must be greater than 0");
-//       return;
-//     }
-
-//     // Send request to backend
-//     const res = await fetch("/api/exams", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         title,
-//         duration: Number(duration),
-//         startTime,
-//         endTime,
-//         batchIds: selectedBatches,
-//       }),
-//     });
-
-//     const data = await res.json();
-//     alert(data.message);
-
-//     if (res.ok) {
-//       // Reset form
+//       // 🟢 Success
+//       alert(data.message || "Exam created successfully");
 //       setTitle("");
+//       setTotalQuestions(0);
+//       setSelectedBatches([]);
 //       setDuration(60);
 //       setStartTime("");
 //       setEndTime("");
-//       setSelectedBatches([]);
+//     } catch (error) {
+//       console.error("Network or server error:", error);
+//       alert("Failed to create exam due to network/server issue");
 //     }
 //   };
 
 //   return (
-//     <main className="p-6 mt-20">
-//       <h1 className="text-2xl font-bold mb-4">Create Exam</h1>
+//     <main className="p-6 mt-20 flex justify-center">
+//       <form
+//         onSubmit={handleSubmit}
+//         className="bg-white shadow-xl rounded-xl p-8 w-full max-w-lg space-y-6"
+//       >
+//         <h1 className="text-3xl font-bold text-[#0D7C66] text-center mb-6">
+//           Create Exam
+//         </h1>
 
-//       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-//         <div>
-//           <label className="block mb-1 font-medium">Exam Title</label>
+//         <div className="flex flex-col">
+//           <label className="mb-1 font-medium text-gray-700">Exam Title</label>
 //           <input
 //             type="text"
-//             placeholder="Exam Title"
+//             placeholder="Enter exam title"
+//             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
 //             value={title}
 //             onChange={(e) => setTitle(e.target.value)}
-//             className="w-full p-2 border rounded"
+//             required
 //           />
 //         </div>
 
-//         <div>
-//           <label className="block mb-1 font-medium">Duration (minutes)</label>
+//         <div className="flex flex-col">
+//           <label className="mb-1 font-medium text-gray-700">Exam Type</label>
+//           <select
+//             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
+//             value={type}
+//             onChange={(e) => setType(e.target.value)}
+//           >
+//             <option value="mcq">MCQ Exam</option>
+//             <option value="theory">Theoretical Exam</option>
+//           </select>
+//         </div>
+
+//         {type === "mcq" && (
+//           <div className="flex flex-col">
+//             <label className="mb-1 font-medium text-gray-700">
+//               Total MCQ Questions
+//             </label>
+//             <input
+//               type="number"
+//               min={1}
+//               className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
+//               value={totalQuestions}
+//               onChange={(e) => setTotalQuestions(e.target.value)}
+//               required
+//             />
+//           </div>
+//         )}
+
+//         <div className="flex flex-col">
+//           <label className="mb-1 font-medium text-gray-700">
+//             Duration (minutes)
+//           </label>
 //           <input
 //             type="number"
 //             min={1}
-//             placeholder="Duration (minutes)"
+//             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
 //             value={duration}
 //             onChange={(e) => setDuration(e.target.value)}
-//             className="w-full p-2 border rounded"
+//             required
 //           />
 //         </div>
 
-//         <div>
-//           <label className="block mb-1 font-medium">Start Time</label>
-//           <input
-//             type="datetime-local"
-//             value={startTime}
-//             min={getMinDateTime()} // prevent past dates
-//             onChange={(e) => setStartTime(e.target.value)}
-//             className="w-full p-2 border rounded"
-//           />
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//           <div className="flex flex-col">
+//             <label className="mb-1 font-medium text-gray-700">Start Time</label>
+//             <input
+//               type="datetime-local"
+//               className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
+//               value={startTime}
+//               onChange={(e) => setStartTime(e.target.value)}
+//               min={getMinDateTime()}
+//               required
+//             />
+//           </div>
+//           <div className="flex flex-col">
+//             <label className="mb-1 font-medium text-gray-700">End Time</label>
+//             <input
+//               type="datetime-local"
+//               className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
+//               value={endTime}
+//               onChange={(e) => setEndTime(e.target.value)}
+//               min={startTime || getMinDateTime()}
+//               required
+//             />
+//           </div>
 //         </div>
 
-//         <div>
-//           <label className="block mb-1 font-medium">End Time</label>
-//           <input
-//             type="datetime-local"
-//             value={endTime}
-//             min={startTime || getMinDateTime()} // ensures endTime >= startTime
-//             onChange={(e) => setEndTime(e.target.value)}
-//             className="w-full p-2 border rounded"
-//           />
-//         </div>
-
-//         <div>
-//           <label className="block mb-1 font-medium">Assign Batches</label>
+//         <div className="flex flex-col">
+//           <label className="mb-1 font-medium text-gray-700">
+//             Assign Batches
+//           </label>
 //           <select
 //             multiple
+//             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D7C66]"
 //             value={selectedBatches}
 //             onChange={(e) =>
 //               setSelectedBatches(
-//                 Array.from(e.target.selectedOptions, (opt) => opt.value),
+//                 Array.from(e.target.selectedOptions, (o) => o.value),
 //               )
 //             }
-//             className="w-full p-2 border rounded"
+//             required
 //           >
 //             {batches.map((b) => (
 //               <option key={b._id} value={b._id}>
@@ -161,7 +197,7 @@
 
 //         <button
 //           type="submit"
-//           className="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-600"
+//           className="w-full py-3 bg-[#0D7C66] hover:bg-[#41B3A2] text-white font-semibold rounded-xl"
 //         >
 //           Create Exam
 //         </button>
@@ -170,7 +206,7 @@
 //   );
 // }
 
-//----------------------------------
+//try 9
 
 "use client";
 
@@ -186,14 +222,39 @@ export default function CreateExamPage() {
   const [batches, setBatches] = useState([]);
   const [selectedBatches, setSelectedBatches] = useState([]);
 
+  /* ---------------- Fetch batches ---------------- */
   useEffect(() => {
     fetch("/api/batches")
       .then((r) => r.json())
-      .then(setBatches);
+      .then(setBatches)
+      .catch(console.error);
   }, []);
 
+  /* -------- Auto calculate end time -------- */
+  useEffect(() => {
+    if (!startTime || !duration) return;
+    const start = new Date(startTime);
+    const end = new Date(start.getTime() + duration * 60000);
+    const offset = end.getTimezoneOffset() * 60000;
+    setEndTime(new Date(end - offset).toISOString().slice(0, 16));
+  }, [startTime, duration]);
+
+  const getMinDateTime = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    return new Date(now - offset).toISOString().slice(0, 16);
+  };
+
+  /* ---------------- Submit ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!title.trim()) return alert("Exam title required");
+    if (duration <= 0) return alert("Invalid duration");
+    if (!startTime || !endTime) return alert("Time required");
+    if (new Date(endTime) <= new Date(startTime))
+      return alert("End time must be after start time");
+    if (selectedBatches.length === 0) return alert("Select at least one batch");
 
     const res = await fetch("/api/exams", {
       method: "POST",
@@ -201,88 +262,136 @@ export default function CreateExamPage() {
       body: JSON.stringify({
         title,
         type,
-        totalQuestions: type === "mcq" ? totalQuestions : 0,
         duration,
         startTime,
         endTime,
         batchIds: selectedBatches,
+        totalQuestions: type === "mcq" ? Number(totalQuestions) : 0,
       }),
     });
 
     const data = await res.json();
-    alert(data.message);
+    if (!res.ok) return alert(data.message || "Failed");
 
-    if (res.ok) {
-      setTitle("");
-      setTotalQuestions(0);
-      setSelectedBatches([]);
-    }
+    alert("Exam created successfully");
+    setTitle("");
+    setTotalQuestions(0);
+    setSelectedBatches([]);
+    setDuration(60);
+    setStartTime("");
+    setEndTime("");
   };
 
   return (
-    <main className="p-6 mt-20 max-w-md">
-      <h1 className="text-2xl font-bold mb-4">Create Exam</h1>
+    <main className="p-6 mt-20 flex justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-2xl space-y-6"
+      >
+        <h1 className="text-3xl font-bold text-center text-[#0D7C66]">
+          Create Exam
+        </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          placeholder="Exam Title"
-          className="w-full p-2 border rounded"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        {/* Exam Title */}
+        <div>
+          <label className="block font-medium mb-1">Exam Title</label>
+          <input
+            className="w-full p-3 border rounded-lg"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="w-full p-2 border rounded"
-        >
-          <option value="mcq">MCQ Exam</option>
-          <option value="theory">Theoretical Exam</option>
-        </select>
+        {/* Exam Type */}
+        <div>
+          <label className="block font-medium mb-1">Exam Type</label>
+          <select
+            className="w-full p-3 border rounded-lg"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="mcq">MCQ</option>
+            <option value="theory">Theoretical</option>
+          </select>
+        </div>
 
+        {/* MCQ Only */}
         {type === "mcq" && (
+          <div>
+            <label className="block font-medium mb-1">
+              Total MCQ Questions
+            </label>
+            <input
+              type="number"
+              min={1}
+              className="w-full p-3 border rounded-lg"
+              value={totalQuestions}
+              onChange={(e) => setTotalQuestions(e.target.value)}
+              required
+            />
+          </div>
+        )}
+
+        {/* Duration */}
+        <div>
+          <label className="block font-medium mb-1">Duration (minutes)</label>
           <input
             type="number"
             min={1}
-            placeholder="Total MCQ Questions"
-            className="w-full p-2 border rounded"
-            value={totalQuestions}
-            onChange={(e) => setTotalQuestions(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            required
           />
-        )}
+        </div>
 
-        <input
-          type="datetime-local"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
+        {/* Time */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Start Time</label>
+            <input
+              type="datetime-local"
+              className="w-full p-3 border rounded-lg"
+              min={getMinDateTime()}
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">End Time</label>
+            <input
+              type="datetime-local"
+              className="w-full p-3 border rounded-lg bg-gray-100"
+              value={endTime}
+              readOnly
+            />
+          </div>
+        </div>
 
-        <input
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
+        {/* Batches */}
+        <div>
+          <label className="block font-medium mb-1">Assign Batches</label>
+          <select
+            multiple
+            className="w-full p-3 border rounded-lg"
+            value={selectedBatches}
+            onChange={(e) =>
+              setSelectedBatches(
+                Array.from(e.target.selectedOptions, (o) => o.value),
+              )
+            }
+          >
+            {batches.map((b) => (
+              <option key={b._id} value={b._id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          multiple
-          className="w-full p-2 border rounded"
-          value={selectedBatches}
-          onChange={(e) =>
-            setSelectedBatches(
-              Array.from(e.target.selectedOptions, (o) => o.value),
-            )
-          }
-        >
-          {batches.map((b) => (
-            <option key={b._id} value={b._id}>
-              {b.name}
-            </option>
-          ))}
-        </select>
-
-        <button className="bg-green-600 text-white px-4 py-2 rounded">
+        <button className="w-full bg-[#0D7C66] text-white py-3 rounded-xl font-semibold hover:bg-[#41B3A2]">
           Create Exam
         </button>
       </form>

@@ -1,200 +1,72 @@
-// // // // import { NextResponse } from "next/server";
-// // // // import { getCollection } from "@/lib/dbConnect";
-// // // // import { ObjectId } from "mongodb";
-
-// // // // export async function POST(req) {
-// // // //   try {
-// // // //     const data = await req.json();
-// // // //     const { examId, questionText, options, correctOption, marks } = data;
-
-// // // //     if (
-// // // //       !examId ||
-// // // //       !questionText ||
-// // // //       !options ||
-// // // //       !correctOption ||
-// // // //       marks == null
-// // // //     ) {
-// // // //       return NextResponse.json(
-// // // //         { message: "All fields are required" },
-// // // //         { status: 400 },
-// // // //       );
-// // // //     }
-
-// // // //     const examsCollection = await getCollection("exams");
-
-// // // //     const question = {
-// // // //       _id: new ObjectId(),
-// // // //       questionText,
-// // // //       options,
-// // // //       correctOption,
-// // // //       marks,
-// // // //     };
-
-// // // //     await examsCollection.updateOne(
-// // // //       { _id: new ObjectId(examId) },
-// // // //       { $push: { questions: question } },
-// // // //     );
-
-// // // //     return NextResponse.json({ message: "Question added successfully" });
-// // // //   } catch (error) {
-// // // //     console.error(error);
-// // // //     return NextResponse.json(
-// // // //       { message: "Failed to add question" },
-// // // //       { status: 500 },
-// // // //     );
-// // // //   }
-// // // // }
-
-// // // import { NextResponse } from "next/server";
-// // // import { getCollection } from "@/lib/dbConnect";
-// // // import { ObjectId } from "mongodb";
-// // // import { getServerSession } from "next-auth";
-// // // import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-// // // export async function POST(req) {
-// // //   try {
-// // //     const session = await getServerSession(authOptions);
-// // //     if (!session || session.user.role !== "instructor") {
-// // //       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-// // //     }
-
-// // //     const { examId, questionText, options, correctOption, marks } =
-// // //       await req.json();
-
-// // //     const examsCollection = await getCollection("exams");
-
-// // //     // 🔒 Verify ownership
-// // //     const exam = await examsCollection.findOne({
-// // //       _id: new ObjectId(examId),
-// // //       instructorId: session.user.id,
-// // //     });
-
-// // //     if (!exam) {
-// // //       return NextResponse.json(
-// // //         { message: "Exam not found or not yours" },
-// // //         { status: 403 },
-// // //       );
-// // //     }
-
-// // //     const question = {
-// // //       _id: new ObjectId(),
-// // //       questionText,
-// // //       options,
-// // //       correctOption,
-// // //       marks,
-// // //     };
-
-// // //     await examsCollection.updateOne(
-// // //       { _id: exam._id },
-// // //       { $push: { questions: question } },
-// // //     );
-
-// // //     return NextResponse.json({ message: "Question added successfully" });
-// // //   } catch (error) {
-// // //     return NextResponse.json(
-// // //       { message: "Failed to add question" },
-// // //       { status: 500 },
-// // //     );
-// // //   }
-// // // }
-
-// // import { NextResponse } from "next/server";
-// // import { getCollection } from "@/lib/dbConnect";
-// // import { ObjectId } from "mongodb";
-// // import { getServerSession } from "next-auth";
-// // import { authOptions } from "../auth/[...nextauth]/route";
-
-// // export async function POST(req) {
-// //   try {
-// //     const session = await getServerSession(authOptions);
-// //     if (!session || session.user.role !== "instructor") {
-// //       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-// //     }
-
-// //     const { examId, questionText, options, correctOption, marks } =
-// //       await req.json();
-
-// //     const examsCollection = await getCollection("exams");
-
-// //     // 🔐 ownership check
-// //     const exam = await examsCollection.findOne({
-// //       _id: new ObjectId(examId),
-// //       instructorEmail: session.user.email,
-// //     });
-
-// //     if (!exam) {
-// //       return NextResponse.json(
-// //         { message: "Exam not found or access denied" },
-// //         { status: 403 },
-// //       );
-// //     }
-
-// //     const question = {
-// //       _id: new ObjectId(),
-// //       questionText,
-// //       options,
-// //       correctOption,
-// //       marks,
-// //     };
-
-// //     await examsCollection.updateOne(
-// //       { _id: exam._id },
-// //       { $push: { questions: question } },
-// //     );
-
-// //     return NextResponse.json({ message: "Question added" });
-// //   } catch (error) {
-// //     console.error("Add question error:", error);
-// //     return NextResponse.json(
-// //       { message: "Failed to add question" },
-// //       { status: 500 },
-// //     );
-// //   }
-// // }
-
+// //try
 // import { NextResponse } from "next/server";
-// import { getCollection } from "@/lib/dbConnect";
-// import { ObjectId } from "mongodb";
 // import { getServerSession } from "next-auth";
-// import { authOptions } from "../auth/[...nextauth]/route";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// import { getCollection } from "@/lib/dbConnect";
 
 // export async function POST(req) {
 //   const session = await getServerSession(authOptions);
+//   if (!session || session.user.role !== "instructor") {
+//     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//   }
+
 //   const { examId, questionText, options, correctOption, marks } =
 //     await req.json();
 
-//   const examsCollection = await getCollection("exams");
+//   if (!examId || !questionText || options?.length !== 4) {
+//     return NextResponse.json(
+//       { message: "Invalid question data" },
+//       { status: 400 },
+//     );
+//   }
 
-//   const exam = await examsCollection.findOne({
-//     _id: new ObjectId(examId),
+//   const examsCol = await getCollection("exams");
+//   const questionsCol = await getCollection("questions");
+
+//   const exam = await examsCol.findOne({
+//     _id: new (await import("mongodb")).ObjectId(examId),
 //     instructorEmail: session.user.email,
 //   });
 
 //   if (!exam) {
-//     return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+//     return NextResponse.json({ message: "Exam not found" }, { status: 404 });
 //   }
 
-//   await examsCollection.updateOne(
-//     { _id: exam._id },
-//     {
-//       $push: {
-//         questions: {
-//           _id: new ObjectId(),
-//           questionText,
-//           options,
-//           correctOption,
-//           marks,
-//         },
-//       },
-//     },
-//   );
+//   if (exam.published) {
+//     return NextResponse.json(
+//       { message: "Cannot add questions after publish" },
+//       { status: 400 },
+//     );
+//   }
 
-//   return NextResponse.json({ message: "Question added" });
+//   const count = await questionsCol.countDocuments({ examId });
+//   if (count >= exam.totalQuestions) {
+//     return NextResponse.json(
+//       { message: "Question limit reached" },
+//       { status: 400 },
+//     );
+//   }
+
+//   await questionsCol.insertOne({
+//     examId, // stored as string
+//     questionText,
+//     options,
+//     correctOption,
+//     marks,
+//     instructorEmail: session.user.email,
+//     createdAt: new Date(),
+//   });
+
+//   return NextResponse.json({ message: "Question added successfully" });
 // }
+
+//try
+
+// app/api/questions/route.js
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCollection } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
 
@@ -205,51 +77,63 @@ export async function POST(req) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { examId, question, options, correctAnswer, marks, type } =
+    const { examId, questionText, options, correctOption, marks } =
       await req.json();
 
-    if (!examId || !question || !type) {
-      return NextResponse.json({ message: "Missing fields" }, { status: 400 });
+    if (
+      !examId ||
+      !questionText ||
+      !Array.isArray(options) ||
+      options.length !== 4
+    ) {
+      return NextResponse.json(
+        { message: "Invalid question data" },
+        { status: 400 },
+      );
     }
 
     const examsCol = await getCollection("exams");
-    const exam = await examsCol.findOne({ _id: new ObjectId(examId) });
+    const questionsCol = await getCollection("questions");
+
+    const exam = await examsCol.findOne({
+      _id: new ObjectId(examId),
+      instructorEmail: session.user.email,
+    });
 
     if (!exam) {
       return NextResponse.json({ message: "Exam not found" }, { status: 404 });
     }
 
-    if (type === "mcq") {
-      const newQ = {
-        _id: new ObjectId(),
-        questionText: question,
-        options,
-        correctAnswer,
-        marks: marks || 1,
-      };
-      await examsCol.updateOne(
-        { _id: new ObjectId(examId) },
-        { $push: { questions: newQ } },
+    if (exam.published) {
+      return NextResponse.json(
+        { message: "Cannot add questions after publish" },
+        { status: 400 },
       );
     }
 
-    if (type === "theory") {
-      const newQ = {
-        _id: new ObjectId(),
-        questionText: question,
-        marks: marks || 1,
-      };
-      await examsCol.updateOne(
-        { _id: new ObjectId(examId) },
-        { $push: { theoryQuestions: newQ } },
+    const count = await questionsCol.countDocuments({ examId });
+    if (count >= exam.totalQuestions) {
+      return NextResponse.json(
+        { message: "Question limit reached" },
+        { status: 400 },
       );
     }
+
+    await questionsCol.insertOne({
+      examId, // ✅ stored as STRING (matches your DB)
+      questionText,
+      options,
+      correctOption,
+      marks,
+      instructorEmail: session.user.email,
+      createdAt: new Date(),
+    });
 
     return NextResponse.json({ message: "Question added successfully" });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("POST /api/questions error:", error);
     return NextResponse.json(
-      { message: "Failed to add question" },
+      { message: "Internal Server Error" },
       { status: 500 },
     );
   }

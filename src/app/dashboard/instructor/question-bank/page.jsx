@@ -1,322 +1,130 @@
-// // "use client";
-
-// // import { useState, useEffect } from "react";
-
-// // export default function QuestionBankPage() {
-// //   const [exams, setExams] = useState([]);
-// //   const [selectedExam, setSelectedExam] = useState("");
-// //   const [questionText, setQuestionText] = useState("");
-// //   const [options, setOptions] = useState(["", "", "", ""]);
-// //   const [correctOption, setCorrectOption] = useState(0);
-// //   const [marks, setMarks] = useState(1);
-
-// //   useEffect(() => {
-// //     async function fetchExams() {
-// //       const res = await fetch("/api/exams");
-// //       const data = await res.json();
-// //       setExams(data);
-// //     }
-// //     fetchExams();
-// //   }, []);
-
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-
-// //     if (!selectedExam || !questionText || options.some((o) => !o)) {
-// //       alert("All fields are required");
-// //       return;
-// //     }
-
-// //     if (correctOption < 0 || correctOption > 3) {
-// //       alert("Correct option must be between 0 and 3");
-// //       return;
-// //     }
-
-// //     const res = await fetch("/api/questions", {
-// //       method: "POST",
-// //       headers: { "Content-Type": "application/json" },
-// //       body: JSON.stringify({
-// //         examId: selectedExam,
-// //         questionText,
-// //         options,
-// //         correctOption,
-// //         marks,
-// //       }),
-// //     });
-
-// //     const data = await res.json();
-// //     alert(data.message);
-
-// //     if (res.ok) {
-// //       setQuestionText("");
-// //       setOptions(["", "", "", ""]);
-// //       setCorrectOption(0);
-// //       setMarks(1);
-// //     }
-// //   };
-
-// //   return (
-// //     <main className="p-6 mt-20">
-// //       <h1 className="text-2xl font-bold mb-4">Add Questions</h1>
-
-// //       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-// //         <div>
-// //           <label className="block mb-1 font-medium">Select Exam</label>
-// //           <select
-// //             value={selectedExam}
-// //             onChange={(e) => setSelectedExam(e.target.value)}
-// //             className="w-full p-2 border rounded"
-// //           >
-// //             <option value="">Select Exam</option>
-// //             {exams.map((e) => (
-// //               <option key={e._id} value={e._id}>
-// //                 {e.title}
-// //               </option>
-// //             ))}
-// //           </select>
-// //         </div>
-
-// //         <div>
-// //           <label className="block mb-1 font-medium">Question Text</label>
-// //           <textarea
-// //             value={questionText}
-// //             onChange={(e) => setQuestionText(e.target.value)}
-// //             className="w-full p-2 border rounded"
-// //           />
-// //         </div>
-
-// //         <label className="block font-medium">Options</label>
-// //         {options.map((opt, idx) => (
-// //           <input
-// //             key={idx}
-// //             type="text"
-// //             placeholder={`Option ${idx + 1}`}
-// //             value={opt}
-// //             onChange={(e) => {
-// //               const newOpts = [...options];
-// //               newOpts[idx] = e.target.value;
-// //               setOptions(newOpts);
-// //             }}
-// //             className="w-full p-2 border rounded"
-// //           />
-// //         ))}
-
-// //         <div>
-// //           <label className="block mb-1 font-medium">
-// //             Correct Option Index (0-3)
-// //           </label>
-// //           <input
-// //             type="number"
-// //             min={0}
-// //             max={3}
-// //             value={correctOption}
-// //             onChange={(e) => setCorrectOption(parseInt(e.target.value))}
-// //             className="w-full p-2 border rounded"
-// //           />
-// //         </div>
-
-// //         <div>
-// //           <label className="block mb-1 font-medium">Marks</label>
-// //           <input
-// //             type="number"
-// //             min={1}
-// //             value={marks}
-// //             onChange={(e) => setMarks(parseInt(e.target.value))}
-// //             className="w-full p-2 border rounded"
-// //           />
-// //         </div>
-
-// //         <button
-// //           type="submit"
-// //           className="bg-purple-500 px-4 py-2 rounded text-white hover:bg-purple-600"
-// //         >
-// //           Add Question
-// //         </button>
-// //       </form>
-// //     </main>
-// //   );
-// // }
-
 // "use client";
 
-// import { useState, useEffect } from "react";
+// import { useEffect, useState } from "react";
+// import { useSession } from "next-auth/react";
 
 // export default function QuestionBankPage() {
+//   const { data: session } = useSession();
+
 //   const [exams, setExams] = useState([]);
-//   const [selectedExam, setSelectedExam] = useState("");
+//   const [selectedExam, setSelectedExam] = useState(null);
+//   const [questionCount, setQuestionCount] = useState(0);
+
 //   const [questionText, setQuestionText] = useState("");
 //   const [options, setOptions] = useState(["", "", "", ""]);
 //   const [correctOption, setCorrectOption] = useState(0);
 //   const [marks, setMarks] = useState(1);
-//   const [loading, setLoading] = useState(true);
 
 //   useEffect(() => {
+//     if (!session) return;
 //     async function fetchExams() {
-//       try {
-//         const res = await fetch("/api/exams");
-
-//         // Check if response is ok
-//         if (!res.ok) {
-//           const text = await res.text();
-//           console.error("API Error:", res.status, text);
-//           alert("Failed to fetch exams. Please login or try again.");
-//           setExams([]);
-//           setLoading(false);
-//           return;
-//         }
-
-//         const data = await res.json();
-
-//         // Ensure data.exams exists
-//         if (!data || !Array.isArray(data.exams)) {
-//           console.error("Unexpected API response:", data);
-//           alert("Invalid data received from server.");
-//           setExams([]);
-//           setLoading(false);
-//           return;
-//         }
-
-//         setExams(data.exams);
-//         setLoading(false);
-//       } catch (err) {
-//         console.error("Fetch exams error:", err);
-//         alert("Error fetching exams.");
-//         setExams([]);
-//         setLoading(false);
-//       }
+//       const res = await fetch("/api/exams");
+//       const data = await res.json();
+//       setExams(data.exams || []);
 //     }
-
 //     fetchExams();
-//   }, []);
+//   }, [session]);
 
-//   const handleSubmit = async (e) => {
+//   const canAdd =
+//     selectedExam &&
+//     !selectedExam.published &&
+//     questionCount < selectedExam.totalQuestions;
+
+//   const handleAdd = async (e) => {
 //     e.preventDefault();
+//     if (!canAdd) return;
 
-//     if (!selectedExam || !questionText || options.some((o) => !o)) {
-//       alert("All fields are required");
-//       return;
-//     }
+//     const res = await fetch("/api/questions", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         examId: selectedExam._id,
+//         questionText,
+//         options,
+//         correctOption,
+//         marks,
+//       }),
+//     });
 
-//     if (correctOption < 0 || correctOption > 3) {
-//       alert("Correct option must be between 0 and 3");
-//       return;
-//     }
+//     const data = await res.json();
+//     alert(data.message);
 
-//     try {
-//       const res = await fetch("/api/questions", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           examId: selectedExam,
-//           questionText,
-//           options,
-//           correctOption,
-//           marks,
-//         }),
-//       });
-
-//       // Safe parse
-//       let data;
-//       try {
-//         data = await res.json();
-//       } catch {
-//         data = { message: "Question added (but server returned invalid JSON)" };
-//       }
-
-//       alert(data.message || "Question added successfully");
-
-//       if (res.ok) {
-//         setQuestionText("");
-//         setOptions(["", "", "", ""]);
-//         setCorrectOption(0);
-//         setMarks(1);
-//       }
-//     } catch (err) {
-//       console.error("Submit question error:", err);
-//       alert("Failed to add question.");
+//     if (res.ok) {
+//       setQuestionText("");
+//       setOptions(["", "", "", ""]);
+//       setCorrectOption(0);
+//       setMarks(1);
+//       setQuestionCount((c) => c + 1);
 //     }
 //   };
 
 //   return (
-//     <main className="p-6 mt-20">
-//       <h1 className="text-2xl font-bold mb-4">Add Questions</h1>
+//     <main className="p-6 mt-20 max-w-xl">
+//       <h1 className="text-2xl font-bold mb-4">Question Bank</h1>
 
-//       {loading ? (
-//         <p>Loading exams...</p>
-//       ) : exams.length === 0 ? (
-//         <p>No exams available. Please create an exam first.</p>
-//       ) : (
-//         <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-//           <div>
-//             <label className="block mb-1 font-medium">Select Exam</label>
-//             <select
-//               value={selectedExam}
-//               onChange={(e) => setSelectedExam(e.target.value)}
-//               className="w-full p-2 border rounded"
-//             >
-//               <option value="">Select Exam</option>
-//               {exams.map((e) => (
-//                 <option key={e._id} value={e._id}>
-//                   {e.title}
-//                 </option>
-//               ))}
-//             </select>
-//           </div>
+//       <select
+//         className="w-full p-2 border rounded mb-4"
+//         onChange={(e) => {
+//           const exam = exams.find((x) => x._id === e.target.value);
+//           setSelectedExam(exam || null);
+//           setQuestionCount(exam?.questionsCount || 0);
+//         }}
+//       >
+//         <option value="">Select Exam</option>
+//         {exams.map((e) => (
+//           <option key={e._id} value={e._id}>
+//             {e.title} ({e.status})
+//           </option>
+//         ))}
+//       </select>
 
-//           <div>
-//             <label className="block mb-1 font-medium">Question Text</label>
-//             <textarea
-//               value={questionText}
-//               onChange={(e) => setQuestionText(e.target.value)}
-//               className="w-full p-2 border rounded"
-//             />
-//           </div>
+//       {selectedExam && (
+//         <p className="mb-3 text-sm text-gray-600">
+//           MCQs added: {questionCount} / {selectedExam.totalQuestions}
+//         </p>
+//       )}
 
-//           <label className="block font-medium">Options</label>
-//           {options.map((opt, idx) => (
+//       {!canAdd && selectedExam && (
+//         <p className="text-red-500 mb-3">
+//           Cannot add more questions (limit reached or exam published)
+//         </p>
+//       )}
+
+//       {canAdd && (
+//         <form onSubmit={handleAdd} className="space-y-3">
+//           <textarea
+//             className="w-full p-2 border rounded"
+//             placeholder="Question"
+//             value={questionText}
+//             onChange={(e) => setQuestionText(e.target.value)}
+//             required
+//           />
+
+//           {options.map((opt, i) => (
 //             <input
-//               key={idx}
-//               type="text"
-//               placeholder={`Option ${idx + 1}`}
+//               key={i}
+//               className="w-full p-2 border rounded"
+//               placeholder={`Option ${i + 1}`}
 //               value={opt}
 //               onChange={(e) => {
-//                 const newOpts = [...options];
-//                 newOpts[idx] = e.target.value;
-//                 setOptions(newOpts);
+//                 const arr = [...options];
+//                 arr[i] = e.target.value;
+//                 setOptions(arr);
 //               }}
-//               className="w-full p-2 border rounded"
+//               required
 //             />
 //           ))}
 
-//           <div>
-//             <label className="block mb-1 font-medium">
-//               Correct Option Index (0-3)
-//             </label>
-//             <input
-//               type="number"
-//               min={0}
-//               max={3}
-//               value={correctOption}
-//               onChange={(e) => setCorrectOption(parseInt(e.target.value))}
-//               className="w-full p-2 border rounded"
-//             />
-//           </div>
+//           <input
+//             type="number"
+//             min={0}
+//             max={3}
+//             value={correctOption}
+//             onChange={(e) => setCorrectOption(Number(e.target.value))}
+//             className="w-full p-2 border rounded"
+//           />
 
-//           <div>
-//             <label className="block mb-1 font-medium">Marks</label>
-//             <input
-//               type="number"
-//               min={1}
-//               value={marks}
-//               onChange={(e) => setMarks(parseInt(e.target.value))}
-//               className="w-full p-2 border rounded"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             className="bg-purple-500 px-4 py-2 rounded text-white hover:bg-purple-600"
-//           >
+//           <button className="bg-purple-600 text-white px-4 py-2 rounded">
 //             Add Question
 //           </button>
 //         </form>
@@ -327,173 +135,241 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function QuestionBankPage() {
+  const { data: session } = useSession();
+
   const [exams, setExams] = useState([]);
-  const [selectedExam, setSelectedExam] = useState("");
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [questionCount, setQuestionCount] = useState(0);
+
+  /* MCQ fields */
   const [questionText, setQuestionText] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctOption, setCorrectOption] = useState(0);
   const [marks, setMarks] = useState(1);
-  const [loading, setLoading] = useState(true);
 
+  /* Theory fields */
+  const [theoryQuestion, setTheoryQuestion] = useState("");
+  const [theoryMarks, setTheoryMarks] = useState(10);
+
+  /* ---------------- Fetch Exams ---------------- */
   useEffect(() => {
-    async function fetchExams() {
-      try {
-        const res = await fetch("/api/exams");
+    if (!session) return;
+    fetch("/api/exams")
+      .then((r) => r.json())
+      .then((d) => setExams(d.exams || []))
+      .catch(console.error);
+  }, [session]);
 
-        if (!res.ok) {
-          // Safe parse error
-          const data = await res.json().catch(() => ({}));
-          alert(
-            data.error || "Failed to fetch exams. Please login or try again.",
-          );
-          setExams([]);
-          setLoading(false);
-          return;
-        }
+  /* ---------------- Permissions ---------------- */
+  const canAddMCQ =
+    selectedExam &&
+    selectedExam.type === "mcq" &&
+    !selectedExam.published &&
+    questionCount < selectedExam.totalQuestions;
 
-        const data = await res.json();
-        setExams(data.exams || []);
-        setLoading(false);
-      } catch (err) {
-        console.error("Fetch exams error:", err);
-        alert("Error fetching exams. Please try again.");
-        setExams([]);
-        setLoading(false);
-      }
-    }
+  const canAddTheory =
+    selectedExam && selectedExam.type === "theory" && !selectedExam.published;
 
-    fetchExams();
-  }, []);
-
-  const handleSubmit = async (e) => {
+  /* ---------------- Add MCQ ---------------- */
+  const handleAddMCQ = async (e) => {
     e.preventDefault();
+    if (!canAddMCQ) return;
 
-    if (!selectedExam || !questionText || options.some((o) => !o)) {
-      alert("All fields are required");
-      return;
+    const res = await fetch("/api/questions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        examId: selectedExam._id,
+        questionText,
+        options,
+        correctOption,
+        marks,
+      }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (res.ok) {
+      setQuestionText("");
+      setOptions(["", "", "", ""]);
+      setCorrectOption(0);
+      setMarks(1);
+      setQuestionCount((c) => c + 1);
     }
+  };
 
-    if (correctOption < 0 || correctOption > 3) {
-      alert("Correct option must be between 0 and 3");
-      return;
-    }
+  /* ---------------- Add Theory Question ---------------- */
+  const handleAddTheory = async (e) => {
+    e.preventDefault();
+    if (!canAddTheory) return;
 
-    try {
-      const res = await fetch("/api/exams", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          examId: selectedExam,
-          questionText,
-          options,
-          correctOption,
-          marks,
-        }),
-      });
+    const res = await fetch("/api/theory-questions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        examId: selectedExam._id,
+        questionText: theoryQuestion,
+        marks: theoryMarks,
+      }),
+    });
 
-      const data = await res.json().catch(() => ({
-        message: "Question added (server returned invalid JSON)",
-      }));
-      alert(data.message || "Question added successfully");
+    const data = await res.json();
+    alert(data.message);
 
-      if (res.ok) {
-        setQuestionText("");
-        setOptions(["", "", "", ""]);
-        setCorrectOption(0);
-        setMarks(1);
-      }
-    } catch (err) {
-      console.error("Submit question error:", err);
-      alert("Failed to add question.");
+    if (res.ok) {
+      setTheoryQuestion("");
+      setTheoryMarks(10);
     }
   };
 
   return (
-    <main className="p-6 mt-20">
-      <h1 className="text-2xl font-bold mb-4">Add Questions</h1>
+    <main className="p-6 mt-40 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-[#0D7C66]">Question Bank</h1>
 
-      {loading ? (
-        <p>Loading exams...</p>
-      ) : exams.length === 0 ? (
-        <p>No exams available. Please create an exam first.</p>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-          <div>
-            <label className="block mb-1 font-medium">Select Exam</label>
-            <select
-              value={selectedExam}
-              onChange={(e) => setSelectedExam(e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select Exam</option>
-              {exams.map((e) => (
-                <option key={e._id} value={e._id}>
-                  {e.title}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Exam Selector */}
+      <div className="mb-6">
+        <label className="block font-medium mb-1">Select Exam</label>
+        <select
+          className="w-full p-3 border rounded-lg"
+          onChange={(e) => {
+            const exam = exams.find((x) => x._id === e.target.value);
+            setSelectedExam(exam || null);
+            setQuestionCount(exam?.questionsCount || 0);
+          }}
+        >
+          <option value="">-- Select Exam --</option>
+          {exams.map((e) => (
+            <option key={e._id} value={e._id}>
+              {e.title} ({e.type})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Exam Status */}
+      {selectedExam && (
+        <div className="mb-4 text-sm text-gray-600">
+          Status: {selectedExam.published ? "Published" : "Draft"}
+        </div>
+      )}
+
+      {/* MCQ SECTION */}
+      {canAddMCQ && (
+        <form
+          onSubmit={handleAddMCQ}
+          className="bg-white p-6 rounded-xl shadow space-y-4"
+        >
+          <h2 className="text-xl font-semibold text-purple-700">
+            Add MCQ Question
+          </h2>
 
           <div>
-            <label className="block mb-1 font-medium">Question Text</label>
+            <label className="block mb-1">Question</label>
             <textarea
+              className="w-full p-3 border rounded-lg"
               value={questionText}
               onChange={(e) => setQuestionText(e.target.value)}
-              className="w-full p-2 border rounded"
+              required
             />
           </div>
 
-          <label className="block font-medium">Options</label>
-          {options.map((opt, idx) => (
-            <input
-              key={idx}
-              type="text"
-              placeholder={`Option ${idx + 1}`}
-              value={opt}
-              onChange={(e) => {
-                const newOpts = [...options];
-                newOpts[idx] = e.target.value;
-                setOptions(newOpts);
-              }}
-              className="w-full p-2 border rounded"
-            />
+          {options.map((opt, i) => (
+            <div key={i}>
+              <label className="block mb-1">Option {i + 1}</label>
+              <input
+                className="w-full p-2 border rounded-lg"
+                value={opt}
+                onChange={(e) => {
+                  const arr = [...options];
+                  arr[i] = e.target.value;
+                  setOptions(arr);
+                }}
+                required
+              />
+            </div>
           ))}
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Correct Option (0–3)</label>
+              <input
+                type="number"
+                min={0}
+                max={3}
+                value={correctOption}
+                onChange={(e) => setCorrectOption(Number(e.target.value))}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Marks</label>
+              <input
+                type="number"
+                min={1}
+                value={marks}
+                onChange={(e) => setMarks(Number(e.target.value))}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+          </div>
+
+          <button className="bg-purple-600 text-white px-6 py-2 rounded-lg">
+            Add MCQ
+          </button>
+
+          <p className="text-sm text-gray-500">
+            Added {questionCount} / {selectedExam.totalQuestions}
+          </p>
+        </form>
+      )}
+
+      {/* THEORY SECTION */}
+      {canAddTheory && (
+        <form
+          onSubmit={handleAddTheory}
+          className="bg-white p-6 rounded-xl shadow space-y-4"
+        >
+          <h2 className="text-xl font-semibold text-blue-700">
+            Add Theory Question
+          </h2>
+
           <div>
-            <label className="block mb-1 font-medium">
-              Correct Option Index (0-3)
-            </label>
-            <input
-              type="number"
-              min={0}
-              max={3}
-              value={correctOption}
-              onChange={(e) => setCorrectOption(parseInt(e.target.value))}
-              className="w-full p-2 border rounded"
+            <label className="block mb-1">Question</label>
+            <textarea
+              className="w-full p-3 border rounded-lg"
+              value={theoryQuestion}
+              onChange={(e) => setTheoryQuestion(e.target.value)}
+              required
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Marks</label>
+            <label className="block mb-1">Marks</label>
             <input
               type="number"
               min={1}
-              value={marks}
-              onChange={(e) => setMarks(parseInt(e.target.value))}
-              className="w-full p-2 border rounded"
+              value={theoryMarks}
+              onChange={(e) => setTheoryMarks(Number(e.target.value))}
+              className="w-full p-2 border rounded-lg"
             />
           </div>
 
-          <button
-            type="submit"
-            className="bg-purple-500 px-4 py-2 rounded text-white hover:bg-purple-600"
-          >
-            Add Question
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+            Add Theory Question
           </button>
         </form>
+      )}
+
+      {/* LOCKED MESSAGE */}
+      {selectedExam && selectedExam.published && (
+        <p className="text-red-500 mt-6">
+          This exam is published. Question editing is locked.
+        </p>
       )}
     </main>
   );
