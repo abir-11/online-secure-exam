@@ -160,7 +160,7 @@ export default function Navbar() {
 
       <div className="drawer-content flex flex-col">
         {/* Navbar */}
-        <div className="navbar w-full sticky top-0 z-50 bg-base-100/90 backdrop-blur-md px-4 lg:px-8 border-b border-base-200 shadow-sm">
+        <div className="navbar w-full sticky top-0 z-1 bg-base-100/90 backdrop-blur-md px-4 lg:px-8 border-b border-base-200 shadow-sm">
           <div className="navbar-start">
             <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
               <IoShield size={26} className="text-primary" />
