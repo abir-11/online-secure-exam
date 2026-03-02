@@ -12,14 +12,9 @@ import { IoShield } from "react-icons/io5";
 // Disable SSR for Lottie
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-
-
-
-import learningAnimation from "@/assets/learning.json"; 
-import studentAnimation from "@/assets/Student.json";   
-import educationAnimation from "@/assets/Educatin.json"; 
-
-
+import learningAnimation from "@/assets/learning.json";
+import studentAnimation from "@/assets/Student.json";
+import educationAnimation from "@/assets/Educatin.json";
 
 export default function LoginContent() {
   const router = useRouter();
@@ -32,7 +27,6 @@ export default function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
-
   // Safe animation selection
   const animationData = useMemo(() => {
     const animations = {
@@ -43,7 +37,6 @@ export default function LoginContent() {
 
     return animations[role] || studentAnimation;
   }, [role]);
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -114,10 +107,10 @@ export default function LoginContent() {
           router.push(callbackUrl);
           return;
         }
-
-        if (dbRole === "admin") router.push("/dashboard/admin");
-        else if (dbRole === "instructor") router.push("/dashboard/instructor");
-        else router.push("/dashboard/student");
+        router.push("/dashboard");
+        // if (dbRole === "admin") router.push("/dashboard/admin");
+        // else if (dbRole === "instructor") router.push("/dashboard/instructor");
+        // else router.push("/dashboard/student");
       }, 1200);
     } catch (error) {
       setLoading(false);
@@ -130,11 +123,10 @@ export default function LoginContent() {
     }
   };
 
-
   // common input styles for email and password fields
   const inputStyles =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0D7C66]/20 focus:border-[#0D7C66] transition-all text-gray-700";
-//role base animation mapping for Lottie
+  //role base animation mapping for Lottie
   const getAnimationForRole = {
     admin: educationAnimation,
     instructor: learningAnimation,
@@ -144,7 +136,6 @@ export default function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500">
-
         {/* Left Side: Lottie Animation (Hidden on Mobile) */}
 
         <div className="hidden md:flex w-full md:w-1/2 bg-[#0D7C66]/5 flex-col justify-center items-center p-12 relative overflow-hidden transition-colors duration-500">
