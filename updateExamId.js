@@ -1,7 +1,6 @@
 import { MongoClient } from "mongodb";
 
-const uri =
-  "mongodb+srv://secureExamAdmin:aQdLUc0YuYK8Kn6B@cluster0.ldizubn.mongodb.net/?appName=Cluster0";
+const uri = MONGODB_URI;
 
 async function main() {
   const client = new MongoClient(uri);

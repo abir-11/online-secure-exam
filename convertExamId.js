@@ -2,9 +2,8 @@
 import { MongoClient } from "mongodb";
 
 // Replace with your correct Atlas URI
-const uri =
-  "mongodb+srv://secureExamAdmin:aQdLUc0YuYK8Kn6B@cluster0.ldizubn.mongodb.net/?appName=Cluster0";
-const dbName = "secureExamDB";
+const uri = MONGODB_URI;
+const dbName = DBNAME;
 
 async function convertExamIds() {
   const client = new MongoClient(uri);
