@@ -43,6 +43,7 @@ export default function DashboardLayout({ children }) {
             <Link href="/dashboard" className={linkClass("/dashboard")}>
               Dashboard
             </Link>
+
             <Link
               href="/dashboard/profile"
               className={linkClass("/dashboard/profile")}
@@ -77,36 +78,52 @@ export default function DashboardLayout({ children }) {
                 >
                   Create Batch
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/view-batches"
                   className={linkClass("/dashboard/instructor/view-batches")}
                 >
                   View Batches
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/add-students"
                   className={linkClass("/dashboard/instructor/add-students")}
                 >
                   Add Students
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/create-exam"
                   className={linkClass("/dashboard/instructor/create-exam")}
                 >
                   Create Exam
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/question-bank"
                   className={linkClass("/dashboard/instructor/question-bank")}
                 >
                   Question Bank
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/exam-list"
                   className={linkClass("/dashboard/instructor/exam-list")}
                 >
                   List of Exams
                 </Link>
+
+                {/* ✅ NEW: THEORY SUBMISSIONS */}
+                <Link
+                  href="/dashboard/instructor/theory-submissions"
+                  className={linkClass(
+                    "/dashboard/instructor/theory-submissions",
+                  )}
+                >
+                  Theory Submissions
+                </Link>
+
                 <Link
                   href="/dashboard/instructor/analytics"
                   className={linkClass("/dashboard/instructor/analytics")}
@@ -125,12 +142,14 @@ export default function DashboardLayout({ children }) {
                 >
                   My Exams
                 </Link>
+
                 <Link
                   href="/dashboard/student/result"
-                  className={linkClass("/dashboard/student/results")}
+                  className={linkClass("/dashboard/student/result")}
                 >
                   Results
                 </Link>
+
                 <Link
                   href="/dashboard/student/notifications"
                   className={linkClass("/dashboard/student/notifications")}
