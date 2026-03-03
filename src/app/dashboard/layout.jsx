@@ -54,8 +54,8 @@ export default function DashboardLayout({ children }) {
             {session.user.role === "admin" && (
               <>
                 <Link
-                  href="/dashboard/admin/manage-users"
-                  className={linkClass("/dashboard/admin/manage-users")}
+                  href="/dashboard/admin/users"
+                  className={linkClass("/dashboard/admin/users")}
                 >
                   Manage Users
                 </Link>
