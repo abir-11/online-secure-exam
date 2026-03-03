@@ -64,3 +64,26 @@ export async function PUT(request, { params }) {
     );
   }
 }
+
+//DELETE
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+
+    const usersCollection = await getCollection("users");
+    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, message: "User deleted" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete user" },
+      { status: 500 },
+    );
+  }
+}
