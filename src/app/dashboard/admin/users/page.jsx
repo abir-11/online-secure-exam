@@ -31,6 +31,31 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/admin/users");
+      setUsers(response.data.users);
+    } catch (error) {
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //handle delete
+  const handleDelete = async (userId, userName) => {
+    if (window.confirm(`Are you sure you want to delete ${userName}?`)) {
+      try {
+        await axios.delete(`/api/admin/users/${userId}`);
+        toast.success("User deleted");
+        fetchUsers(); // Refresh list
+      } catch (error) {
+        toast.error("Failed to delete user");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Header with gradient */}
