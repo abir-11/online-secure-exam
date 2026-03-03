@@ -43,15 +43,43 @@ export default function UsersPage() {
     }
   };
 
+  //   //handle delete
+  //   const handleDelete = async (userId, userName) => {
+  //     if (window.confirm(`Are you sure you want to delete ${userName}?`)) {
+  //       try {
+  //         await axios.delete(`/api/admin/users/${userId}`);
+  //         toast.success("User deleted");
+  //         fetchUsers(); // Refresh list
+  //       } catch (error) {
+  //         toast.error("Failed to delete user");
+  //       }
+  //     }
+  //   };
+
   //handle delete
   const handleDelete = async (userId, userName) => {
+    console.log("🗑️ Delete clicked for user:", userId, userName);
+    console.log("📡 DELETE URL:", `/api/admin/users/${userId}`);
+
     if (window.confirm(`Are you sure you want to delete ${userName}?`)) {
+      console.log("✅ User confirmed deletion");
+
       try {
-        await axios.delete(`/api/admin/users/${userId}`);
+        console.log("📡 Making DELETE request...");
+
+        const response = await axios.delete(`/api/admin/users/${userId}`);
+
+        console.log("✅ Delete response:", response.data);
+
         toast.success("User deleted");
         fetchUsers(); // Refresh list
       } catch (error) {
-        toast.error("Failed to delete user");
+        console.error("❌ Delete error:", error);
+        console.error("❌ Error response:", error.response?.data);
+        console.error("❌ Error status:", error.response?.status);
+        console.error("❌ Error config:", error.config);
+
+        toast.error(error.response?.data?.error || "Failed to delete user");
       }
     }
   };

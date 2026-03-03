@@ -7,14 +7,7 @@ import bcrypt from "bcryptjs";
 //GET
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
-
-    console.log("🔍 Received ID:", id);
-
-    // ⚠️ ObjectId validation remove
-    // if (!ObjectId.isValid(id)) {
-    //   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    // }
+    const { id } = await params;
 
     const usersCollection = await getCollection("users");
 
@@ -40,16 +33,12 @@ export async function GET(request, { params }) {
     );
   }
 }
+
 //PUT
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const updates = await request.json();
-
-    // Validation remove
-    // if (!ObjectId.isValid(id)) {
-    //   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    // }
 
     const usersCollection = await getCollection("users");
 
@@ -86,26 +75,33 @@ export async function PUT(request, { params }) {
 //DELETE
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const usersCollection = await getCollection("users");
+    console.log(" Database connected");
 
     // Try string ID first
+    console.log(" Trying string ID delete...");
     let result = await usersCollection.deleteOne({ _id: id });
+    console.log(" String ID result:", result);
 
     // If not found, try as ObjectId
     if (result.deletedCount === 0 && ObjectId.isValid(id)) {
+      console.log(" Trying ObjectId delete:", new ObjectId(id));
       result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+      console.log(" ObjectId result:", result);
     }
 
     if (result.deletedCount === 0) {
+      console.log("User not found with any method");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    console.log("✅ User deleted successfully");
     return NextResponse.json({ success: true, message: "User deleted" });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete user" },
+      { error: "Failed to delete user: " + error.message },
       { status: 500 },
     );
   }
