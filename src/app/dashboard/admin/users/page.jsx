@@ -56,6 +56,18 @@ export default function UsersPage() {
     }
   };
 
+  // Filter users based on role and search
+  const filteredUsers = users.filter((user) => {
+    if (filter !== "all" && user.role !== filter) return false;
+    if (searchTerm) {
+      return (
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Header with gradient */}
