@@ -68,6 +68,24 @@ export default function UsersPage() {
     return true;
   });
 
+  // Count users by role
+  const counts = {
+    total: users.length,
+    admin: users.filter((u) => u.role === "admin").length,
+    instructor: users.filter((u) => u.role === "instructor").length,
+    student: users.filter((u) => u.role === "student").length,
+  };
+
+  // Role badge color
+  const getRoleBadge = (role) => {
+    const colors = {
+      admin: "bg-purple-100 text-purple-800 border-purple-200",
+      instructor: "bg-blue-100 text-blue-800 border-blue-200",
+      student: "bg-green-100 text-green-800 border-green-200",
+    };
+    return colors[role] || "bg-gray-100 text-gray-800";
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Header with gradient */}
@@ -86,6 +104,90 @@ export default function UsersPage() {
             <UserPlus className="w-5 h-5" />
             Add New User
           </Link>
+        </div>
+      </div>
+
+      {/* Stats Cards - Responsive Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+        <StatCard
+          icon={Users}
+          count={counts.total}
+          label="Total Users"
+          color="text-[#0D7C66]"
+          bg="bg-[#0D7C66]/10"
+        />
+        <StatCard
+          icon={Shield}
+          count={counts.admin}
+          label="Admins"
+          color="text-purple-600"
+          bg="bg-purple-100"
+        />
+        <StatCard
+          icon={GraduationCap}
+          count={counts.instructor}
+          label="Instructors"
+          color="text-blue-600"
+          bg="bg-blue-100"
+        />
+        <StatCard
+          icon={Users}
+          count={counts.student}
+          label="Students"
+          color="text-green-600"
+          bg="bg-green-100"
+        />
+      </div>
+
+      {/* Search & Filter - Responsive */}
+      <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
+          {/* Search Bar */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2] focus:border-transparent"
+            />
+          </div>
+
+          {/* Filter Buttons - Scrollable on mobile */}
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+            {[
+              { key: "all", label: "All", count: counts.total },
+              { key: "admin", label: "Admin", count: counts.admin },
+              {
+                key: "instructor",
+                label: "Instructor",
+                count: counts.instructor,
+              },
+              { key: "student", label: "Student", count: counts.student },
+            ].map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={`px-4 py-2 rounded-xl whitespace-nowrap transition ${
+                  filter === f.key
+                    ? "bg-[#0D7C66] text-white shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {f.label} ({f.count})
+              </button>
+            ))}
+            <button
+              onClick={fetchUsers}
+              className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
+              title="Refresh"
+            >
+              <RefreshCw
+                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
