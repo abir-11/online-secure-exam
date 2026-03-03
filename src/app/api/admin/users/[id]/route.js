@@ -9,12 +9,22 @@ export async function GET(request, { params }) {
   try {
     const { id } = params;
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    }
+    console.log("🔍 Received ID:", id);
+
+    // ⚠️ ObjectId validation remove
+    // if (!ObjectId.isValid(id)) {
+    //   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    // }
 
     const usersCollection = await getCollection("users");
-    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+    // Try to find by string ID first
+    let user = await usersCollection.findOne({ _id: id });
+
+    // If not found, try as ObjectId
+    if (!user && ObjectId.isValid(id)) {
+      user = await usersCollection.findOne({ _id: new ObjectId(id) });
+    }
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -23,34 +33,41 @@ export async function GET(request, { params }) {
     const { password, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error) {
+    console.error(" Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch user" },
       { status: 500 },
     );
   }
 }
-
 //PUT
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
     const updates = await request.json();
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    }
+    // Validation remove
+    // if (!ObjectId.isValid(id)) {
+    //   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    // }
+
     const usersCollection = await getCollection("users");
 
     const { _id, password, createdAt, ...validUpdates } = updates;
     validUpdates.updatedAt = new Date();
 
-    if (updates.password) {
-      validUpdates.password = await bcrypt.hash(updates.password, 10);
-    }
-    const result = await usersCollection.updateOne(
-      { _id: new ObjectId(id) },
+    // Try string ID first, then ObjectId
+    let result = await usersCollection.updateOne(
+      { _id: id },
       { $set: validUpdates },
     );
+
+    if (result.matchedCount === 0 && ObjectId.isValid(id)) {
+      result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: validUpdates },
+      );
+    }
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -58,6 +75,7 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json({ success: true, message: "User updated" });
   } catch (error) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to update user" },
       { status: 500 },
@@ -70,15 +88,20 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = params;
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    const usersCollection = await getCollection("users");
+
+    // Try string ID first
+    let result = await usersCollection.deleteOne({ _id: id });
+
+    // If not found, try as ObjectId
+    if (result.deletedCount === 0 && ObjectId.isValid(id)) {
+      result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
     }
 
-    const usersCollection = await getCollection("users");
-    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
     return NextResponse.json({ success: true, message: "User deleted" });
   } catch (error) {
     return NextResponse.json(
