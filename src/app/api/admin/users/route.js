@@ -1,13 +1,24 @@
-//GET all users API
+//GET all users API with role filtering
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const role = searchParams.get("role");
+
+    console.log("🔍 API called with role filter:", role); // Debug
+
     const usersCollection = await getCollection("users");
+
+    let query = {};
+    if (role && role !== "undefined" && role !== "null") {
+      query = { role: role };
+    }
+
     const users = await usersCollection
-      .find({})
+      .find(query)
       .sort({ createdAt: -1 })
       .toArray();
 
@@ -19,6 +30,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, users: safeUsers });
   } catch (error) {
+    console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 },
