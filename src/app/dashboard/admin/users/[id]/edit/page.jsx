@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, User, Mail, Shield } from "lucide-react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function EditUserPage() {
@@ -11,28 +12,90 @@ export default function EditUserPage() {
   const params = useParams();
   const userId = params?.id;
 
-  // Static data for frontend demonstration
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: "Rahim Miah",
-    email: "rahim@example.com",
-    role: "student",
-    department: "Computer Science",
+    name: "",
+    email: "",
+    role: "",
+    department: "",
     isActive: true,
   });
 
-  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (userId) {
+      fetchUser();
+    } else {
+      toast.error("Invalid user ID");
+      router.push("/dashboard/admin/users");
+    }
+  }, [userId]);
+
+  const fetchUser = async () => {
+    try {
+      setLoading(true);
+      console.log("📡 Fetching user with ID:", userId);
+
+      const response = await axios.get(`/api/admin/users/${userId}`);
+      console.log("✅ User data:", response.data);
+
+      if (response.data.success) {
+        const user = response.data.user;
+        setFormData({
+          name: user.name || "",
+          email: user.email || "",
+          role: user.role || "student",
+          department: user.department || "",
+          isActive: user.isActive !== false,
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error:", error);
+      toast.error(error.response?.data?.error || "Failed to load user");
+      setTimeout(() => router.push("/dashboard/admin/users"), 2000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.email) {
+      toast.error("Name and email are required");
+      return;
+    }
+
     setSaving(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("User updated successfully (Demo)");
+    try {
+      const response = await axios.put(`/api/admin/users/${userId}`, {
+        name: formData.name,
+        email: formData.email,
+        department: formData.department,
+        isActive: formData.isActive,
+      });
+
+      if (response.data.success) {
+        toast.success("User updated successfully");
+        router.push("/dashboard/admin/users");
+      }
+    } catch (error) {
+      console.error("❌ Update error:", error);
+      toast.error(error.response?.data?.error || "Failed to update user");
+    } finally {
       setSaving(false);
-      router.push("/dashboard/admin/users");
-    }, 1000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
+        <p className="ml-2 text-gray-600">Loading user data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -47,18 +110,6 @@ export default function EditUserPage() {
         <h1 className="text-xl md:text-2xl font-bold text-gray-800">
           Edit User
         </h1>
-      </div>
-
-      {/* User ID Display */}
-      <div className="max-w-2xl mx-auto mb-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
-          <p className="text-sm text-blue-700">
-            <span className="font-semibold">User ID:</span> {userId || "No ID"}
-          </p>
-          <p className="text-xs text-blue-600 mt-1">
-            ⚡ Frontend Demo Mode - No API calls
-          </p>
-        </div>
       </div>
 
       {/* Edit Form */}
@@ -149,6 +200,9 @@ export default function EditUserPage() {
                   {formData.role}
                 </span>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                To change role, use Change Role page
+              </p>
             </div>
 
             {/* Buttons */}
@@ -166,7 +220,7 @@ export default function EditUserPage() {
                 ) : (
                   <>
                     <Save className="w-5 h-5" />
-                    Save Changes (Demo)
+                    Save Changes
                   </>
                 )}
               </button>
