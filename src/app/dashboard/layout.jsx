@@ -137,6 +137,18 @@ export default function DashboardLayout({ children }) {
                 >
                   Notifications
                 </Link>
+                <Link
+                  href="/dashboard/student/online-courses"
+                  className={linkClass("/dashboard/student/online-courses")}
+                >
+                  Online Courses & Exams
+                </Link>
+                <Link
+                  href="/dashboard/student/payment-history"
+                  className={linkClass("/dashboard/student/payment-history")}
+                >
+                  Payment History
+                </Link>
               </>
             )}
           </nav>
