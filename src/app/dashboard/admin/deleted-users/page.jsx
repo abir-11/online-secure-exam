@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  UserPlus,
   Search,
-  Edit,
-  Trash2,
   RefreshCw,
   Shield,
   GraduationCap,
@@ -18,11 +15,15 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  RotateCcw,
+  Trash2,
+  Archive,
+  AlertCircle,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function UsersPage() {
+export default function DeletedUsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +38,7 @@ export default function UsersPage() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPrevPage, setHasPrevPage] = useState(false);
 
-  // Count states
+  // ✅ Count states - সব deleted users থেকে calculate করব
   const [counts, setCounts] = useState({
     total: 0,
     admin: 0,
@@ -45,37 +46,53 @@ export default function UsersPage() {
     student: 0,
   });
 
-  // Load counts when component mounts
+  // ✅ Load counts when component mounts
   useEffect(() => {
     fetchCounts();
   }, []);
 
   // Load users when page, filter, or pageSize changes
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, filter, pageSize]);
+    fetchDeletedUsers();
+  }, [currentPage, filter, pageSize, searchTerm]);
 
-  // Fetch counts separately
+  // ✅ আলাদা function for counts
   const fetchCounts = async () => {
     try {
-      const response = await axios.get("/api/admin/users/count");
-      if (response.data.success) {
-        setCounts(response.data.counts);
-      }
+      // সব deleted users নিয়ে আসি (limit 1000 যাতে সব আসে)
+      const response = await axios.get("/api/admin/deleted-users?limit=1000");
+      const allDeletedUsers = response.data.users;
+
+      setCounts({
+        total: allDeletedUsers.length,
+        admin: allDeletedUsers.filter((u) => u.role === "admin").length,
+        instructor: allDeletedUsers.filter((u) => u.role === "instructor")
+          .length,
+        student: allDeletedUsers.filter((u) => u.role === "student").length,
+      });
+
+      console.log("✅ Counts updated:", {
+        total: allDeletedUsers.length,
+        admin: allDeletedUsers.filter((u) => u.role === "admin").length,
+        instructor: allDeletedUsers.filter((u) => u.role === "instructor")
+          .length,
+        student: allDeletedUsers.filter((u) => u.role === "student").length,
+      });
     } catch (error) {
       console.error("Error fetching counts:", error);
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchDeletedUsers = async () => {
     try {
       setLoading(true);
 
-      const response = await axios.get("/api/admin/users", {
+      const response = await axios.get("/api/admin/deleted-users", {
         params: {
           page: currentPage,
           limit: pageSize,
           role: filter !== "all" ? filter : undefined,
+          search: searchTerm || undefined,
         },
       });
 
@@ -89,37 +106,43 @@ export default function UsersPage() {
         setHasPrevPage(response.data.pagination.hasPrevPage);
       }
     } catch (error) {
-      toast.error("Failed to load users");
+      toast.error("Failed to load deleted users");
     } finally {
       setLoading(false);
     }
   };
 
-  //handle delete
-  const handleDelete = async (userId, userName) => {
-    if (window.confirm(`Are you sure you want to delete ${userName}?`)) {
+  const handleRestore = async (userId, userName) => {
+    if (window.confirm(`Are you sure you want to restore ${userName}?`)) {
       try {
-        await axios.delete(`/api/admin/users/${userId}`);
-        toast.success("User deleted");
-
+        await axios.post(`/api/admin/deleted-users/${userId}`);
+        toast.success("User restored successfully");
+        // ✅ Restore করার পর counts এবং users দুটোই refresh
         await fetchCounts();
-        await fetchUsers();
+        await fetchDeletedUsers();
       } catch (error) {
-        toast.error(error.response?.data?.error || "Failed to delete user");
+        toast.error(error.response?.data?.error || "Failed to restore user");
       }
     }
   };
 
-  // Filter users locally (search)
-  const filteredUsers = users.filter((user) => {
-    if (searchTerm) {
-      return (
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const handlePermanentDelete = async (userId, userName) => {
+    if (
+      window.confirm(
+        `Are you sure you want to permanently delete ${userName}? This action cannot be undone!`,
+      )
+    ) {
+      try {
+        await axios.delete(`/api/admin/deleted-users/${userId}`);
+        toast.success("User permanently deleted");
+        // ✅ Permanent delete করার পর counts এবং users refresh
+        await fetchCounts();
+        await fetchDeletedUsers();
+      } catch (error) {
+        toast.error("Failed to permanently delete user");
+      }
     }
-    return true;
-  });
+  };
 
   // Role badge color
   const getRoleBadge = (role) => {
@@ -143,41 +166,49 @@ export default function UsersPage() {
     setCurrentPage(1);
   };
 
-  // Refresh both counts and users
+  // Handle search with debounce
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // ✅ Refresh both counts and users
   const handleRefresh = () => {
     fetchCounts();
-    fetchUsers();
+    fetchDeletedUsers();
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      {/* Header with gradient */}
-      <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-2xl p-6 mb-6 text-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-red-600 to-red-400 rounded-2xl p-6 mb-6 text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">
-              👥 User Management
+              🗑️ Deleted Users Archive
             </h1>
-            <p className="text-white/80 mt-1">Manage all users in the system</p>
+            <p className="text-white/80 mt-1">
+              Restore or permanently delete archived users
+            </p>
           </div>
           <Link
-            href="/dashboard/admin/users/add"
-            className="bg-white text-[#0D7C66] px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
+            href="/dashboard/admin/users"
+            className="bg-white text-red-600 px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
           >
-            <UserPlus className="w-5 h-5" />
-            Add New User
+            <Users className="w-5 h-5" />
+            Back to Active Users
           </Link>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - ✅ এখন counts state থেকে দেখাচ্ছে */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
         <StatCard
-          icon={Users}
+          icon={Archive}
           count={counts.total}
-          label="Total Users"
-          color="text-[#0D7C66]"
-          bg="bg-[#0D7C66]/10"
+          label="Total Deleted"
+          color="text-red-600"
+          bg="bg-red-100"
         />
         <StatCard
           icon={Shield}
@@ -210,14 +241,14 @@ export default function UsersPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder="Search deleted users by name or email..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
               className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2] focus:border-transparent"
             />
           </div>
 
-          {/* Filter Buttons */}
+          {/* Filter Buttons - ✅ counts state থেকে দেখাচ্ছে */}
           <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
             {[
               { key: "all", label: "All", count: counts.total },
@@ -234,10 +265,11 @@ export default function UsersPage() {
                 onClick={() => {
                   setFilter(f.key);
                   setCurrentPage(1);
+                  fetchCounts(); // ✅ counts refresh
                 }}
                 className={`px-4 py-2 rounded-xl whitespace-nowrap transition ${
                   filter === f.key
-                    ? "bg-[#0D7C66] text-white shadow-md"
+                    ? "bg-red-600 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -257,12 +289,24 @@ export default function UsersPage() {
         </div>
       </div>
 
+      {/* Warning Message */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+        <div className="flex gap-2">
+          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+          <p className="text-sm text-yellow-700">
+            <strong>Note:</strong> Deleted users are stored for 30 days. After
+            that, they will be automatically permanently deleted. You can
+            restore them anytime within this period.
+          </p>
+        </div>
+      </div>
+
       {/* Users Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
-            <p className="mt-2 text-gray-500">Loading users...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent"></div>
+            <p className="mt-2 text-gray-500">Loading deleted users...</p>
           </div>
         ) : (
           <>
@@ -281,7 +325,7 @@ export default function UsersPage() {
                       Role
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Joined
+                      Deleted At
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Status
@@ -292,11 +336,14 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredUsers.map((user) => (
+                  {users.map((user) => (
                     <tr key={user._id} className="hover:bg-gray-50 transition">
                       <td className="px-6 py-4">
                         <div className="font-medium text-gray-900">
                           {user.name}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          Original ID: {user.originalId?.slice(-6)}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{user.email}</td>
@@ -308,39 +355,29 @@ export default function UsersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gray-500 text-sm">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {new Date(user.deletedAt).toLocaleDateString()} at{" "}
+                        {new Date(user.deletedAt).toLocaleTimeString()}
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            user.isActive !== false
-                              ? "bg-green-100 text-green-800 border border-green-200"
-                              : "bg-red-100 text-red-800 border border-red-200"
-                          }`}
-                        >
-                          {user.isActive !== false ? "Active" : "Inactive"}
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                          Deleted
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
-                          <Link
-                            href={`/dashboard/admin/users/${user._id}/edit`}
-                            className="p-2 hover:bg-blue-100 rounded-lg transition group"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4 text-blue-600 group-hover:scale-110" />
-                          </Link>
-                          <Link
-                            href={`/dashboard/admin/users/change-role/${user._id}`}
-                            className="p-2 hover:bg-green-100 rounded-lg transition group"
-                            title="Change Role"
-                          >
-                            <Shield className="w-4 h-4 text-green-600 group-hover:scale-110" />
-                          </Link>
                           <button
-                            onClick={() => handleDelete(user._id, user.name)}
+                            onClick={() => handleRestore(user._id, user.name)}
+                            className="p-2 hover:bg-green-100 rounded-lg transition group"
+                            title="Restore User"
+                          >
+                            <RotateCcw className="w-4 h-4 text-green-600 group-hover:scale-110" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handlePermanentDelete(user._id, user.name)
+                            }
                             className="p-2 hover:bg-red-100 rounded-lg transition group"
-                            title="Delete"
+                            title="Permanently Delete"
                           >
                             <Trash2 className="w-4 h-4 text-red-600 group-hover:scale-110" />
                           </button>
@@ -354,7 +391,7 @@ export default function UsersPage() {
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
+              {users.map((user) => (
                 <div key={user._id} className="p-4 hover:bg-gray-50">
                   <div className="flex justify-between items-start mb-2">
                     <div>
@@ -376,37 +413,25 @@ export default function UsersPage() {
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {new Date(user.deletedAt).toLocaleDateString()}
                     </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs ${
-                        user.isActive !== false
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {user.isActive !== false ? "Active" : "Inactive"}
+                    <span className="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700">
+                      Deleted
                     </span>
                   </div>
 
                   <div className="flex gap-2 pt-2 border-t">
-                    <Link
-                      href={`/dashboard/admin/users/${user._id}/edit`}
-                      className="flex-1 text-center px-3 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm hover:bg-blue-100"
-                    >
-                      Edit
-                    </Link>
-                    <Link
-                      href={`/dashboard/admin/users/change-role/${user._id}`}
-                      className="flex-1 text-center px-3 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100"
-                    >
-                      Change Role
-                    </Link>
                     <button
-                      onClick={() => handleDelete(user._id, user.name)}
+                      onClick={() => handleRestore(user._id, user.name)}
+                      className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100"
+                    >
+                      Restore
+                    </button>
+                    <button
+                      onClick={() => handlePermanentDelete(user._id, user.name)}
                       className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100"
                     >
-                      Delete
+                      Delete Permanently
                     </button>
                   </div>
                 </div>
@@ -414,9 +439,11 @@ export default function UsersPage() {
             </div>
 
             {/* No Results */}
-            {filteredUsers.length === 0 && (
+            {users.length === 0 && (
               <div className="text-center py-12 text-gray-500">
-                No users found matching your criteria.
+                <Archive className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <p>No deleted users found.</p>
+                <p className="text-sm mt-1">Deleted users will appear here.</p>
               </div>
             )}
           </>
