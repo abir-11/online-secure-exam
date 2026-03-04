@@ -8,9 +8,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+      {/* <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
       <p>Welcome, {session?.user?.name}!</p>
-      <p>Role: {session?.user?.role}</p>
+      <p>Role: {session?.user?.role}</p> */}
 
       {/* Quick Actions - Now Clickable */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">

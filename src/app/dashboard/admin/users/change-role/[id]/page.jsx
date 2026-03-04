@@ -223,8 +223,8 @@ export default function ChangeRolePage() {
                   <div className="text-sm text-yellow-700">
                     <p className="font-medium mb-1">Warning: Role Change</p>
                     <p>
-                      Changing role will affect user's permissions and dashboard
-                      access.
+                      Changing role will affect user&apos;s permissions and
+                      dashboard access.
                     </p>
                   </div>
                 </div>
