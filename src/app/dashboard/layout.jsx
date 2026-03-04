@@ -59,17 +59,12 @@ export default function DashboardLayout({ children }) {
                 >
                   Manage Users
                 </Link>
-                <Link
-                  href="/dashboard/admin/users"
-                  className={linkClass("/dashboard/admin/users")}
-                >
-                  Active Users
-                </Link>
+
                 <Link
                   href="/dashboard/admin/deleted-users"
                   className={linkClass("/dashboard/admin/deleted-users")}
                 >
-                  Deleted Users
+                  Deleted Users Archive
                 </Link>
                 <Link
                   href="/dashboard/admin/reports"
