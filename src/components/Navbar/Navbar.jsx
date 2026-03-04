@@ -18,9 +18,10 @@ export default function Navbar() {
 
   if (status === "loading") return null;
 
-  const profileImage =
-    session?.user?.image ||
-    "https://ui-avatars.com/api/?name=User&background=random";
+  // const profileImage =
+  //   session?.user?.image ||
+  //   "https://ui-avatars.com/api/?name=User&background=random";
+  const profileImage = session?.user?.image || "/default-avatar.png";
   const profileName = session?.user?.name || "User";
   const profileEmail = session?.user?.email || "";
 
@@ -137,6 +138,21 @@ export default function Navbar() {
           </li>
         );
       })}
+      {/* ✅ DASHBOARD (ONLY WHEN LOGGED IN) */}
+      {session && (
+        <li>
+          <Link
+            href={dashboardHref}
+            className={`px-4 py-2 rounded-lg transition ${
+              pathname.startsWith("/dashboard")
+                ? "text-primary bg-primary/10 font-bold"
+                : "hover:text-primary hover:bg-primary/10"
+            }`}
+          >
+            Dashboard
+          </Link>
+        </li>
+      )}
     </>
   );
 
@@ -171,6 +187,17 @@ export default function Navbar() {
           </li>
         );
       })}
+      {/* ✅ DASHBOARD (ONLY WHEN LOGGED IN) */}
+      {session && (
+        <li>
+          <Link
+            href={dashboardHref}
+            className="btn w-full text-left bg-primary/10 text-primary font-bold"
+          >
+            Dashboard
+          </Link>
+        </li>
+      )}
     </>
   );
 
@@ -205,7 +232,12 @@ export default function Navbar() {
                   className="btn btn-ghost btn-circle avatar"
                 >
                   <div className="w-10 rounded-full border-2 border-primary/20 hover:border-primary transition-colors">
-                    <img src={profileImage} alt="Profile" />
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border-2 border-primary/20 hover:border-primary transition-colors"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
                 <ul
@@ -290,7 +322,8 @@ export default function Navbar() {
                   <img
                     src={profileImage}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full border border-primary"
+                    className="w-10 h-10 rounded-full border-2 border-primary/20 hover:border-primary transition-colors"
+                    referrerPolicy="no-referrer"
                   />
                   <div>
                     <p className="font-bold text-sm">{profileName}</p>
