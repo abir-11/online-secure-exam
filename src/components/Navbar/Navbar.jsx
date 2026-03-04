@@ -18,7 +18,9 @@ export default function Navbar() {
 
   if (status === "loading") return null;
 
-  const profileImage = session?.user?.image || "https://ui-avatars.com/api/?name=User&background=random";
+  const profileImage =
+    session?.user?.image ||
+    "https://ui-avatars.com/api/?name=User&background=random";
   const profileName = session?.user?.name || "User";
   const profileEmail = session?.user?.email || "";
 
@@ -61,21 +63,33 @@ export default function Navbar() {
         { name: "API Reference", href: "/resources/api" },
       ],
     },
+    {
+      name: "Community",
+      submenu: [
+        { name: "Forum", href: "/community/forum" },
+        { name: "Events", href: "/community/events" },
+        { name: "Blog", href: "/community/blog" },
+      ],
+    },
+    {
+      name: "Support",
+      submenu: [
+        { name: "Contact Us", href: "/support/contact" },
+        { name: "FAQ", href: "/support/faq" },
+        { name: "Report Issue", href: "/support/report" },
+      ],
+    },
   ];
 
-  const dashboardHref =
-    session?.user?.role === "admin"
-      ? "/dashboard/admin"
-      : session?.user?.role === "instructor"
-      ? "/dashboard/instructor"
-      : "/dashboard/student";
+  const dashboardHref = "/dashboard";
 
   /* ================= DESKTOP NAV ================= */
   const renderNavLinks = () => (
     <>
       {navLinks.map((link) => {
         const isActive =
-          pathname === link.href || (link.href && pathname.startsWith(link.href) && link.href !== "/");
+          pathname === link.href ||
+          (link.href && pathname.startsWith(link.href) && link.href !== "/");
 
         if (!link.submenu) {
           return (
@@ -93,7 +107,10 @@ export default function Navbar() {
         }
 
         return (
-          <li key={link.name} className="dropdown dropdown-hover dropdown-bottom">
+          <li
+            key={link.name}
+            className="dropdown dropdown-hover dropdown-bottom"
+          >
             <div
               tabIndex={0}
               role="button"
@@ -108,7 +125,10 @@ export default function Navbar() {
             >
               {link.submenu.map((sub) => (
                 <li key={sub.name}>
-                  <Link href={sub.href} className="hover:bg-primary/10 hover:text-primary rounded-md">
+                  <Link
+                    href={sub.href}
+                    className="hover:bg-primary/10 hover:text-primary rounded-md"
+                  >
                     {sub.name}
                   </Link>
                 </li>
@@ -162,7 +182,10 @@ export default function Navbar() {
         {/* Navbar */}
         <div className="navbar w-full sticky top-0 z-50 bg-base-100/90 backdrop-blur-md px-4 lg:px-8 border-b border-base-200 shadow-sm">
           <div className="navbar-start">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+            <Link
+              href="/"
+              className="flex items-center gap-2 font-bold text-xl tracking-tight"
+            >
               <IoShield size={26} className="text-primary" />
               SecureExam
             </Link>
@@ -176,7 +199,11 @@ export default function Navbar() {
             {session ? (
               /* User Profile Dropdown (Professional Way) */
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn btn-ghost btn-circle avatar"
+                >
                   <div className="w-10 rounded-full border-2 border-primary/20 hover:border-primary transition-colors">
                     <img src={profileImage} alt="Profile" />
                   </div>
@@ -187,16 +214,24 @@ export default function Navbar() {
                 >
                   <li className="px-4 py-2 pointer-events-none">
                     <p className="font-bold text-base block">{profileName}</p>
-                    <span className="text-xs text-base-content/60 truncate">{profileEmail}</span>
+                    <span className="text-xs text-base-content/60 truncate">
+                      {profileEmail}
+                    </span>
                   </li>
                   <div className="divider my-0"></div>
                   <li>
-                    <Link href={dashboardHref} className="hover:bg-primary/10 hover:text-primary">
+                    <Link
+                      href={dashboardHref}
+                      className="hover:bg-primary/10 hover:text-primary"
+                    >
                       Dashboard
                     </Link>
                   </li>
                   <li>
-                    <button onClick={handleLogout} className="text-error hover:bg-error/10">
+                    <button
+                      onClick={handleLogout}
+                      className="text-error hover:bg-error/10"
+                    >
                       Logout
                     </button>
                   </li>
@@ -207,7 +242,10 @@ export default function Navbar() {
                 <Link href="/auth/login" className="btn btn-ghost font-medium">
                   Login
                 </Link>
-                <Link href="/auth/registration" className="btn btn-primary text-white shadow-md">
+                <Link
+                  href="/auth/registration"
+                  className="btn btn-primary text-white shadow-md"
+                >
                   Get Started
                 </Link>
               </div>
@@ -215,7 +253,11 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <div className="flex-none lg:hidden">
-              <label htmlFor="mobile-drawer" aria-label="open sidebar" className="btn btn-square btn-ghost">
+              <label
+                htmlFor="mobile-drawer"
+                aria-label="open sidebar"
+                className="btn btn-square btn-ghost"
+              >
                 <HiBars3BottomLeft size={28} className="text-base-content" />
               </label>
             </div>
@@ -225,7 +267,11 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       <div className="drawer-side z-[60]">
-        <label htmlFor="mobile-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+        <label
+          htmlFor="mobile-drawer"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
         <div className="menu p-4 w-72 min-h-full bg-base-100 text-base-content flex flex-col gap-2">
           {/* Mobile Header */}
           <div className="flex items-center gap-2 font-bold text-xl mb-4 px-4 py-2 border-b border-base-200">
@@ -241,25 +287,43 @@ export default function Navbar() {
             {session ? (
               <>
                 <div className="flex items-center gap-3 mb-4">
-                  <img src={profileImage} alt="Profile" className="w-10 h-10 rounded-full border border-primary" />
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full border border-primary"
+                  />
                   <div>
                     <p className="font-bold text-sm">{profileName}</p>
-                    <p className="text-xs text-base-content/60">{profileEmail}</p>
+                    <p className="text-xs text-base-content/60">
+                      {profileEmail}
+                    </p>
                   </div>
                 </div>
-                <Link href={dashboardHref} className="btn btn-outline btn-primary w-full">
+                <Link
+                  href={dashboardHref}
+                  className="btn btn-outline btn-primary w-full"
+                >
                   Dashboard
                 </Link>
-                <button onClick={handleLogout} className="btn btn-error w-full text-white">
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-error w-full text-white"
+                >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/login" className="btn btn-outline w-full mb-2">
+                <Link
+                  href="/auth/login"
+                  className="btn btn-outline w-full mb-2"
+                >
                   Login
                 </Link>
-                <Link href="/auth/registration" className="btn btn-primary w-full">
+                <Link
+                  href="/auth/registration"
+                  className="btn btn-primary w-full"
+                >
                   Get Started
                 </Link>
               </>
