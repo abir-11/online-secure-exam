@@ -93,7 +93,7 @@ export default function QuestionBankPage() {
   };
 
   return (
-    <main className="p-6 mt-40 max-w-3xl mx-auto">
+    <main className="p-6 mt-10 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-[#0D7C66]">Question Bank</h1>
 
       {/* Exam Selector */}
