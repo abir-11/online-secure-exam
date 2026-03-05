@@ -438,6 +438,7 @@ export default function DashboardLayout({ children }) {
               <span>Dashboard</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
+
             <Link
               href="/dashboard/profile"
               className={mobileLinkClass("/dashboard/profile")}
@@ -485,6 +486,7 @@ export default function DashboardLayout({ children }) {
                   <span>Create Batch</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/view-batches"
                   className={mobileLinkClass(
@@ -494,6 +496,7 @@ export default function DashboardLayout({ children }) {
                   <span>View Batches</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/add-students"
                   className={mobileLinkClass(
@@ -503,6 +506,7 @@ export default function DashboardLayout({ children }) {
                   <span>Add Students</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/create-exam"
                   className={mobileLinkClass(
@@ -512,6 +516,7 @@ export default function DashboardLayout({ children }) {
                   <span>Create Exam</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/question-bank"
                   className={mobileLinkClass(
@@ -521,6 +526,7 @@ export default function DashboardLayout({ children }) {
                   <span>Question Bank</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/instructor/exam-list"
                   className={mobileLinkClass("/dashboard/instructor/exam-list")}
@@ -528,6 +534,17 @@ export default function DashboardLayout({ children }) {
                   <span>List of Exams</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
+                {/* ✅ NEW: THEORY SUBMISSIONS */}
+                <Link
+                  href="/dashboard/instructor/theory-submissions"
+                  className={linkClass(
+                    "/dashboard/instructor/theory-submissions",
+                  )}
+                >
+                  Theory Submissions
+                </Link>
+
                 <Link
                   href="/dashboard/instructor/analytics"
                   className={mobileLinkClass("/dashboard/instructor/analytics")}
@@ -548,6 +565,7 @@ export default function DashboardLayout({ children }) {
                   <span>My Exams</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/student/result"
                   className={mobileLinkClass("/dashboard/student/results")}
@@ -555,6 +573,7 @@ export default function DashboardLayout({ children }) {
                   <span>Results</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+
                 <Link
                   href="/dashboard/student/notifications"
                   className={mobileLinkClass(
