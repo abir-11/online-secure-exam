@@ -75,7 +75,7 @@ export default function ExamListPage() {
         return;
       }
 
-      setSelectedExam(data.exam || data); // backend returns {exam} or exam directly
+      setSelectedExam(data.exam || data);
     } catch (error) {
       console.error(error);
       alert("Error loading questions");
@@ -94,97 +94,127 @@ export default function ExamListPage() {
         <p className="text-gray-500">No exams found.</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {exams.map((exam) => (
-            <div
-              key={exam._id}
-              className="border rounded-lg p-4 bg-white shadow hover:shadow-md transition"
-            >
-              <h2 className="text-xl font-semibold mb-2">{exam.title}</h2>
+          {exams.map((exam) => {
+            const calculatedTotalMarks =
+              exam.totalMarks ??
+              (exam.questions
+                ? exam.questions.reduce((sum, q) => sum + (q.marks || 1), 0)
+                : "-");
 
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Type:</span>{" "}
-                {exam.type.toUpperCase()}
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Duration:</span> {exam.duration}{" "}
-                minutes
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Total Questions:</span>{" "}
-                {exam.totalQuestions || "-"}
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Batches:</span>{" "}
-                {exam.batchNames && exam.batchNames.length > 0
-                  ? exam.batchNames.join(", ")
-                  : "-"}
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Start:</span>{" "}
-                {new Date(exam.startTime).toLocaleString()}
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">End:</span>{" "}
-                {new Date(exam.endTime).toLocaleString()}
-              </div>
-              <div className="text-gray-700 mb-1">
-                <span className="font-medium">Created At:</span>{" "}
-                {new Date(exam.createdAt).toLocaleString()}
-              </div>
+            return (
+              <div
+                key={exam._id}
+                className="border rounded-lg p-4 bg-white shadow hover:shadow-md transition"
+              >
+                <h2 className="text-xl font-semibold mb-2">{exam.title}</h2>
 
-              <div className="flex items-center justify-between mt-3">
-                <span
-                  className={`px-2 py-1 rounded text-sm font-semibold ${
-                    exam.published
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {exam.published ? "Published" : "Draft"}
-                </span>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Type:</span>{" "}
+                  {exam.type.toUpperCase()}
+                </div>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Duration:</span> {exam.duration}{" "}
+                  minutes
+                </div>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Total Questions:</span>{" "}
+                  {exam.totalQuestions || "-"}
+                </div>
 
-                <div className="flex gap-2">
-                  {!exam.published && (
-                    <button
-                      onClick={() => handlePublish(exam._id)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
-                    >
-                      Publish
-                    </button>
-                  )}
+                {/* ✅ Added Total Marks Here */}
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Total Marks:</span>{" "}
+                  {calculatedTotalMarks}
+                </div>
 
-                  <button
-                    onClick={() => handleViewQuestions(exam._id)}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded"
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Batches:</span>{" "}
+                  {exam.batchNames && exam.batchNames.length > 0
+                    ? exam.batchNames.join(", ")
+                    : "-"}
+                </div>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Start:</span>{" "}
+                  {new Date(exam.startTime).toLocaleString()}
+                </div>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">End:</span>{" "}
+                  {new Date(exam.endTime).toLocaleString()}
+                </div>
+                <div className="text-gray-700 mb-1">
+                  <span className="font-medium">Created At:</span>{" "}
+                  {new Date(exam.createdAt).toLocaleString()}
+                </div>
+
+                <div className="flex items-center justify-between mt-3">
+                  <span
+                    className={`px-2 py-1 rounded text-sm font-semibold ${
+                      exam.published
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
                   >
-                    {questionLoading && selectedExam?._id === exam._id
-                      ? "Loading..."
-                      : "View Questions"}
-                  </button>
-                </div>
-              </div>
+                    {exam.published ? "Published" : "Draft"}
+                  </span>
 
-              {selectedExam && selectedExam._id === exam._id && (
-                <div className="mt-4 border-t pt-2">
-                  <h3 className="font-semibold mb-2">Questions:</h3>
-                  {selectedExam.questions.length === 0 ? (
-                    <p className="text-gray-500">No questions added yet.</p>
-                  ) : (
-                    <ul className="list-disc pl-5 space-y-1">
-                      {selectedExam.questions.map((q, i) => (
-                        <li key={q._id}>
-                          {q.questionText}{" "}
-                          <span className="text-sm text-green-700">
-                            (Answer: {q.correctOption})
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <div className="flex gap-2">
+                    {!exam.published && (
+                      <button
+                        onClick={() => handlePublish(exam._id)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                      >
+                        Publish
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => handleViewQuestions(exam._id)}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded"
+                    >
+                      {questionLoading && selectedExam?._id === exam._id
+                        ? "Loading..."
+                        : "View Questions"}
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {selectedExam && selectedExam._id === exam._id && (
+                  <div className="mt-4 border-t pt-2">
+                    <h3 className="font-semibold mb-2">Questions:</h3>
+
+                    {selectedExam.questions.length === 0 ? (
+                      <p className="text-gray-500">No questions added yet.</p>
+                    ) : (
+                      <>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {selectedExam.questions.map((q) => (
+                            <li key={q._id}>
+                              {q.questionText}{" "}
+                              <span className="text-sm text-green-700">
+                                (Answer: {q.correctOption})
+                              </span>{" "}
+                              <span className="text-sm text-blue-700">
+                                — Marks: {q.marks || 1}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* ✅ Total Marks for selected exam */}
+                        <div className="mt-3 font-semibold text-gray-800">
+                          Total Marks:{" "}
+                          {selectedExam.questions.reduce(
+                            (sum, q) => sum + (q.marks || 1),
+                            0,
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </main>

@@ -1,4 +1,3 @@
-//dashboard/theory-submissions/[examId]/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,22 +7,110 @@ export default function InstructorTheorySubmissionsPage() {
   const { examId } = useParams();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!examId) return;
+
     async function fetchSubmissions() {
-      const res = await fetch(`/api/instructor/theory-submissions/${examId}`);
-      const data = await res.json();
-      setSubmissions(data.submissions || []);
-      setLoading(false);
+      try {
+        const res = await fetch(`/api/instructor/theory-submissions/${examId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.message || "Failed to fetch");
+          setSubmissions([]);
+        } else {
+          setSubmissions(data.submissions || []);
+        }
+      } catch (err) {
+        setError("Network error");
+        setSubmissions([]);
+      } finally {
+        setLoading(false);
+      }
     }
+
     fetchSubmissions();
   }, [examId]);
 
-  async function gradeSubmission(submissionId, score) {
-    const res = await fetch("/api/instructor/theory-submissions/grade", {
+  if (loading) return <p className="p-6">Loading...</p>;
+  if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
+
+  return (
+    <main className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
+
+      {submissions.length === 0 && <p>No submissions found.</p>}
+
+      {submissions.map((s) => (
+        <div key={s._id} className="border p-4 mb-4 rounded">
+          <p className="font-semibold">Student: {s.studentEmail}</p>
+
+          <div className="mt-2">
+            {Object.entries(s.answersWithMarks || {}).map(
+              ([qid, { questionText, answer, maxMarks, awarded }], idx) => (
+                <div key={qid} className="mb-4 border-b pb-3">
+                  <p className="font-medium">
+                    Q{idx + 1}: {questionText} ({maxMarks} marks)
+                  </p>
+
+                  <p className="ml-2 text-gray-700 mt-1">
+                    <strong>Student Answer:</strong> {answer}
+                  </p>
+
+                  {s.scores?.[qid] != null ? (
+                    <p className="text-green-600 mt-2">
+                      Score: {s.scores[qid]} / {maxMarks}
+                    </p>
+                  ) : (
+                    <div className="mt-2 flex gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={maxMarks}
+                        id={`score-${s._id}-${qid}`}
+                        className="border px-2 py-1 w-24"
+                      />
+                      <button
+                        className="bg-blue-600 text-white px-4 py-1 rounded"
+                        onClick={() =>
+                          gradeSubmission(
+                            s._id,
+                            qid,
+                            Number(
+                              document.getElementById(`score-${s._id}-${qid}`)
+                                .value,
+                            ),
+                            maxMarks,
+                          )
+                        }
+                      >
+                        Grade
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ),
+            )}
+          </div>
+
+          <p className="mt-3 font-semibold text-lg">
+            Total Score: {s.score} / {s.totalMarks}
+          </p>
+        </div>
+      ))}
+    </main>
+  );
+
+  async function gradeSubmission(submissionId, qid, score, maxMarks) {
+    if (score < 0) return alert("Cannot be negative");
+    if (score > maxMarks) return alert(`Cannot exceed ${maxMarks}`);
+
+    const res = await fetch(`/api/instructor/theory-submissions/${examId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ submissionId, score }),
+      body: JSON.stringify({ submissionId, qid, score }),
     });
 
     if (res.ok) {
@@ -34,54 +121,4 @@ export default function InstructorTheorySubmissionsPage() {
       alert(data.message);
     }
   }
-
-  if (loading) return <p>Loading...</p>;
-
-  return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
-
-      {submissions.map((s) => (
-        <div key={s._id} className="border p-4 mb-4 rounded">
-          <p className="font-semibold">Student: {s.studentEmail}</p>
-
-          <div className="mt-2">
-            {Object.entries(s.answers).map(([qid, ans], idx) => (
-              <p key={qid}>
-                <strong>Q{idx + 1}:</strong> {ans}
-              </p>
-            ))}
-          </div>
-
-          {s.status === "graded" ? (
-            <p className="mt-2 text-green-600">
-              Graded: {s.score}/{s.totalMarks}
-            </p>
-          ) : (
-            <div className="mt-3 flex gap-2">
-              <input
-                type="number"
-                placeholder="Score"
-                min={0}
-                max={s.totalMarks}
-                id={`score-${s._id}`}
-                className="border px-2 py-1"
-              />
-              <button
-                className="bg-blue-600 text-white px-4 py-1 rounded"
-                onClick={() =>
-                  gradeSubmission(
-                    s._id,
-                    Number(document.getElementById(`score-${s._id}`).value),
-                  )
-                }
-              >
-                Grade
-              </button>
-            </div>
-          )}
-        </div>
-      ))}
-    </main>
-  );
 }

@@ -1,3 +1,4 @@
+//src/app/api/student/exam/route.js
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCollection } from "@/lib/dbConnect";

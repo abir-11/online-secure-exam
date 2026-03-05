@@ -1,3 +1,4 @@
+//dashboard/student/exam/[examId]/page.jsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
