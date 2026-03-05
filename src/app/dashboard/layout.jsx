@@ -271,7 +271,7 @@ export default function DashboardLayout({ children }) {
                     href="/dashboard/admin/users"
                     className={linkClass("/dashboard/admin/users")}
                   >
-                    Active Users
+                    User Management
                   </Link>
                   <Link
                     href="/dashboard/admin/deleted-users"
@@ -453,7 +453,7 @@ export default function DashboardLayout({ children }) {
                   href="/dashboard/admin/users"
                   className={mobileLinkClass("/dashboard/admin/users")}
                 >
-                  <span>Active Users</span>
+                  <span>User Management</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
                 <Link
