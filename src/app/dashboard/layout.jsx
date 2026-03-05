@@ -583,6 +583,18 @@ export default function DashboardLayout({ children }) {
                   <span>Notifications</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
+                <Link
+                  href="/dashboard/student/online-courses"
+                  className={linkClass("/dashboard/student/online-courses")}
+                >
+                  Online Courses & Exams
+                </Link>
+                <Link
+                  href="/dashboard/student/payment-history"
+                  className={linkClass("/dashboard/student/payment-history")}
+                >
+                  Payment History
+                </Link>
               </>
             )}
           </div>
