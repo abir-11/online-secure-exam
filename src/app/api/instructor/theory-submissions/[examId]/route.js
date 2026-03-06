@@ -7,8 +7,9 @@ import { ObjectId } from "mongodb";
 /* ====================== GET SUBMISSIONS ====================== */
 export async function GET(req, context) {
   try {
-    // ✔ unwrap params properly in Next 16+
-    const { examId } = await context.params;
+    // Unwrap params for Next.js 16+
+    const params = await context.params;
+    const { examId } = params;
 
     if (!examId || typeof examId !== "string") {
       return NextResponse.json(
@@ -18,23 +19,22 @@ export async function GET(req, context) {
     }
 
     const session = await getServerSession(authOptions);
-
     if (!session || session.user.role !== "instructor") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const submissionsCol = await getCollection("submissions");
-    const questionsCol = await getCollection("questions");
+    const theoryQuestionsCol = await getCollection("theoryQuestions");
 
-    // 1. Fetch all submissions for this exam
-    const submissions = await submissionsCol.find({ examId }).toArray();
-
-    // 2. Fetch all theory questions for this exam
-    const questions = await questionsCol
-      .find({ examId, type: "theory" })
+    // Fetch submissions and theory questions
+    const submissions = await submissionsCol
+      .find({ examId: String(examId) })
+      .toArray();
+    const questions = await theoryQuestionsCol
+      .find({ examId: String(examId) })
       .toArray();
 
-    // Build questions map for easy lookup
+    // Map questions by string _id
     const qMap = {};
     let totalExamMarks = 0;
     questions.forEach((q) => {
@@ -42,7 +42,6 @@ export async function GET(req, context) {
       totalExamMarks += q.marks || 0;
     });
 
-    // 3. Merge student answers + question info
     const submissionsWithDetails = submissions.map((sub) => {
       const answersWithMarks = {};
 
@@ -56,7 +55,6 @@ export async function GET(req, context) {
         };
       }
 
-      // total marks for this specific submission
       const awardedTotal = Object.values(sub.scores || {}).reduce(
         (sum, val) => sum + (val || 0),
         0,
@@ -80,19 +78,19 @@ export async function GET(req, context) {
 /* ====================== POST: GRADE QUESTION ====================== */
 export async function POST(req, context) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user.role !== "instructor") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    const { examId } = await context.params;
+    const params = await context.params;
+    const { examId } = params;
 
     if (!examId) {
       return NextResponse.json(
         { message: "Exam ID required" },
         { status: 400 },
       );
+    }
+
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "instructor") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -106,13 +104,12 @@ export async function POST(req, context) {
     }
 
     const submissionsCol = await getCollection("submissions");
-    const questionsCol = await getCollection("questions");
+    const theoryQuestionsCol = await getCollection("theoryQuestions");
 
     // validate question
-    const question = await questionsCol.findOne({
+    const question = await theoryQuestionsCol.findOne({
       _id: new ObjectId(qid),
     });
-
     if (!question) {
       return NextResponse.json(
         { message: "Question not found" },
@@ -122,9 +119,7 @@ export async function POST(req, context) {
 
     if (score > question.marks) {
       return NextResponse.json(
-        {
-          message: `Cannot assign more than ${question.marks} marks`,
-        },
+        { message: `Cannot assign more than ${question.marks} marks` },
         { status: 400 },
       );
     }
@@ -133,6 +128,26 @@ export async function POST(req, context) {
     await submissionsCol.updateOne(
       { _id: new ObjectId(submissionId) },
       { $set: { [`scores.${qid}`]: score } },
+    );
+
+    // ✅ Recalculate total score and update submission status
+    const submission = await submissionsCol.findOne({
+      _id: new ObjectId(submissionId),
+    });
+    const totalScore = Object.values(submission.scores || {}).reduce(
+      (sum, val) => sum + (val || 0),
+      0,
+    );
+
+    await submissionsCol.updateOne(
+      { _id: new ObjectId(submissionId) },
+      {
+        $set: {
+          score: totalScore,
+          status: "graded",
+          gradedAt: new Date(),
+        },
+      },
     );
 
     return NextResponse.json({ message: "Graded successfully" });

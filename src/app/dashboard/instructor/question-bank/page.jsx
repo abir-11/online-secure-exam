@@ -1,3 +1,4 @@
+//dashboard/instructor/question-bank/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+//dashboard/instructor/theory-submissions/[examId]/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
