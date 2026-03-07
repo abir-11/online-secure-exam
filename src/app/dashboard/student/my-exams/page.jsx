@@ -1,23 +1,197 @@
+// // "use client";
+
+// // import { useEffect, useState } from "react";
+
+// // export default function MyExamsPage() {
+// //   const [exams, setExams] = useState([]);
+// //   const [submittedExams, setSubmittedExams] = useState(new Set()); // 🆕
+
+// //   useEffect(() => {
+// //     async function fetchExams() {
+// //       try {
+// //         const res = await fetch("/api/student/exams");
+// //         const data = await res.json();
+// //         setExams(data.exams || []);
+
+// //         // Fetch submitted exams
+// //         const submittedRes = await fetch("/api/student/exams/submitted");
+// //         if (submittedRes.ok) {
+// //           const submittedData = await submittedRes.json();
+// //           // store submitted examIds in a Set for quick lookup
+// //           setSubmittedExams(new Set(submittedData.examIds || []));
+// //         }
+// //       } catch (err) {
+// //         console.error("Failed to load exams or submissions:", err);
+// //       }
+// //     }
+
+// //     fetchExams();
+// //   }, []);
+
+// //   return (
+// //     <main className="p-6 mt-20">
+// //       <h1 className="text-2xl font-bold mb-4">My Exams</h1>
+
+// //       {exams.length === 0 ? (
+// //         <p>No exams assigned yet.</p>
+// //       ) : (
+// //         <ul className="space-y-4">
+// //           {exams.map((exam) => {
+// //             const now = new Date();
+// //             const start = new Date(exam.startTime);
+// //             const end = new Date(exam.endTime);
+
+// //             const canAttend = now >= start && now <= end;
+// //             const hasSubmitted = submittedExams.has(exam._id); // 🆕
+
+// //             return (
+// //               <li
+// //                 key={exam._id}
+// //                 className="border p-4 rounded flex justify-between items-center"
+// //               >
+// //                 <div>
+// //                   <h2 className="font-semibold">{exam.title}</h2>
+// //                   <p>Starts: {start.toLocaleString()}</p>
+// //                   <p>Ends: {end.toLocaleString()}</p>
+// //                 </div>
+
+// //                 {hasSubmitted ? (
+// //                   <span className="bg-gray-400 text-white px-4 py-2 rounded">
+// //                     Attended
+// //                   </span>
+// //                 ) : canAttend ? (
+// //                   <a
+// //                     href={`/dashboard/student/exam/${exam._id}`}
+// //                     className="bg-green-600 text-white px-4 py-2 rounded"
+// //                   >
+// //                     Attend
+// //                   </a>
+// //                 ) : (
+// //                   <span className="text-gray-500">Not available</span>
+// //                 )}
+// //               </li>
+// //             );
+// //           })}
+// //         </ul>
+// //       )}
+// //     </main>
+// //   );
+// // }
+
+// //sort from latest to oldest
+// "use client";
+
+// import { useEffect, useState } from "react";
+
+// export default function MyExamsPage() {
+//   const [exams, setExams] = useState([]);
+//   const [submittedExams, setSubmittedExams] = useState(new Set());
+
+//   useEffect(() => {
+//     async function fetchExams() {
+//       try {
+//         const res = await fetch("/api/student/exams");
+//         const data = await res.json();
+
+//         // ✅ Sort exams so latest exam appears first
+//         const sortedExams = (data.exams || []).sort(
+//           (a, b) => new Date(b.startTime) - new Date(a.startTime),
+//         );
+
+//         setExams(sortedExams);
+
+//         // Fetch submitted exams
+//         const submittedRes = await fetch("/api/student/exams/submitted");
+
+//         if (submittedRes.ok) {
+//           const submittedData = await submittedRes.json();
+
+//           // store submitted examIds in a Set for quick lookup
+//           setSubmittedExams(new Set(submittedData.examIds || []));
+//         }
+//       } catch (err) {
+//         console.error("Failed to load exams or submissions:", err);
+//       }
+//     }
+
+//     fetchExams();
+//   }, []);
+
+//   return (
+//     <main className="p-6 mt-20">
+//       <h1 className="text-2xl font-bold mb-4">My Exams</h1>
+
+//       {exams.length === 0 ? (
+//         <p>No exams assigned yet.</p>
+//       ) : (
+//         <ul className="space-y-4">
+//           {exams.map((exam) => {
+//             const now = new Date();
+//             const start = new Date(exam.startTime);
+//             const end = new Date(exam.endTime);
+
+//             const canAttend = now >= start && now <= end;
+//             const hasSubmitted = submittedExams.has(exam._id);
+
+//             return (
+//               <li
+//                 key={exam._id}
+//                 className="border p-4 rounded flex justify-between items-center"
+//               >
+//                 <div>
+//                   <h2 className="font-semibold">{exam.title}</h2>
+//                   <p>Starts: {start.toLocaleString()}</p>
+//                   <p>Ends: {end.toLocaleString()}</p>
+//                 </div>
+
+//                 {hasSubmitted ? (
+//                   <span className="bg-gray-400 text-white px-4 py-2 rounded">
+//                     Attended
+//                   </span>
+//                 ) : canAttend ? (
+//                   <a
+//                     href={`/dashboard/student/exam/${exam._id}`}
+//                     className="bg-green-600 text-white px-4 py-2 rounded"
+//                   >
+//                     Attend
+//                   </a>
+//                 ) : (
+//                   <span className="text-gray-500">Not available</span>
+//                 )}
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       )}
+//     </main>
+//   );
+// }
+
+//....
 "use client";
 
 import { useEffect, useState } from "react";
 
 export default function MyExamsPage() {
   const [exams, setExams] = useState([]);
-  const [submittedExams, setSubmittedExams] = useState(new Set()); // 🆕
+  const [submittedExams, setSubmittedExams] = useState(new Set());
 
   useEffect(() => {
     async function fetchExams() {
       try {
         const res = await fetch("/api/student/exams");
         const data = await res.json();
-        setExams(data.exams || []);
+
+        // ✅ Sort exams so latest exam appears first
+        const sortedExams = (data.exams || []).sort(
+          (a, b) => new Date(b.startTime) - new Date(a.startTime),
+        );
+        setExams(sortedExams);
 
         // Fetch submitted exams
         const submittedRes = await fetch("/api/student/exams/submitted");
         if (submittedRes.ok) {
           const submittedData = await submittedRes.json();
-          // store submitted examIds in a Set for quick lookup
           setSubmittedExams(new Set(submittedData.examIds || []));
         }
       } catch (err) {
@@ -29,51 +203,72 @@ export default function MyExamsPage() {
   }, []);
 
   return (
-    <main className="p-6 mt-20">
-      <h1 className="text-2xl font-bold mb-4">My Exams</h1>
+    <main className="min-h-screen p-6 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-teal-900 mb-6">My Exams</h1>
 
-      {exams.length === 0 ? (
-        <p>No exams assigned yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {exams.map((exam) => {
-            const now = new Date();
-            const start = new Date(exam.startTime);
-            const end = new Date(exam.endTime);
+        {exams.length === 0 ? (
+          <div className="p-6 bg-teal-100 border-l-4 border-teal-400 text-teal-800 rounded shadow-md">
+            No exams assigned yet.
+          </div>
+        ) : (
+          <ul className="space-y-4">
+            {exams.map((exam) => {
+              const now = new Date();
+              const start = new Date(exam.startTime);
+              const end = new Date(exam.endTime);
 
-            const canAttend = now >= start && now <= end;
-            const hasSubmitted = submittedExams.has(exam._id); // 🆕
+              const canAttend = now >= start && now <= end;
+              const hasSubmitted = submittedExams.has(exam._id);
 
-            return (
-              <li
-                key={exam._id}
-                className="border p-4 rounded flex justify-between items-center"
-              >
-                <div>
-                  <h2 className="font-semibold">{exam.title}</h2>
-                  <p>Starts: {start.toLocaleString()}</p>
-                  <p>Ends: {end.toLocaleString()}</p>
-                </div>
+              return (
+                <li
+                  key={exam._id}
+                  className="bg-white shadow-md hover:shadow-lg rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center transition-shadow duration-200 border-l-4"
+                  style={{
+                    borderColor: hasSubmitted
+                      ? "#9CA3AF" // gray
+                      : canAttend
+                        ? "#14B8A6" // teal
+                        : "#FBBF24", // yellow for not available yet
+                  }}
+                >
+                  <div className="flex flex-col gap-1">
+                    <h2 className="font-semibold text-teal-900 text-lg">
+                      {exam.title}
+                    </h2>
+                    <p className="text-gray-700 text-sm">
+                      Starts: {start.toLocaleString()}
+                    </p>
+                    <p className="text-gray-700 text-sm">
+                      Ends: {end.toLocaleString()}
+                    </p>
+                  </div>
 
-                {hasSubmitted ? (
-                  <span className="bg-gray-400 text-white px-4 py-2 rounded">
-                    Attended
-                  </span>
-                ) : canAttend ? (
-                  <a
-                    href={`/dashboard/student/exam/${exam._id}`}
-                    className="bg-green-600 text-white px-4 py-2 rounded"
-                  >
-                    Attend
-                  </a>
-                ) : (
-                  <span className="text-gray-500">Not available</span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  <div className="mt-3 sm:mt-0">
+                    {hasSubmitted ? (
+                      <span className="bg-gray-400 text-white px-4 py-2 rounded-xl font-semibold">
+                        Attended
+                      </span>
+                    ) : canAttend ? (
+                      <a
+                        href={`/dashboard/student/exam/${exam._id}`}
+                        className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors duration-200"
+                      >
+                        Attend
+                      </a>
+                    ) : (
+                      <span className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-xl font-semibold">
+                        Not available
+                      </span>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </main>
   );
 }
