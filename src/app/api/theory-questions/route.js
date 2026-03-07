@@ -23,9 +23,9 @@ export async function POST(req) {
 
     const theoryCol = await getCollection("theoryQuestions");
 
-    // ✅ Store examId as string instead of ObjectId
+    // Store examId as string to match submissions
     await theoryCol.insertOne({
-      examId: examId, // keep it as string
+      examId: String(examId),
       questionText,
       marks: Number(marks),
       createdAt: new Date(),
