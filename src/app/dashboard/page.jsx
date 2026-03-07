@@ -105,6 +105,7 @@ import {
   FaChartLine,
   FaBookOpen,
 } from "react-icons/fa";
+import AdminDashboard from "./admin/page";
 
 export default function DashboardPage() {
   const { data: session } = useSession();
