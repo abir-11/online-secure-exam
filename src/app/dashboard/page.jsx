@@ -137,6 +137,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* admin panel */}
+        {session?.user?.role === "admin" && <AdminDashboard></AdminDashboard>}
         {/* Instructor Panel */}
         {session?.user?.role === "instructor" && (
           <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
