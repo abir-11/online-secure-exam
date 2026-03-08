@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+// import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function POST(req) {
   try {
@@ -54,7 +54,7 @@ export async function POST(req) {
     // Send notifications
     const notifications = foundEmails.map((email) => ({
       to: email,
-      message: `You have been added to batch: ${batch.name}`,
+      message: `bat have been added to batch: ${batch.name}`,
       type: "batch",
       read: false,
       createdAt: new Date(),

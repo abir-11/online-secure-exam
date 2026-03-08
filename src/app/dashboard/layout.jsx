@@ -6,7 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X, LogOut, ChevronRight } from "lucide-react";
 
-
 export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -82,20 +81,23 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      
       {/* Mobile Topbar (Visible only on small screens) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0D7C66] text-white flex items-center justify-between px-4 z-40">
         <h2 className="text-xl font-bold">SecureExam</h2>
-        <button ref={buttonRef} onClick={toggleMenu} className="p-2 focus:outline-none">
+        <button
+          ref={buttonRef}
+          onClick={toggleMenu}
+          className="p-2 focus:outline-none"
+        >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Sidebar Overlay for Mobile */}
       {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden" 
-          onClick={() => setIsMobileMenuOpen(false)} 
+        <div
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
@@ -107,14 +109,19 @@ export default function DashboardLayout({ children }) {
         }`}
       >
         <div className="mt-16 lg:mt-6">
-          <h2 className="text-2xl font-bold mb-6 hidden lg:block">SecureExam</h2>
+          <h2 className="text-2xl font-bold mb-6 hidden lg:block">
+            SecureExam
+          </h2>
 
           <nav className="flex flex-col gap-2 overflow-y-auto max-h-[70vh] custom-scrollbar">
             <Link href="/dashboard" className={linkClass("/dashboard")}>
               Dashboard
             </Link>
 
-            <Link href="/dashboard/profile" className={mobileLinkClass("/dashboard/profile")}>
+            <Link
+              href="/dashboard/profile"
+              className={mobileLinkClass("/dashboard/profile")}
+            >
               <span>Profile</span>
               <ChevronRight className="w-4 h-4 lg:hidden" />
             </Link>
@@ -122,15 +129,24 @@ export default function DashboardLayout({ children }) {
             {/* ADMIN Links */}
             {session.user.role === "admin" && (
               <>
-                <Link href="/dashboard/admin/users" className={mobileLinkClass("/dashboard/admin/users")}>
+                <Link
+                  href="/dashboard/admin/users"
+                  className={mobileLinkClass("/dashboard/admin/users")}
+                >
                   <span>Active Users</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/admin/deleted-users" className={mobileLinkClass("/dashboard/admin/deleted-users")}>
+                <Link
+                  href="/dashboard/admin/deleted-users"
+                  className={mobileLinkClass("/dashboard/admin/deleted-users")}
+                >
                   <span>Deleted Users</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/admin/reports" className={mobileLinkClass("/dashboard/admin/reports")}>
+                <Link
+                  href="/dashboard/admin/reports"
+                  className={mobileLinkClass("/dashboard/admin/reports")}
+                >
                   <span>Reports</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
@@ -140,35 +156,71 @@ export default function DashboardLayout({ children }) {
             {/* INSTRUCTOR Links */}
             {session.user.role === "instructor" && (
               <>
-                <Link href="/dashboard/instructor/create-batch" className={mobileLinkClass("/dashboard/instructor/create-batch")}>
+                <Link
+                  href="/dashboard/instructor/create-batch"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/create-batch",
+                  )}
+                >
                   <span>Create Batch</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/view-batches" className={mobileLinkClass("/dashboard/instructor/view-batches")}>
+                <Link
+                  href="/dashboard/instructor/view-batches"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/view-batches",
+                  )}
+                >
                   <span>View Batches</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/add-students" className={mobileLinkClass("/dashboard/instructor/add-students")}>
+                <Link
+                  href="/dashboard/instructor/add-students"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/add-students",
+                  )}
+                >
                   <span>Add Students</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/create-exam" className={mobileLinkClass("/dashboard/instructor/create-exam")}>
+                <Link
+                  href="/dashboard/instructor/create-exam"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/create-exam",
+                  )}
+                >
                   <span>Create Exam</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/question-bank" className={mobileLinkClass("/dashboard/instructor/question-bank")}>
-                  <span>Question Bank</span>
+                <Link
+                  href="/dashboard/instructor/question-bank"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/question-bank",
+                  )}
+                >
+                  <span>Create Question </span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/exam-list" className={mobileLinkClass("/dashboard/instructor/exam-list")}>
+                <Link
+                  href="/dashboard/instructor/exam-list"
+                  className={mobileLinkClass("/dashboard/instructor/exam-list")}
+                >
                   <span>List of Exams</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/theory-submissions" className={mobileLinkClass("/dashboard/instructor/theory-submissions")}>
+                <Link
+                  href="/dashboard/instructor/theory-submissions"
+                  className={mobileLinkClass(
+                    "/dashboard/instructor/theory-submissions",
+                  )}
+                >
                   <span>Theory Submissions</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/instructor/analytics" className={mobileLinkClass("/dashboard/instructor/analytics")}>
+                <Link
+                  href="/dashboard/instructor/analytics"
+                  className={mobileLinkClass("/dashboard/instructor/analytics")}
+                >
                   <span>Analytics</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
@@ -178,23 +230,44 @@ export default function DashboardLayout({ children }) {
             {/* STUDENT Links */}
             {session.user.role === "student" && (
               <>
-                <Link href="/dashboard/student/my-exams" className={mobileLinkClass("/dashboard/student/my-exams")}>
+                <Link
+                  href="/dashboard/student/my-exams"
+                  className={mobileLinkClass("/dashboard/student/my-exams")}
+                >
                   <span>My Exams</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/student/result" className={mobileLinkClass("/dashboard/student/result")}>
+                <Link
+                  href="/dashboard/student/result"
+                  className={mobileLinkClass("/dashboard/student/result")}
+                >
                   <span>Results</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/student/notifications" className={mobileLinkClass("/dashboard/student/notifications")}>
+                <Link
+                  href="/dashboard/student/notifications"
+                  className={mobileLinkClass(
+                    "/dashboard/student/notifications",
+                  )}
+                >
                   <span>Notifications</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/student/online-courses" className={mobileLinkClass("/dashboard/student/online-courses")}>
+                <Link
+                  href="/dashboard/student/online-courses"
+                  className={mobileLinkClass(
+                    "/dashboard/student/online-courses",
+                  )}
+                >
                   <span>Online Courses & Exams</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
-                <Link href="/dashboard/student/payment-history" className={mobileLinkClass("/dashboard/student/payment-history")}>
+                <Link
+                  href="/dashboard/student/payment-history"
+                  className={mobileLinkClass(
+                    "/dashboard/student/payment-history",
+                  )}
+                >
                   <span>Payment History</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>

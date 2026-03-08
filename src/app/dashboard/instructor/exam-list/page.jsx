@@ -207,6 +207,17 @@ export default function ExamListPage() {
                         ? "Loading..."
                         : "View"}
                     </button>
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `/dashboard/instructor/exam/${exam._id}/questions`,
+                          "_blank",
+                        )
+                      }
+                      className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md text-sm transition"
+                    >
+                      View to edit
+                    </button>
                   </div>
                 </div>
 
