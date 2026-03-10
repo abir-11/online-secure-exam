@@ -198,7 +198,7 @@ export default function DashboardLayout({ children }) {
                     "/dashboard/instructor/question-bank",
                   )}
                 >
-                  <span>Create Question </span>
+                  <span>Question Bank</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
                 <Link
