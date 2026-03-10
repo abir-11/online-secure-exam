@@ -1,3 +1,4 @@
+// File: app/api/exams/route.js
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -13,20 +14,56 @@ export async function GET() {
 
     const examsCol = await getCollection("exams");
     const batchesCol = await getCollection("batches");
+    const questionsCol = await getCollection("questions");
+    const theoryCol = await getCollection("theoryQuestions");
 
+    // Fetch all exams by this instructor
     const exams = await examsCol
       .find({ instructorEmail: session.user.email })
       .sort({ createdAt: -1 })
       .toArray();
 
-    // Attach batch names
+    // Process each exam
     for (const exam of exams) {
+      // ---------------- Batch Names ----------------
       const batchIds = (exam.batchIds || []).map((id) => new ObjectId(id));
       const batches = await batchesCol
         .find({ _id: { $in: batchIds } })
         .project({ name: 1 })
         .toArray();
       exam.batchNames = batches.map((b) => b.name);
+
+      // ---------------- Questions ----------------
+      let questions = [];
+
+      if (exam.type === "mcq") {
+        // Fetch MCQs from questions collection
+        questions = await questionsCol
+          .find({ examId: exam._id.toString() }) // stored as string
+          .toArray();
+      } else if (exam.type === "theory") {
+        questions = await theoryCol
+          .find({ examId: exam._id.toString() })
+          .toArray();
+      }
+
+      exam.questions = questions; // array of questions
+      exam.questionsCount = questions.length; // count
+      exam.totalMarks = questions.reduce(
+        (sum, q) => sum + (Number(q.marks) || 0),
+        0,
+      );
+
+      // ---------------- Optional: Update exam document ----------------
+      await examsCol.updateOne(
+        { _id: exam._id },
+        {
+          $set: {
+            questionsCount: exam.questionsCount,
+            totalMarks: exam.totalMarks,
+          },
+        },
+      );
     }
 
     return NextResponse.json({ exams });
@@ -87,11 +124,14 @@ export async function POST(req) {
       instructorEmail: session.user.email,
       published: false,
       status: "draft",
+      questionsCount: 0, // initialize
+      totalMarks: 0, // initialize
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     await examsCol.insertOne(examDoc);
+
     return NextResponse.json({ message: "Exam created successfully" });
   } catch (err) {
     console.error("POST /api/exams error:", err);
