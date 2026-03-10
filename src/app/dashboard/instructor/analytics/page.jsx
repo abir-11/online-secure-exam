@@ -1,3 +1,4 @@
+//dashboard/instructor/analytics/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -89,7 +90,7 @@ export default function InstructorAnalyticsPage() {
             <p>Duration: {exam.duration || "-"} minutes</p>
             <button
               className="mt-4 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md"
-              onClick={() => fetchAnalytics(exam._id)}
+              onClick={() => fetchAnalytics(exam._id.toString())}
             >
               <Eye size={16} />
               View Analytics

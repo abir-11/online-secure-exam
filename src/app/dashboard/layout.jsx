@@ -271,6 +271,13 @@ export default function DashboardLayout({ children }) {
                   <span>Payment History</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
+                <Link
+                  href="/dashboard/student/awards"
+                  className={mobileLinkClass("/dashboard/student/awards")}
+                >
+                  <span>Awards</span>
+                  <ChevronRight className="w-4 h-4 lg:hidden" />
+                </Link>
               </>
             )}
           </nav>

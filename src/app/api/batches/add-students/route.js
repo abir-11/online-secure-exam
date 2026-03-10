@@ -54,7 +54,7 @@ export async function POST(req) {
     // Send notifications
     const notifications = foundEmails.map((email) => ({
       to: email,
-      message: `You have been added to batch: ${batch.name}`,
+      message: `bat have been added to batch: ${batch.name}`,
       type: "batch",
       read: false,
       createdAt: new Date(),
