@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           {/* Navbar must be inside SessionProvider */}
           <NavbarWrapper />
 
-          <div className="pt-12">{children}</div>
+          <div className="">{children}</div>
 
           <Footer />
         </Providers>
