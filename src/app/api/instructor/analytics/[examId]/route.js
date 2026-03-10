@@ -1,4 +1,3 @@
-//app/api/instructor/analytics/[examId]/route.js
 // app/api/instructor/analytics/[examId]/route.js
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
@@ -21,7 +20,7 @@ export async function GET(req) {
     const submissionsCol = await getCollection("submissions");
     const examsCol = await getCollection("exams");
 
-    // Submissions are stored as string
+    // Submissions are stored as string examId
     const submissions = await submissionsCol.find({ examId }).toArray();
 
     let exam = {};
@@ -42,6 +41,7 @@ export async function GET(req) {
       });
     }
 
+    // Calculate scores
     const scores = submissions.map((s) => s.score || 0);
     const averageScore = (
       scores.reduce((a, b) => a + b, 0) / scores.length
@@ -51,13 +51,17 @@ export async function GET(req) {
     const passCount = submissions.filter((s) => s.passed).length;
     const failCount = submissions.length - passCount;
 
-    const questionAccuracy = (exam.questions || []).map((q, index) => {
+    // Calculate question-wise accuracy
+    const questionAccuracy = (exam.questions || []).map((q) => {
       let correct = 0;
+
       submissions.forEach((s) => {
-        if (s.answers && s.answers[index] === q.correctOption) correct++;
+        // Use question _id as key to access answers object
+        if (s.answers && s.answers[q._id] === q.correctOption) correct++;
       });
+
       return {
-        question: q.questionText || `Question ${index + 1}`,
+        question: q.questionText || q.title || `Question`,
         accuracy: submissions.length
           ? ((correct / submissions.length) * 100).toFixed(2)
           : "0.00",
