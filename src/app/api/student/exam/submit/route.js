@@ -234,6 +234,7 @@
 // }
 
 //award page try
+//api/student/exam/submit/route.js
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCollection } from "@/lib/dbConnect";

@@ -10,9 +10,9 @@ import { IoShield } from "react-icons/io5";
 // Lottie dynamic import for client-side rendering only
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-import learningAnimation from "@/assets/learning.json"; // Instructor 
-import studentAnimation from "@/assets/Student.json";   // Student 
-import educationAnimation from "@/assets/Educatin.json"; // Admin 
+import learningAnimation from "@/assets/learning.json"; // Instructor
+import studentAnimation from "@/assets/Student.json"; // Student
+import educationAnimation from "@/assets/Educatin.json"; // Admin
 export default function RegisterPage() {
   const [role, setRole] = useState("student");
   const [name, setName] = useState("");
@@ -49,12 +49,12 @@ export default function RegisterPage() {
         const sessionData = await sessionRes.json();
 
         if (sessionData?.user?.role) {
-          const userRole = sessionData.user.role;
-          if (userRole === "admin") window.location.href = "/dashboard/admin";
-          else if (userRole === "instructor")
-            window.location.href = "/dashboard/instructor";
-          else window.location.href = "/dashboard/student";
-        } else {
+          //   const userRole = sessionData.user.role;
+          //   if (userRole === "admin") window.location.href = "/dashboard/admin";
+          //   else if (userRole === "instructor")
+          //     window.location.href = "/dashboard/instructor";
+          //   else window.location.href = "/dashboard/student";
+          // } else {
           window.location.href = "/dashboard";
         }
       } else {
@@ -76,7 +76,8 @@ export default function RegisterPage() {
   };
 
   // input styles for consistency
-  const inputStyles = "w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 outline-none transition-all duration-300 text-gray-700 placeholder:text-gray-400";
+  const inputStyles =
+    "w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 outline-none transition-all duration-300 text-gray-700 placeholder:text-gray-400";
 
   return (
     <div className="min-h-screen flex items-center justify-center mt-20 bg-gray-50/50 p-4 md:p-8">
