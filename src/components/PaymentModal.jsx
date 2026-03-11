@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-export default function PaymentModal({ course, onClose }) {
+export default function PaymentModal({ course, onClose, itemType = "course" }) {
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvc, setCvc] = useState("");
@@ -103,6 +103,7 @@ export default function PaymentModal({ course, onClose }) {
           cardNumber: cardDigits,
           expiryDate: expiryDate,
           cvc: cvc,
+          itemType: itemType,
         }),
       });
 
