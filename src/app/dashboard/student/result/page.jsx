@@ -239,7 +239,7 @@ export default function StudentResultPage() {
     );
 
   return (
-    <main className="p-6  mx-auto  bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
+    <main className="p-6  mx-auto min-h-screen bg-primary">
       <h1 className="text-3xl font-bold mb-8  text-center text-teal-800">
         My Exam Results
       </h1>

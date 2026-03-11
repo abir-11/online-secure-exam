@@ -149,82 +149,87 @@ export default function StudentExamPage() {
   if (!exam) return <p className="p-6 mt-20 text-red-500">Exam not found</p>;
 
   return (
-    <main className="p-6 mt-10 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">{exam.title}</h1>
+    <main className="bg-primary min-h-screen">
+      <div className="p-6  max-w-4xl mx-auto ">
+        <h1 className="text-3xl font-bold mb-4">{exam.title}</h1>
 
-      {hasSubmitted && (
-        <div className="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded">
-          You have already submitted this exam. Answers are locked.
-        </div>
-      )}
-
-      {!hasSubmitted && (
-        <>
-          <div className="mb-2 p-3 bg-blue-100 text-blue-800 rounded font-semibold">
-            Time Left: {formatTime(timeLeft)}
+        {hasSubmitted && (
+          <div className="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+            You have already submitted this exam. Answers are locked.
           </div>
-          {warningMessage && (
-            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded font-medium animate-pulse">
-              {warningMessage}
+        )}
+
+        {!hasSubmitted && (
+          <>
+            <div className="mb-2 p-3 bg-blue-100 text-blue-800 rounded font-semibold">
+              Time Left: {formatTime(timeLeft)}
             </div>
-          )}
-        </>
-      )}
+            {warningMessage && (
+              <div className="mb-4 p-2 bg-red-100 text-red-700 rounded font-medium animate-pulse">
+                {warningMessage}
+              </div>
+            )}
+          </>
+        )}
 
-      <p className="mb-2">Type: {exam.type.toUpperCase()}</p>
-      <p className="mb-2">Duration: {exam.duration} min</p>
-      <p className="mb-4">Total Questions: {questions.length}</p>
-      <hr className="my-4" />
+        <p className="mb-2">Type: {exam.type.toUpperCase()}</p>
+        <p className="mb-2">Duration: {exam.duration} min</p>
+        <p className="mb-4">Total Questions: {questions.length}</p>
+        <hr className="my-4" />
 
-      {questions.map((q, i) => (
-        <div key={q._id} className="mb-6 p-4 border rounded">
-          <p className="font-medium mb-2">
-            Q{i + 1}: {q.questionText} ({q.marks} marks)
-          </p>
+        {questions.map((q, i) => (
+          <div
+            key={q._id}
+            className="mb-6 p-4  border-teal-500 border-4 rounded-2xl"
+          >
+            <p className="font-medium mb-2">
+              Q{i + 1}: {q.questionText} ({q.marks} marks)
+            </p>
 
-          {exam.type === "mcq" && (
-            <div className="space-y-2">
-              {q.options.map((opt, idx) => (
-                <label key={idx} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    name={q._id}
-                    value={idx}
-                    disabled={hasSubmitted}
-                    checked={answers[q._id] === idx}
-                    onChange={() => handleSelect(q._id, idx)}
-                    className="form-radio"
-                  />
-                  <span>{opt}</span>
-                </label>
-              ))}
-            </div>
-          )}
+            {exam.type === "mcq" && (
+              <div className="space-y-2">
+                {q.options.map((opt, idx) => (
+                  <label key={idx} className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name={q._id}
+                      value={idx}
+                      disabled={hasSubmitted}
+                      checked={answers[q._id] === idx}
+                      onChange={() => handleSelect(q._id, idx)}
+                      className="form-radio"
+                    />
+                    <span>{opt}</span>
+                  </label>
+                ))}
+              </div>
+            )}
 
-          {exam.type === "theory" && (
-            <textarea
-              className="w-full border rounded p-2 mt-2"
-              rows={4}
-              disabled={hasSubmitted}
-              value={answers[q._id] || ""}
-              onChange={(e) => handleSelect(q._id, e.target.value)}
-              placeholder="Write your answer here..."
-            />
-          )}
-        </div>
-      ))}
+            {exam.type === "theory" && (
+              <textarea
+                className="w-full border rounded p-2 mt-2"
+                rows={4}
+                disabled={hasSubmitted}
+                value={answers[q._id] || ""}
+                onChange={(e) => handleSelect(q._id, e.target.value)}
+                placeholder="Write your answer here..."
+              />
+            )}
+          </div>
+        ))}
 
-      <button
-        onClick={() => handleSubmit(false)}
-        disabled={submitting || hasSubmitted}
-        className="w-full py-3 bg-[#0D7C66] hover:bg-[#41B3A2] disabled:bg-gray-400 text-white font-semibold rounded-xl"
-      >
-        {hasSubmitted
-          ? "Already Submitted"
-          : submitting
-            ? "Submitting..."
-            : "Submit Exam"}
-      </button>
+        <button
+          onClick={() => handleSubmit(false)}
+          disabled={submitting || hasSubmitted}
+          className="w-full py-3 bg-[#0D7C66] hover:bg-[#41B3A2] disabled:bg-gray-400 text-white font-semibold rounded-xl"
+        >
+          {hasSubmitted
+            ? "Already Submitted"
+            : submitting
+              ? "Submitting..."
+              : "Submit Exam"}
+        </button>
+      </div>
     </main>
   );
 }
