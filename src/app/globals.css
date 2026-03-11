@@ -6,8 +6,8 @@
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
-  --color-primary: #0d7c66;
-  --color-secondary: teal;
+  --color-primary: #c7ecee;
+  --color-secondary: #0f766e;
 }
 
 /* ✅ Custom class outside daisy theme */
