@@ -15,6 +15,18 @@ export async function GET() {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
+    // Users stats
+    const totalUsers = await usersCollection.countDocuments();
+    const students = await usersCollection.countDocuments({ role: "student" });
+    const instructors = await usersCollection.countDocuments({
+      role: "instructor",
+    });
+    const admins = await usersCollection.countDocuments({ role: "admin" });
+
+    const newUsersToday = await usersCollection.countDocuments({
+      createdAt: { $gte: today, $lt: tomorrow },
+    });
+
     return NextResponse.json({
       success: true,
       data: {
