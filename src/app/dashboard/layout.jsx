@@ -150,6 +150,12 @@ export default function DashboardLayout({ children }) {
                   <span>Reports</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
+                <Link
+                  href="/dashboard/admin/analytics"
+                  className={linkClass("/dashboard/admin/analytics")}
+                >
+                  <span>Analytics</span>
+                </Link>
               </>
             )}
 
