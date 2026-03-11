@@ -18,7 +18,6 @@ export default function Home() {
       <Feature />
 
       <LearnerResources />
-
       <PricingSection></PricingSection>
 
       <GetStarted />
