@@ -1,4 +1,4 @@
-//stats API
+//Stats API
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/dbConnect";
 
