@@ -51,6 +51,11 @@ export async function GET() {
       0,
     );
 
+    // Active today
+    const activeToday = await activityCollection.countDocuments({
+      timestamp: { $gte: today, $lt: tomorrow },
+    });
+
     return NextResponse.json({
       success: true,
       data: {
