@@ -15,6 +15,7 @@ export async function POST(request) {
 
     const body = await request.json();
     const { courseId, courseName, amount, cardNumber, expiryDate, cvc } = body;
+    const { courseId, courseName, amount, cardNumber, expiryDate, cvc, itemType } = body;
 
     if (!courseId || !amount || !cardNumber || !expiryDate || !cvc) {
       return NextResponse.json(
@@ -47,7 +48,9 @@ export async function POST(request) {
     const paymentsDb = await getCollection("payments");
     const paymentRecord = await paymentsDb.insertOne({
       userId: session.user.id,
-      courseId: courseId.toString(),
+      itemId: courseId.toString(),
+      itemType: itemType || "course",
+      courseId: courseId.toString(), // Keep for backwards compatibility
       courseName: courseName,
       amount: amount,
       userEmail: session.user.email,
@@ -84,6 +87,28 @@ export async function POST(request) {
         },
       },
     );
+    // Add course/exam to user's enrolled items
+    const usersDb = await getCollection("users");
+    
+    if (itemType === "exam") {
+      await usersDb.updateOne(
+        { email: session.user.email },
+        {
+          $addToSet: {
+            enrolledExams: courseId.toString(),
+          },
+        }
+      );
+    } else {
+      await usersDb.updateOne(
+        { email: session.user.email },
+        {
+          $addToSet: {
+            enrolledCourses: courseId.toString(),
+          },
+        }
+      );
+    }
 
     return NextResponse.json(
       {

@@ -23,7 +23,7 @@ const features = [
       "Real-time countdown timer with automatic start and 1-minute warning notifications.",
     icon: BsStopwatch,
     image:
-      "https://images.unsplash.com/photo-1495364141860-b0d03eccd065?q=80&w=600&auto=format&fit=crop", // Clock/Timer picture
+      "https://images.unsplash.com/photo-1495364141860-b0d03eccd065?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const features = [
       "Strict time enforcement with automatic submission when timer reaches zero.",
     icon: FaHourglassEnd,
     image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop", // Laptop working
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 3,
@@ -41,7 +41,7 @@ const features = [
       "Detects and logs tab switching, window blur, and page reload attempts.",
     icon: SiLogstash,
     image:
-      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=600&auto=format&fit=crop", // Screen/Logs
+      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 4,
@@ -50,7 +50,7 @@ const features = [
       "Unique question and option order for each student to prevent cheating.",
     icon: RiShuffleLine,
     image:
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop", // Paper/Exam desk
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 5,
@@ -58,7 +58,7 @@ const features = [
     description: "Instant MCQ grading with automatic marks calculation.",
     icon: IoIosCheckmarkCircle,
     image:
-      "https://images.unsplash.com/photo-1543286386-2e659306cd6c?q=80&w=600&auto=format&fit=crop", // Grades/Tick mark
+      "https://images.unsplash.com/photo-1543286386-2e659306cd6c?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 6,
@@ -67,7 +67,7 @@ const features = [
       "View total score, correct/incorrect answers, percentage, and pass/fail status.",
     icon: FaChartPie,
     image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop", // Pie chart/Dashboard
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 7,
@@ -76,7 +76,7 @@ const features = [
       "Track averages, highest/lowest marks, pass/fail ratios, and question accuracy.",
     icon: FaChartLine,
     image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop", // Data charts
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 8,
@@ -85,7 +85,7 @@ const features = [
       "Add, edit, delete questions with marks and subject categorization.",
     icon: FaDatabase,
     image:
-      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=600&auto=format&fit=crop", // Digital library/Database
+      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 9,
@@ -94,7 +94,7 @@ const features = [
       "Create exams, set duration, and get upcoming exam notifications.",
     icon: FaCalendarAlt,
     image:
-      "https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=600&auto=format&fit=crop", // Calendar/Planning
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: 10,
@@ -102,7 +102,7 @@ const features = [
     description: "Separate dashboards for Admin, Instructor, and Students.",
     icon: FaUsersCog,
     image:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop", // Team/Users
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
   },
 ];
 
@@ -121,8 +121,14 @@ const cardVariants = {
 
 export default function Feature() {
   return (
-    <section className="py-10 bg-gray-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-24 bg-emerald-950 overflow-hidden">
+      
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
@@ -131,13 +137,20 @@ export default function Feature() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#0c7d66] mb-4">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/60 border border-emerald-700/50 text-emerald-300 text-sm font-semibold mb-6 backdrop-blur-sm"
+          >
+            Core Capabilities
+          </motion.div>
+          
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
             Advanced{" "}
-            <span className="bg-linear-to-r from-[#0D7C66] to-[#41B3A2] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">
               Exam Features
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-emerald-100/70 max-w-2xl mx-auto leading-relaxed">
             Experience a seamless, automated, and highly secure environment
             tailored for modern online assessments.
           </p>
@@ -155,43 +168,41 @@ export default function Feature() {
             <motion.div
               key={feature.id}
               variants={cardVariants}
-              whileHover={{
-                y: -8,
-                boxShadow:
-                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              }}
-              className="bg-white rounded-2xl shadow-md overflow-hidden group cursor-pointer flex flex-col transition-all duration-300 border border-gray-100"
+              whileHover={{ y: -10 }}
+              className="bg-emerald-900/30 rounded-2xl overflow-hidden group cursor-pointer flex flex-col transition-all duration-300 border border-emerald-800/50 backdrop-blur-md shadow-[0_4px_20px_rgb(0,0,0,0.2)] hover:shadow-[0_8px_30px_rgb(16,185,129,0.15)] hover:border-emerald-500/40 hover:bg-emerald-800/40"
             >
               {/* Image Section */}
-              <div className="relative w-full h-48 bg-gray-200 overflow-hidden shrink-0 block">
+              <div className="relative w-full h-48 bg-emerald-900/50 overflow-hidden shrink-0 block">
                 <motion.img
                   src={feature.image}
                   alt={feature.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  whileHover={{ scale: 1.12 }}
-                  transition={{ duration: 0.5 }}
-                  // Error Fallback
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100  group-hover:mix-blend-normal transition-all duration-500"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.6 }}
                   onError={(e) => {
                     e.currentTarget.src =
                       "https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=600";
                   }}
                 />
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-blue-900/10 group-hover:bg-transparent transition duration-300 pointer-events-none z-10"></div>
+                {/* Dark Gradient Overlay over Image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent z-10"></div>
 
                 {/* Floating Icon inside Image */}
-                <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg text-[#0c7d66] z-20 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="text-xl" />
+                <div className="absolute bottom-4 right-4 bg-emerald-800/80 backdrop-blur-md border border-emerald-600/50 p-3 rounded-xl shadow-lg text-emerald-300 z-20 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-400 transition-all duration-300">
+                  <feature.icon className="text-2xl" />
                 </div>
               </div>
 
               {/* Text Content */}
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-3  group-hover:bg-gradient-to-r group-hover:from-[#0D7C66] group-hover:to-[#41B3A2] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 flex items-center gap-2">
+              <div className="p-6 flex-1 flex flex-col relative">
+                {/* Subtle top border accent on hover */}
+                <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300 flex items-center gap-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                <p className="text-emerald-100/60 leading-relaxed text-sm md:text-base group-hover:text-emerald-100/80 transition-colors duration-300">
                   {feature.description}
                 </p>
               </div>
