@@ -159,7 +159,7 @@ const HomeHero = () => {
               alt="SecureExam Dashboard Hero"
               width={650}
               height={550}
-              className="w-[80%] sm:w-[90%] md:w-[100%] max-w-[650px] h-auto drop-shadow-[0_20px_50px_rgb(0,0,0,0.5)]"
+              className="w-[100%] lg:pr-20  sm:w-[90%] md:w-[100%] lg:w-[138%] max-w-[650px] h-auto drop-shadow-[0_20px_50px_rgb(0,0,0,0.5)]"
               priority
             />
           </motion.div>

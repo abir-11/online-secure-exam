@@ -35,7 +35,7 @@ export default function TheorySubmissionsListPage() {
     return <p className="p-6 text-gray-600">No theory exams found.</p>;
 
   return (
-    <main className="p-6 mt-10">
+    <main className="p-6 min-h-screen bg-primary">
       <h1 className="text-3xl font-bold mb-6 text-teal-800">
         Theory Exam Submissions
       </h1>

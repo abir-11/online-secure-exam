@@ -39,13 +39,13 @@ export default function InstructorTheorySubmissionsPage() {
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
 
   return (
-    <main className="p-6">
+    <main className="p-6 bg-primary">
       <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
 
       {submissions.length === 0 && <p>No submissions found.</p>}
 
       {submissions.map((s) => (
-        <div key={s._id} className="border p-4 mb-4 rounded">
+        <div key={s._id} className="border-8 border-teal-500 p-4 mb-4 rounded">
           <p className="font-semibold">Student: {s.studentEmail}</p>
 
           <div className="mt-2">

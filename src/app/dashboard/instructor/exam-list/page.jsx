@@ -99,7 +99,7 @@ export default function ExamListPage() {
   if (loading) return <p className="p-6">Loading exams...</p>;
 
   return (
-    <main className="p-8  max-w-full mx-auto bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
+    <main className="p-8 bg-primary max-w-full mx-auto bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
       <h1 className="text-3xl font-bold mb-8 text-gray-800">Exam Management</h1>
 
       {exams.length === 0 ? (

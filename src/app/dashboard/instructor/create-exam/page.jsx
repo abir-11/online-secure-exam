@@ -73,7 +73,7 @@ export default function CreateExamPage() {
   };
 
   return (
-    <main className="p-6 mt-20 flex justify-center">
+    <main className="p-6 bg-primary flex justify-center">
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-2xl space-y-6"
