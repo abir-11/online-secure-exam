@@ -9,7 +9,7 @@ export async function GET() {
     const activities = await activityCollection
       .find({})
       .sort({ timestamp: -1 })
-      .limit(10)
+      .limit(20)
       .toArray();
 
     return NextResponse.json({
