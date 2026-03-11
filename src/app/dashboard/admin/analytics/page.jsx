@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // ✅ এই line টা গুরুত্বপূর্ণ
+import { useRouter } from "next/navigation";
 import {
   Users,
   BookOpen,
@@ -45,7 +45,7 @@ ChartJS.register(
 );
 
 export default function AdminAnalyticsPage() {
-  const router = useRouter(); // ✅ এই line টা যোগ করুন
+  const router = useRouter();
   const [stats, setStats] = useState(null);
   const [activities, setActivities] = useState([]);
   const [revenueData, setRevenueData] = useState(null);
@@ -299,7 +299,7 @@ export default function AdminAnalyticsPage() {
 
         {/* Recent Logins */}
         <ActivitySection
-          router={router} // ✅ router prop পাঠাচ্ছি
+          router={router}
           icon={LogIn}
           title="Recent Logins"
           count={activitiesByType.counts.logins}
@@ -311,7 +311,7 @@ export default function AdminAnalyticsPage() {
 
         {/* Recent Purchases */}
         <ActivitySection
-          router={router} // ✅ router prop পাঠাচ্ছি
+          router={router}
           icon={CreditCard}
           title="Recent Purchases"
           count={activitiesByType.counts.purchases}
@@ -485,7 +485,7 @@ function ProgressBar({ label, value, total, color, bgColor }) {
   );
 }
 
-// ✅ Activity Section Component - আপডেটেড ভার্সন
+// Activity Section Component
 function ActivitySection({
   router,
   icon: Icon,
@@ -551,7 +551,7 @@ function ActivitySection({
             <p className="text-sm text-gray-500">{count} today</p>
           </div>
         </div>
-        {/* View All Button - এখন functional */}
+        {/* View All Button */}
         <button
           onClick={handleViewAll}
           className="text-sm text-[#0D7C66] hover:text-[#41B3A2] flex items-center gap-1 transition-colors"
