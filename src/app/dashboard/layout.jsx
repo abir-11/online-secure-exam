@@ -81,7 +81,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile Topbar (Visible only on small screens) */}
+      {/* Mobile topbar (Visible only on small screens) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0D7C66] text-white flex items-center justify-between px-4 z-40">
         <h2 className="text-xl font-bold">SecureExam</h2>
         <button
