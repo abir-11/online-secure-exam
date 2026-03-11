@@ -1,4 +1,4 @@
-//analytics dashboard page
+// //analytics dashboard page
 
 "use client";
 
@@ -46,18 +46,22 @@ export default function AdminAnalyticsPage() {
   const [activities, setActivities] = useState([]);
   const [revenueData, setRevenueData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [timeFilter, setTimeFilter] = useState("week"); // week, month
+  const [timeFilter, setTimeFilter] = useState("week"); // "week" or "month"
 
+  // Fetch data when timeFilter changes
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [timeFilter]);
 
   const fetchAllData = async () => {
     try {
+      setLoading(true);
+      console.log(`📡 Fetching data with filter: ${timeFilter}`);
+
       const [statsRes, activitiesRes, revenueRes] = await Promise.all([
         axios.get("/api/admin/analytics/stats"),
         axios.get("/api/admin/analytics/activities"),
-        axios.get("/api/admin/analytics/revenue"),
+        axios.get(`/api/admin/analytics/revenue?period=${timeFilter}`),
       ]);
 
       setStats(statsRes.data.data);
@@ -82,6 +86,11 @@ export default function AdminAnalyticsPage() {
         bodyColor: "white",
         padding: 10,
         displayColors: false,
+        callbacks: {
+          label: function (context) {
+            return `$${context.raw}`;
+          },
+        },
       },
     },
     scales: {
@@ -94,6 +103,11 @@ export default function AdminAnalyticsPage() {
       },
       x: {
         grid: { display: false },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+          maxTicksLimit: timeFilter === "week" ? 7 : 10,
+        },
       },
     },
     elements: {
@@ -162,7 +176,7 @@ export default function AdminAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-6">
-      {/* Header */}
+      {/* Header with Time Filter */}
       <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-2xl p-6 text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -173,6 +187,8 @@ export default function AdminAnalyticsPage() {
               Real-time overview of your platform
             </p>
           </div>
+
+          {/* Time Filter Buttons */}
           <div className="flex gap-2 bg-white/10 rounded-lg p-1">
             <button
               onClick={() => setTimeFilter("week")}
@@ -182,7 +198,7 @@ export default function AdminAnalyticsPage() {
                   : "text-white hover:bg-white/20"
               }`}
             >
-              Week
+              Last 7 Days
             </button>
             <button
               onClick={() => setTimeFilter("month")}
@@ -192,7 +208,7 @@ export default function AdminAnalyticsPage() {
                   : "text-white hover:bg-white/20"
               }`}
             >
-              Month
+              Last 30 Days
             </button>
           </div>
         </div>
@@ -241,14 +257,15 @@ export default function AdminAnalyticsPage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-[#0D7C66]" />
-            Revenue Trend
+            Revenue Trend{" "}
+            {timeFilter === "week" ? "(Last 7 Days)" : "(Last 30 Days)"}
           </h2>
           <div className="text-sm text-gray-500 flex items-center gap-2">
             <Calendar className="w-4 h-4" />
-            Last 7 days
+            {timeFilter === "week" ? "Week View" : "Month View"}
           </div>
         </div>
-        <div className="h-64">
+        <div className="h-80">
           {revenueData && <Line data={chartData} options={chartOptions} />}
         </div>
       </div>
@@ -286,7 +303,7 @@ export default function AdminAnalyticsPage() {
           </div>
         </div>
 
-        {/* Recent Transactions */}
+        {/* Payment Summary */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <ShoppingCart className="w-5 h-5 text-[#0D7C66]" />
