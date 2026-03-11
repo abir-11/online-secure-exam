@@ -69,7 +69,7 @@ export default function PaymentHistoryPage() {
             <table className="w-full">
               <thead className="bg-[#0D7C66] text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Course</th>
+                  <th className="px-6 py-4 text-left font-semibold">Course/Exam</th>
                   <th className="px-6 py-4 text-left font-semibold">Amount</th>
                   <th className="px-6 py-4 text-left font-semibold">Status</th>
                   <th className="px-6 py-4 text-left font-semibold">Date</th>
