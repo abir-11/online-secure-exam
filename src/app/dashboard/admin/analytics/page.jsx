@@ -1,8 +1,7 @@
-// //analytics dashboard page
-
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // ✅ এই line টা গুরুত্বপূর্ণ
 import {
   Users,
   BookOpen,
@@ -14,6 +13,10 @@ import {
   Activity,
   UserCheck,
   Calendar,
+  UserPlus,
+  LogIn,
+  CreditCard,
+  ChevronRight,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -42,9 +45,16 @@ ChartJS.register(
 );
 
 export default function AdminAnalyticsPage() {
+  const router = useRouter(); // ✅ এই line টা যোগ করুন
   const [stats, setStats] = useState(null);
   const [activities, setActivities] = useState([]);
   const [revenueData, setRevenueData] = useState(null);
+  const [activitiesByType, setActivitiesByType] = useState({
+    registrations: [],
+    logins: [],
+    purchases: [],
+    counts: { total: 0, registrations: 0, logins: 0, purchases: 0 },
+  });
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState("week"); // "week" or "month"
 
@@ -58,15 +68,18 @@ export default function AdminAnalyticsPage() {
       setLoading(true);
       console.log(`📡 Fetching data with filter: ${timeFilter}`);
 
-      const [statsRes, activitiesRes, revenueRes] = await Promise.all([
-        axios.get("/api/admin/analytics/stats"),
-        axios.get("/api/admin/analytics/activities"),
-        axios.get(`/api/admin/analytics/revenue?period=${timeFilter}`),
-      ]);
+      const [statsRes, activitiesRes, revenueRes, activitiesByTypeRes] =
+        await Promise.all([
+          axios.get("/api/admin/analytics/stats"),
+          axios.get("/api/admin/analytics/activities"),
+          axios.get(`/api/admin/analytics/revenue?period=${timeFilter}`),
+          axios.get("/api/admin/analytics/activities-by-type"),
+        ]);
 
       setStats(statsRes.data.data);
       setActivities(activitiesRes.data.activities);
       setRevenueData(revenueRes.data.data);
+      setActivitiesByType(activitiesByTypeRes.data.data);
     } catch (error) {
       console.error("Error fetching analytics:", error);
     } finally {
@@ -270,6 +283,45 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
+      {/* Activity Sections - 3 Column Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* New Registrations */}
+        <ActivitySection
+          router={router} // ✅ router prop পাঠাচ্ছি
+          icon={UserPlus}
+          title="New Registrations"
+          count={activitiesByType.counts.registrations}
+          activities={activitiesByType.registrations}
+          bgColor="bg-purple-100"
+          iconColor="text-purple-600"
+          type="registrations"
+        />
+
+        {/* Recent Logins */}
+        <ActivitySection
+          router={router} // ✅ router prop পাঠাচ্ছি
+          icon={LogIn}
+          title="Recent Logins"
+          count={activitiesByType.counts.logins}
+          activities={activitiesByType.logins}
+          bgColor="bg-blue-100"
+          iconColor="text-blue-600"
+          type="logins"
+        />
+
+        {/* Recent Purchases */}
+        <ActivitySection
+          router={router} // ✅ router prop পাঠাচ্ছি
+          icon={CreditCard}
+          title="Recent Purchases"
+          count={activitiesByType.counts.purchases}
+          activities={activitiesByType.purchases}
+          bgColor="bg-green-100"
+          iconColor="text-green-600"
+          type="purchases"
+        />
+      </div>
+
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Distribution */}
@@ -428,6 +480,126 @@ function ProgressBar({ label, value, total, color, bgColor }) {
           className={`${color} rounded-full h-2.5 transition-all duration-500`}
           style={{ width: `${percentage}%` }}
         ></div>
+      </div>
+    </div>
+  );
+}
+
+// ✅ Activity Section Component - আপডেটেড ভার্সন
+function ActivitySection({
+  router,
+  icon: Icon,
+  title,
+  count,
+  activities,
+  bgColor,
+  iconColor,
+  type,
+}) {
+  const getActionIcon = (action) => {
+    switch (action) {
+      case "purchased_course":
+        return "🛒";
+      case "joined_platform":
+        return "🎉";
+      case "logged_in":
+        return "🔓";
+      default:
+        return "📌";
+    }
+  };
+
+  const formatTime = (timestamp) => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffMs = now - past;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return "just now";
+    if (diffMins < 60) return `${diffMins} min ago`;
+    return `${Math.floor(diffMins / 60)} hour ago`;
+  };
+
+  // View All click handler
+  const handleViewAll = () => {
+    switch (type) {
+      case "registrations":
+        router.push("/dashboard/admin/analytics/registrations");
+        break;
+      case "logins":
+        router.push("/dashboard/admin/analytics/logins");
+        break;
+      case "purchases":
+        router.push("/dashboard/admin/analytics/purchases");
+        break;
+      default:
+        router.push("/dashboard/admin/analytics/all");
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-10 h-10 rounded-xl ${bgColor} flex items-center justify-center`}
+          >
+            <Icon className={`w-5 h-5 ${iconColor}`} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-500">{count} today</p>
+          </div>
+        </div>
+        {/* View All Button - এখন functional */}
+        <button
+          onClick={handleViewAll}
+          className="text-sm text-[#0D7C66] hover:text-[#41B3A2] flex items-center gap-1 transition-colors"
+        >
+          View all <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {activities.length > 0 ? (
+          activities.map((act, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#0D7C66] flex items-center justify-center text-white text-sm">
+                {act.userName?.charAt(0)}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm">
+                  <span className="font-medium text-gray-800">
+                    {act.userName}
+                  </span>
+                  {type === "purchases" && act.amount && (
+                    <span className="text-xs bg-green-100 text-green-700 ml-2 px-2 py-0.5 rounded-full">
+                      ${act.amount}
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {type === "purchases"
+                    ? act.courseName || act.details
+                    : act.details}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {formatTime(act.timestamp)}
+                </p>
+              </div>
+              <div className="text-lg opacity-50">
+                {getActionIcon(act.action)}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-400 text-center py-4">
+            No {title.toLowerCase()} yet
+          </p>
+        )}
       </div>
     </div>
   );
