@@ -49,12 +49,6 @@ export default function RegisterPage() {
         const sessionData = await sessionRes.json();
 
         if (sessionData?.user?.role) {
-          //   const userRole = sessionData.user.role;
-          //   if (userRole === "admin") window.location.href = "/dashboard/admin";
-          //   else if (userRole === "instructor")
-          //     window.location.href = "/dashboard/instructor";
-          //   else window.location.href = "/dashboard/student";
-          // } else {
           window.location.href = "/dashboard";
         }
       } else {

@@ -1,5 +1,5 @@
 //dashboard/student/exam/[examId]/page.jsx
-//dashboard/student/exam/[examId]/page.jsx
+
 "use client";
 
 import { useEffect, useState, useRef } from "react";
