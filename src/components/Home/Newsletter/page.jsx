@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 export default function Newsletter() {
-  // Framer Motion অ্যানিমেশন ভ্যারিয়েন্ট
+  // Framer Motion 
   const slideInLeft = {
     hidden: { opacity: 0, x: -40 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -27,10 +27,7 @@ export default function Newsletter() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }} 
         >
-          {/* গুরুত্বপূর্ণ: আপনার ছবিটি public ফোল্ডারে রাখুন। 
-            যেমন: public/newsletter.png রাখলে src="/newsletter.png" হবে।
-            আপাতত নিচে একটি ডেমো ইমেজ লিঙ্ক দেওয়া হলো যাতে আপনার কোড রান করলে ব্রোকেন না দেখায়।
-          */}
+          
           <img 
             src="https://i.ibb.co.com/BVNg33mY/newsletter-img-2048x1738.webp" 
             alt="Newsletter Envelop Illustration" 
@@ -56,7 +53,7 @@ export default function Newsletter() {
 
           {/* Heading */}
           <h2 className="text-[36px] md:text-[46px] lg:text-[52px] font-extrabold text-[#1f2937] mb-6 leading-[1.2]">
-            Sign Up <span className="text-[#144b36] underline decoration-[#144b36] decoration-[5px] underline-offset-[10px]">Our</span> NewsLetter
+            Sign Up <span className="text-[#144b36] underline decoration-[#144b36] decoration-[5px] underline-offset-[10px]">Our</span> <span className="text-[#144b36] underline decoration-[#144b36] decoration-[5px] underline-offset-[10px]">NewsLetter</span>
           </h2>
 
           {/* Meaningful English Description */}
