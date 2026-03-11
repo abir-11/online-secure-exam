@@ -176,7 +176,7 @@ export default function Feature() {
                 <motion.img
                   src={feature.image}
                   alt={feature.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 mix-blend-overlay group-hover:mix-blend-normal transition-all duration-500"
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100  group-hover:mix-blend-normal transition-all duration-500"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.6 }}
                   onError={(e) => {
