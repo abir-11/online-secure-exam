@@ -27,6 +27,30 @@ export async function GET() {
       createdAt: { $gte: today, $lt: tomorrow },
     });
 
+    // Courses stats
+    const totalCourses = await coursesCollection.countDocuments();
+
+    // Payment stats
+    const allPayments = await paymentsCollection
+      .find({
+        status: "completed",
+      })
+      .toArray();
+
+    const totalRevenue = allPayments.reduce(
+      (sum, p) => sum + (p.amount / 100 || 0),
+      0,
+    );
+    const totalTransactions = allPayments.length;
+
+    const todayPayments = allPayments.filter(
+      (p) => new Date(p.createdAt) >= today && new Date(p.createdAt) < tomorrow,
+    );
+    const todayRevenue = todayPayments.reduce(
+      (sum, p) => sum + (p.amount / 100 || 0),
+      0,
+    );
+
     return NextResponse.json({
       success: true,
       data: {
