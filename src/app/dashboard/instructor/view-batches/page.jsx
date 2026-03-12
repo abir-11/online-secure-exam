@@ -89,14 +89,14 @@ export default function ViewBatchesPage() {
         </div>
 
         {/* Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-1">
           {batches.map((batch) => (
             <div
               key={batch._id}
               className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 dark:border-gray-700"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className=" flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-teal-600" />
                   <h2 className="font-semibold text-gray-800 dark:text-white">
