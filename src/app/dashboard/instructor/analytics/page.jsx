@@ -244,7 +244,7 @@ export default function InstructorAnalyticsPage() {
             </div>
 
             {/* Question Accuracy Chart */}
-            <div className="bg-white p-6 rounded-xl shadow-lg">
+            {/* <div className="bg-white p-6 rounded-xl shadow-lg">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <BarChart3 size={20} className="text-teal-600" />
                 Question Accuracy
@@ -273,7 +273,7 @@ export default function InstructorAnalyticsPage() {
                   </BarChart>
                 </ResponsiveContainer>
               )}
-            </div>
+            </div> */}
           </div>
         )}
       </div>
