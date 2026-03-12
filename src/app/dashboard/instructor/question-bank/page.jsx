@@ -94,149 +94,153 @@ export default function QuestionBankPage() {
   };
 
   return (
-    <main className="p-6 mt-10 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-[#0D7C66]">Question Bank</h1>
+    <main className="bg-primary min-h-screen p-6">
+      <div className="p-6 rounded-2xl max-w-3xl mx-auto bg-white">
+        <h1 className="text-3xl font-bold mb-6 text-[#0D7C66]">
+          Question Bank
+        </h1>
 
-      {/* Exam Selector */}
-      <div className="mb-6">
-        <label className="block font-medium mb-1">Select Exam</label>
-        <select
-          className="w-full p-3 border rounded-lg"
-          onChange={(e) => {
-            const exam = exams.find((x) => x._id === e.target.value);
-            setSelectedExam(exam || null);
-            setQuestionCount(exam?.questionsCount || 0);
-          }}
-        >
-          <option value="">-- Select Exam --</option>
-          {exams.map((e) => (
-            <option key={e._id} value={e._id}>
-              {e.title} ({e.type})
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Exam Status */}
-      {selectedExam && (
-        <div className="mb-4 text-sm text-gray-600">
-          Status: {selectedExam.published ? "Published" : "Draft"}
+        {/* Exam Selector */}
+        <div className="mb-6">
+          <label className="block font-medium mb-1">Select Exam</label>
+          <select
+            className="w-full p-3 border rounded-lg"
+            onChange={(e) => {
+              const exam = exams.find((x) => x._id === e.target.value);
+              setSelectedExam(exam || null);
+              setQuestionCount(exam?.questionsCount || 0);
+            }}
+          >
+            <option value="">-- Select Exam --</option>
+            {exams.map((e) => (
+              <option key={e._id} value={e._id}>
+                {e.title} ({e.type})
+              </option>
+            ))}
+          </select>
         </div>
-      )}
 
-      {/* MCQ SECTION */}
-      {canAddMCQ && (
-        <form
-          onSubmit={handleAddMCQ}
-          className="bg-white p-6 rounded-xl shadow space-y-4"
-        >
-          <h2 className="text-xl font-semibold text-purple-700">
-            Add MCQ Question
-          </h2>
-
-          <div>
-            <label className="block mb-1">Question</label>
-            <textarea
-              className="w-full p-3 border rounded-lg"
-              value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
-              required
-            />
+        {/* Exam Status */}
+        {selectedExam && (
+          <div className="mb-4 text-sm text-gray-600">
+            Status: {selectedExam.published ? "Published" : "Draft"}
           </div>
+        )}
 
-          {options.map((opt, i) => (
-            <div key={i}>
-              <label className="block mb-1">Option {i + 1}</label>
-              <input
-                className="w-full p-2 border rounded-lg"
-                value={opt}
-                onChange={(e) => {
-                  const arr = [...options];
-                  arr[i] = e.target.value;
-                  setOptions(arr);
-                }}
+        {/* MCQ SECTION */}
+        {canAddMCQ && (
+          <form
+            onSubmit={handleAddMCQ}
+            className="bg-white p-6 rounded-xl shadow space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-purple-700">
+              Add MCQ Question
+            </h2>
+
+            <div>
+              <label className="block mb-1">Question</label>
+              <textarea
+                className="w-full p-3 border rounded-lg"
+                value={questionText}
+                onChange={(e) => setQuestionText(e.target.value)}
                 required
               />
             </div>
-          ))}
 
-          <div className="grid grid-cols-2 gap-4">
+            {options.map((opt, i) => (
+              <div key={i}>
+                <label className="block mb-1">Option {i + 1}</label>
+                <input
+                  className="w-full p-2 border rounded-lg"
+                  value={opt}
+                  onChange={(e) => {
+                    const arr = [...options];
+                    arr[i] = e.target.value;
+                    setOptions(arr);
+                  }}
+                  required
+                />
+              </div>
+            ))}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1">Correct Option (0–3)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={3}
+                  value={correctOption}
+                  onChange={(e) => setCorrectOption(Number(e.target.value))}
+                  className="w-full p-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Marks</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={marks}
+                  onChange={(e) => setMarks(Number(e.target.value))}
+                  className="w-full p-2 border rounded-lg"
+                />
+              </div>
+            </div>
+
+            <button className="bg-purple-600 text-white px-6 py-2 rounded-lg">
+              Add MCQ
+            </button>
+
+            <p className="text-sm text-gray-500">
+              Added {questionCount} / {selectedExam.totalQuestions}
+            </p>
+          </form>
+        )}
+
+        {/* THEORY SECTION */}
+        {canAddTheory && (
+          <form
+            onSubmit={handleAddTheory}
+            className="bg-white p-6 rounded-xl shadow space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-blue-700">
+              Add Theory Question
+            </h2>
+
             <div>
-              <label className="block mb-1">Correct Option (0–3)</label>
-              <input
-                type="number"
-                min={0}
-                max={3}
-                value={correctOption}
-                onChange={(e) => setCorrectOption(Number(e.target.value))}
-                className="w-full p-2 border rounded-lg"
+              <label className="block mb-1">Question</label>
+              <textarea
+                className="w-full p-3 border rounded-lg"
+                value={theoryQuestion}
+                onChange={(e) => setTheoryQuestion(e.target.value)}
+                required
               />
             </div>
+
             <div>
               <label className="block mb-1">Marks</label>
               <input
                 type="number"
                 min={1}
-                value={marks}
-                onChange={(e) => setMarks(Number(e.target.value))}
+                value={theoryMarks}
+                onChange={(e) => setTheoryMarks(Number(e.target.value))}
                 className="w-full p-2 border rounded-lg"
               />
             </div>
-          </div>
 
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-lg">
-            Add MCQ
-          </button>
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+              Add Theory Question
+            </button>
+          </form>
+        )}
 
-          <p className="text-sm text-gray-500">
-            Added {questionCount} / {selectedExam.totalQuestions}
+        {/* LOCKED MESSAGE */}
+        {selectedExam && selectedExam.published && (
+          <p className="text-red-500 mt-6">
+            This exam is published. Question editing is locked.
           </p>
-        </form>
-      )}
-
-      {/* THEORY SECTION */}
-      {canAddTheory && (
-        <form
-          onSubmit={handleAddTheory}
-          className="bg-white p-6 rounded-xl shadow space-y-4"
-        >
-          <h2 className="text-xl font-semibold text-blue-700">
-            Add Theory Question
-          </h2>
-
-          <div>
-            <label className="block mb-1">Question</label>
-            <textarea
-              className="w-full p-3 border rounded-lg"
-              value={theoryQuestion}
-              onChange={(e) => setTheoryQuestion(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1">Marks</label>
-            <input
-              type="number"
-              min={1}
-              value={theoryMarks}
-              onChange={(e) => setTheoryMarks(Number(e.target.value))}
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
-
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
-            Add Theory Question
-          </button>
-        </form>
-      )}
-
-      {/* LOCKED MESSAGE */}
-      {selectedExam && selectedExam.published && (
-        <p className="text-red-500 mt-6">
-          This exam is published. Question editing is locked.
-        </p>
-      )}
+        )}
+      </div>
     </main>
   );
 }

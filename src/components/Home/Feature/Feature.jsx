@@ -122,13 +122,11 @@ const cardVariants = {
 export default function Feature() {
   return (
     <section className="relative py-24 bg-emerald-950 overflow-hidden">
-      
       {/* Background Decorative Glows */}
       <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
@@ -137,13 +135,15 @@ export default function Feature() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/60 border border-emerald-700/50 text-emerald-300 text-sm font-semibold mb-6 backdrop-blur-sm"
           >
             Core Capabilities
           </motion.div>
-          
+
           <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
             Advanced{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">
@@ -198,7 +198,7 @@ export default function Feature() {
               <div className="p-6 flex-1 flex flex-col relative">
                 {/* Subtle top border accent on hover */}
                 <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                
+
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300 flex items-center gap-2">
                   {feature.title}
                 </h3>

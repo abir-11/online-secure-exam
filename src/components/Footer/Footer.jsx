@@ -2,6 +2,7 @@
 "use client";
 
 import { FaHeart, FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
+import { FaSquareXTwitter } from "react-icons/fa6";
 import { IoShield } from "react-icons/io5";
 import Link from "next/link";
 
@@ -10,7 +11,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-emerald-950 text-emerald-100/80 py-16 relative overflow-hidden border-t border-emerald-900/50">
-      
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 via-teal-400 to-emerald-600"></div>
       <div className="absolute -top-40 -left-40 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -18,7 +18,6 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 mt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-          
           {/* Brand Section */}
           <div className="lg:col-span-2 space-y-6">
             <Link href="/" className="inline-flex items-center gap-3 group">
@@ -39,7 +38,8 @@ export default function Footer() {
                 href="#"
                 className="text-emerald-200/50 hover:text-emerald-400 hover:-translate-y-1 transition-all duration-300"
               >
-                <FaTwitter size={20} />
+                {/* <FaTwitter size={20} /> */}
+                <FaSquareXTwitter size={20} />
               </a>
               <a
                 href="#"

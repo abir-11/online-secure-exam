@@ -108,9 +108,6 @@ export default function LoginContent() {
           return;
         }
         router.push("/dashboard");
-        // if (dbRole === "admin") router.push("/dashboard/admin");
-        // else if (dbRole === "instructor") router.push("/dashboard/instructor");
-        // else router.push("/dashboard/student");
       }, 1200);
     } catch (error) {
       setLoading(false);

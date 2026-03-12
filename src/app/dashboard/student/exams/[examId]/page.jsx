@@ -1,6 +1,6 @@
+//dashboard/student/exams/[examId]/page.jsx
 "use client";
 
-//dashboard/student/exams/[examId]/page.jsx
 import { useEffect, useState } from "react";
 
 export default function StudentExamPage({ params }) {

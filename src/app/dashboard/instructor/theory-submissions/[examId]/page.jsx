@@ -39,13 +39,13 @@ export default function InstructorTheorySubmissionsPage() {
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
 
   return (
-    <main className="p-6">
+    <main className="p-6 bg-primary min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
 
       {submissions.length === 0 && <p>No submissions found.</p>}
 
       {submissions.map((s) => (
-        <div key={s._id} className="border p-4 mb-4 rounded">
+        <div key={s._id} className="border-8 border-teal-500 p-4 mb-4 rounded">
           <p className="font-semibold">Student: {s.studentEmail}</p>
 
           <div className="mt-2">
@@ -74,7 +74,7 @@ export default function InstructorTheorySubmissionsPage() {
                         className="border px-2 py-1 w-24"
                       />
                       <button
-                        className="bg-blue-600 text-white px-4 py-1 rounded"
+                        className="bg-teal-600 text-white px-4 py-1 rounded"
                         onClick={() =>
                           gradeSubmission(
                             s._id,
