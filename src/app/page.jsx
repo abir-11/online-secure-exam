@@ -7,6 +7,7 @@ import HomeHero from "@/components/Home/Home-Hero/HomeHero";
 import Newsletter from "@/components/Home/Newsletter/page";
 import PricingSection from "@/components/Home/PricingSection/page";
 import Trusted from "@/components/Home/Trusted/Trusted";
+import StudentReviews from "@/components/Home/StudentReviews/page";
 
 export default function Home() {
   return (
@@ -17,9 +18,10 @@ export default function Home() {
       <CourseCategories></CourseCategories>
       <Feature />
 
-      <LearnerResources />
+      
       <PricingSection></PricingSection>
-
+       <LearnerResources />
+       <StudentReviews></StudentReviews>
       <GetStarted />
       <Newsletter></Newsletter>
     </div>
