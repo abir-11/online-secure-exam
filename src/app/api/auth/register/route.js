@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { getCollection } from "@/lib/dbConnect";
 
+import { logActivity } from "@/lib/activityLogger";
+
 export async function POST(req) {
   try {
     const body = await req.json();
@@ -39,6 +41,16 @@ export async function POST(req) {
       // Track login attempts and lock state
       failedLoginAttempts: 0,
       isLocked: false,
+    });
+
+    // Activity Log for new registration
+    await logActivity({
+      userId: result.insertedId,
+      userName: name,
+      userEmail: email,
+      userRole: role,
+      action: "joined_platform",
+      details: "New user registration",
     });
 
     return NextResponse.json({
