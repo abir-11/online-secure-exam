@@ -14,35 +14,6 @@ export default function OnlineCoursesPage() {
         </div>
       </div>
 
-  return (
-    <main className="bg-primary min-h-screen">
-      <div className="p-6">
-        <h1 className="text-3xl font-bold mb-2">Online Courses & Exams</h1>
-        <p className="text-gray-600 mb-8">
-          Explore and purchase our online courses to enhance your learning
-        </p>
-
-        {courses.length === 0 ? (
-          <div className="bg-white p-8 rounded-lg shadow text-center">
-            <p className="text-gray-500 text-lg">
-              No courses available at the moment
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <CourseCard
-                key={course._id}
-                course={course}
-                onBuyNow={handleBuyNow}
-              />
-            ))}
-          </div>
-        )}
-
-        {showPaymentModal && selectedCourse && (
-          <PaymentModal course={selectedCourse} onClose={handlePaymentClose} />
-        )}
       <div className="mt-8 transition-all duration-300">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
           {/* Widget 1: Free Learning */}
