@@ -25,7 +25,7 @@ export default function AdminDashboard() {
           </div>
         </Link>
 
-        <Link href="/dashboard/admin/reports">
+        {/* <Link href="/dashboard/admin/reports">
           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
               📊 Reports & Analytics
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
               View exam reports and system analytics
             </p>
           </div>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
