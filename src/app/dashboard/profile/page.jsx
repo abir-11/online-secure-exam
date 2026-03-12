@@ -119,7 +119,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
+    <div className="min-h-screen p-6 bg-primary">
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 bg-teal-100 border-b border-teal-200">

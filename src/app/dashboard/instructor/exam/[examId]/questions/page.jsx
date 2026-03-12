@@ -202,265 +202,275 @@ export default function ExamQuestionsPage() {
   if (loading) return <p className="p-6">Loading exam...</p>;
 
   return (
-    <main className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Exam: {exam?.title || "-"}
-      </h1>
+    <main className="bg-primary min-h-screen">
+      <div className="p-6 max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          Exam: {exam?.title || "-"}
+        </h1>
 
-      <div className="mb-4">
-        <button
-          onClick={openAdd}
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Add Question
-        </button>
-      </div>
+        <div className="mb-4">
+          <button
+            onClick={openAdd}
+            className="px-4 py-2 bg-teal-600 text-white rounded"
+          >
+            Add Question
+          </button>
+        </div>
 
-      {questions.length === 0 ? (
-        <p>No questions added yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {questions.map((q) => (
-            <li
-              key={q._id}
-              className="p-4 bg-white shadow rounded-lg flex justify-between items-start"
-            >
-              <div>
-                <p className="font-semibold">{q.questionText}</p>
+        {questions.length === 0 ? (
+          <p>No questions added yet.</p>
+        ) : (
+          <ul className="space-y-4">
+            {questions.map((q) => (
+              <li
+                key={q._id}
+                className="p-4 bg-white shadow rounded-lg flex justify-between items-start"
+              >
+                <div>
+                  <p className="font-semibold">{q.questionText}</p>
+
+                  {exam.type === "mcq" && (
+                    <ul className="list-disc pl-5 mt-1 text-sm text-gray-700">
+                      {q.options?.map((opt, i) => (
+                        <li
+                          key={i}
+                          className={
+                            i === q.correctOption ? "text-green-600" : ""
+                          }
+                        >
+                          {opt}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <p className="text-xs text-gray-500">
+                    Marks: {q.marks || 1} | Category: {q.category || "-"}
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    className="text-blue-600 hover:text-blue-800"
+                    onClick={() => openEdit(q)}
+                  >
+                    <Edit size={16} />
+                  </button>
+
+                  <button
+                    className="text-red-600 hover:text-red-800"
+                    onClick={() => handleDelete(q)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* ------------------- Add Modal ------------------- */}
+
+        {addOpen && (
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
+            <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4">Add Question</h2>
+
+              <form onSubmit={handleAddSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-medium mb-1">
+                    Question Text
+                  </label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={qText}
+                    onChange={(e) => setQText(e.target.value)}
+                    required
+                  />
+                </div>
 
                 {exam.type === "mcq" && (
-                  <ul className="list-disc pl-5 mt-1 text-sm text-gray-700">
-                    {q.options?.map((opt, i) => (
-                      <li
-                        key={i}
-                        className={
-                          i === q.correctOption ? "text-green-600" : ""
-                        }
-                      >
-                        {opt}
-                      </li>
+                  <>
+                    {options.map((opt, i) => (
+                      <div key={i}>
+                        <label className="block mb-1">Option {i + 1}</label>
+                        <input
+                          className="w-full p-2 border rounded mb-1"
+                          value={opt}
+                          onChange={(e) => {
+                            const arr = [...options];
+                            arr[i] = e.target.value;
+                            setOptions(arr);
+                          }}
+                          required
+                        />
+                      </div>
                     ))}
-                  </ul>
+
+                    <div>
+                      <label className="block mb-1">Correct Option (0–3)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={3}
+                        value={correctOption}
+                        onChange={(e) =>
+                          setCorrectOption(Number(e.target.value))
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </>
                 )}
 
-                <p className="text-xs text-gray-500">
-                  Marks: {q.marks || 1} | Category: {q.category || "-"}
-                </p>
-              </div>
+                <div>
+                  <label className="block mb-1">Marks</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={marks}
+                    onChange={(e) => setMarks(Number(e.target.value))}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
 
-              <div className="flex gap-2">
-                <button
-                  className="text-blue-600 hover:text-blue-800"
-                  onClick={() => openEdit(q)}
-                >
-                  <Edit size={16} />
-                </button>
+                <div>
+                  <label className="block mb-1">Category</label>
+                  <select
+                    className="w-full p-2 border rounded"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">-- Select Category --</option>
+                    <option value="Math">Math</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                  </select>
+                </div>
 
-                <button
-                  className="text-red-600 hover:text-red-800"
-                  onClick={() => handleDelete(q)}
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded bg-gray-300"
+                    onClick={() => setAddOpen(false)}
+                  >
+                    Cancel
+                  </button>
 
-      {/* ------------------- Add Modal ------------------- */}
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded bg-green-600 text-white"
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
-      {addOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
-          <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Add Question</h2>
+        {/* ------------------- Edit Modal ------------------- */}
 
-            <form onSubmit={handleAddSubmit} className="space-y-4">
-              <div>
-                <label className="block font-medium mb-1">Question Text</label>
-                <textarea
-                  className="w-full p-2 border rounded"
-                  value={qText}
-                  onChange={(e) => setQText(e.target.value)}
-                  required
-                />
-              </div>
+        {editOpen && (
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
+            <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4">Edit Question</h2>
 
-              {exam.type === "mcq" && (
-                <>
-                  {options.map((opt, i) => (
-                    <div key={i}>
-                      <label className="block mb-1">Option {i + 1}</label>
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-medium mb-1">
+                    Question Text
+                  </label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={qText}
+                    onChange={(e) => setQText(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {exam.type === "mcq" && (
+                  <>
+                    {options.map((opt, i) => (
+                      <div key={i}>
+                        <label className="block mb-1">Option {i + 1}</label>
+                        <input
+                          className="w-full p-2 border rounded mb-1"
+                          value={opt}
+                          onChange={(e) => {
+                            const arr = [...options];
+                            arr[i] = e.target.value;
+                            setOptions(arr);
+                          }}
+                          required
+                        />
+                      </div>
+                    ))}
+
+                    <div>
+                      <label className="block mb-1">Correct Option (0–3)</label>
                       <input
-                        className="w-full p-2 border rounded mb-1"
-                        value={opt}
-                        onChange={(e) => {
-                          const arr = [...options];
-                          arr[i] = e.target.value;
-                          setOptions(arr);
-                        }}
-                        required
+                        type="number"
+                        min={0}
+                        max={3}
+                        value={correctOption}
+                        onChange={(e) =>
+                          setCorrectOption(Number(e.target.value))
+                        }
+                        className="w-full p-2 border rounded"
                       />
                     </div>
-                  ))}
+                  </>
+                )}
 
-                  <div>
-                    <label className="block mb-1">Correct Option (0–3)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={3}
-                      value={correctOption}
-                      onChange={(e) => setCorrectOption(Number(e.target.value))}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                </>
-              )}
+                <div>
+                  <label className="block mb-1">Marks</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={marks}
+                    onChange={(e) => setMarks(Number(e.target.value))}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
 
-              <div>
-                <label className="block mb-1">Marks</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={marks}
-                  onChange={(e) => setMarks(Number(e.target.value))}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+                <div>
+                  <label className="block mb-1">Category</label>
+                  <select
+                    className="w-full p-2 border rounded"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">-- Select Category --</option>
+                    <option value="Math">Math</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block mb-1">Category</label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="">-- Select Category --</option>
-                  <option value="Math">Math</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Biology">Biology</option>
-                </select>
-              </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded bg-gray-300"
+                    onClick={() => setEditOpen(false)}
+                  >
+                    Cancel
+                  </button>
 
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 rounded bg-gray-300"
-                  onClick={() => setAddOpen(false)}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded bg-green-600 text-white"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded bg-teal-600 text-white"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* ------------------- Edit Modal ------------------- */}
-
-      {editOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
-          <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Edit Question</h2>
-
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              <div>
-                <label className="block font-medium mb-1">Question Text</label>
-                <textarea
-                  className="w-full p-2 border rounded"
-                  value={qText}
-                  onChange={(e) => setQText(e.target.value)}
-                  required
-                />
-              </div>
-
-              {exam.type === "mcq" && (
-                <>
-                  {options.map((opt, i) => (
-                    <div key={i}>
-                      <label className="block mb-1">Option {i + 1}</label>
-                      <input
-                        className="w-full p-2 border rounded mb-1"
-                        value={opt}
-                        onChange={(e) => {
-                          const arr = [...options];
-                          arr[i] = e.target.value;
-                          setOptions(arr);
-                        }}
-                        required
-                      />
-                    </div>
-                  ))}
-
-                  <div>
-                    <label className="block mb-1">Correct Option (0–3)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={3}
-                      value={correctOption}
-                      onChange={(e) => setCorrectOption(Number(e.target.value))}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                </>
-              )}
-
-              <div>
-                <label className="block mb-1">Marks</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={marks}
-                  onChange={(e) => setMarks(Number(e.target.value))}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1">Category</label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="">-- Select Category --</option>
-                  <option value="Math">Math</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Biology">Biology</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 rounded bg-gray-300"
-                  onClick={() => setEditOpen(false)}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded bg-blue-600 text-white"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   );
 }

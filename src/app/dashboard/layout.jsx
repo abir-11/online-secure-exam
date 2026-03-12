@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }) {
       {/* Sidebar */}
       <aside
         ref={menuRef}
-        className={`fixed inset-y-0 left-0 w-64 bg-[#0D7C66] text-white p-4 flex flex-col justify-between z-30 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static ${
+        className={`fixed inset-y-0 left-0 w-64 bg-secondary text-white p-4 flex flex-col justify-between z-30 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -301,7 +301,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <main className="flex-1 min-h-screen pt-16 lg:pt-0">
-        <div className="p-4 lg:p-6">{children}</div>
+        <div className="">{children}</div>
       </main>
     </div>
   );
