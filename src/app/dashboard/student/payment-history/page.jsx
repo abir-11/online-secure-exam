@@ -84,6 +84,64 @@ export default function PaymentHistoryPage() {
                     <th className="px-6 py-4 text-left font-semibold">
                       Transaction ID
                     </th>
+      {payments.length === 0 ? (
+        <div className="bg-white p-8 rounded-lg shadow text-center">
+          <p className="text-gray-500 text-lg">No payments yet</p>
+          <p className="text-gray-400 mt-2">
+            Your payment history will appear here once you make a purchase
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#0D7C66] text-white">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">Course/Exam</th>
+                  <th className="px-6 py-4 text-left font-semibold">Amount</th>
+                  <th className="px-6 py-4 text-left font-semibold">Status</th>
+                  <th className="px-6 py-4 text-left font-semibold">Date</th>
+                  <th className="px-6 py-4 text-left font-semibold">Time</th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Transaction ID
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((payment, index) => (
+                  <tr
+                    key={payment._id}
+                    className={`border-b ${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100 transition-colors`}
+                  >
+                    <td className="px-6 py-4 font-medium">{payment.courseName}</td>
+                    <td className="px-6 py-4 font-semibold text-[#0D7C66]">
+                      ${(payment.amount / 100).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                          payment.status === "completed"
+                            ? "bg-green-200 text-green-800"
+                            : payment.status === "pending"
+                            ? "bg-yellow-200 text-yellow-800"
+                            : "bg-red-200 text-red-800"
+                        }`}
+                      >
+                        {payment.status.charAt(0).toUpperCase() +
+                          payment.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">
+                      {formatDate(payment.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">
+                      {formatTime(payment.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 font-mono">
+                      {payment.transactionId || "N/A"}
+                    </td>
                   </tr>
                 </thead>
                 <tbody>

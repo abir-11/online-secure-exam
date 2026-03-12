@@ -1,10 +1,11 @@
-
 // ----------- role added
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { getCollection } from "@/lib/dbConnect";
+
+import { logActivity } from "@/lib/activityLogger";
 
 export const authOptions = {
   session: {
@@ -43,7 +44,9 @@ export const authOptions = {
 
           // If profile is already locked, block login immediately
           if (user.isLocked) {
-            throw new Error("Your profile is locked. Please reset your password.");
+            throw new Error(
+              "Your profile is locked. Please reset your password.",
+            );
           }
 
           const isPasswordCorrect = await bcrypt.compare(
@@ -66,10 +69,7 @@ export const authOptions = {
               updateDoc.$set.isLocked = true;
             }
 
-            await usersCollection.updateOne(
-              { _id: user._id },
-              updateDoc,
-            );
+            await usersCollection.updateOne({ _id: user._id }, updateDoc);
 
             if (updatedAttempts >= 3) {
               throw new Error(
@@ -84,6 +84,16 @@ export const authOptions = {
           if (credentials.role && credentials.role !== user.role) {
             throw new Error("Role mismatch");
           }
+
+          // Activity Log for successful login
+          await logActivity({
+            userId: user._id.toString(),
+            userName: user.name,
+            userEmail: user.email,
+            userRole: user.role,
+            action: "logged_in",
+            details: "User logged in",
+          });
 
           // Successful login: reset failed attempts and unlock if needed
           if (user.failedLoginAttempts || user.isLocked) {

@@ -37,9 +37,26 @@ export default function MyExamsPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-teal-900 mb-6">My Exams</h1>
 
+        {/* Static Demo Exam Widget */}
+        <div className="bg-white shadow-md hover:shadow-lg rounded-xl p-5 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-teal-500 transition-all duration-200">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-bold text-teal-900 text-xl">Demo Exam</h2>
+            <p className="text-gray-600">Duration: No time limit</p>
+            <p className="text-sm text-teal-600">Static practice questions to get you started</p>
+          </div>
+          <div className="mt-3 sm:mt-0">
+            <a
+              href="/dashboard/student/demo-exam"
+              className="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors duration-200 inline-block shadow-sm"
+            >
+              Start Demo
+            </a>
+          </div>
+        </div>
+
         {exams.length === 0 ? (
           <div className="p-6 bg-teal-100 border-l-4 border-teal-400 text-teal-800 rounded shadow-md">
-            No exams assigned yet.
+            No exam published yet.
           </div>
         ) : (
           <ul className="space-y-4">
