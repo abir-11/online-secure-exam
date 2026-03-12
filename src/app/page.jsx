@@ -16,8 +16,10 @@ export default function Home() {
       <Trusted />
       <CourseCategories></CourseCategories>
       <Feature />
+
       <LearnerResources />
       <PricingSection></PricingSection>
+
       <GetStarted />
       <Newsletter></Newsletter>
     </div>
