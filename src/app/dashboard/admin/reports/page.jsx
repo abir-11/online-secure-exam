@@ -156,7 +156,7 @@ export default function AdminReportsPage() {
       name: "Batch Analytics",
       icon: PieChart,
       description: "Insights per batch",
-      path: "#",
+      path: "/dashboard/admin/reports/batch-analytics",
       color: "from-orange-500 to-orange-600",
     },
     {
