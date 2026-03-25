@@ -148,7 +148,7 @@ export default function AdminReportsPage() {
       name: "Exam Reports",
       icon: FileText,
       description: "Detailed exam results",
-      path: "#",
+      path: "/dashboard/admin/reports/exam-reports",
       color: "from-purple-500 to-purple-600",
     },
     {

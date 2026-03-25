@@ -9,13 +9,12 @@ import {
   TrendingUp,
   Award,
   Calendar,
-  Clock,
   Search,
   ChevronRight,
   BarChart3,
-  PieChart,
   CheckCircle,
   XCircle,
+  Eye,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -23,11 +22,13 @@ import toast from "react-hot-toast";
 export default function ExamReportsPage() {
   const router = useRouter();
   const [exams, setExams] = useState([]);
+  const [allExams, setAllExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
   const [examDetail, setExamDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAllExams, setShowAllExams] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
 
@@ -39,7 +40,10 @@ export default function ExamReportsPage() {
     try {
       setLoading(true);
       const res = await axios.get("/api/admin/reports/exam-reports");
-      setExams(res.data.exams || []);
+      const examList = res.data.exams || [];
+      setAllExams(examList);
+      // Show only 5 exams initially
+      setExams(examList.slice(0, 5));
     } catch (error) {
       toast.error("Failed to load exams");
       console.error(error);
@@ -65,23 +69,33 @@ export default function ExamReportsPage() {
     }
   };
 
+  const handleShowAll = () => {
+    setShowAllExams(true);
+    setExams(allExams);
+  };
+
+  const handleShowLess = () => {
+    setShowAllExams(false);
+    setExams(allExams.slice(0, 5));
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    const filtered = allExams.filter((exam) =>
+      exam.title?.toLowerCase().includes(term.toLowerCase()),
+    );
+    if (showAllExams) {
+      setExams(filtered);
+    } else {
+      setExams(filtered.slice(0, 5));
+    }
+  };
+
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
     if (selectedExam) {
       fetchExamDetail(selectedExam);
     }
-  };
-
-  const filteredExams = exams.filter((exam) =>
-    exam.title?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const getScoreColor = (percentage) => {
-    const p = parseFloat(percentage);
-    if (p >= 80) return "text-green-600";
-    if (p >= 60) return "text-blue-600";
-    if (p >= 40) return "text-yellow-600";
-    return "text-red-600";
   };
 
   const getScoreBgColor = (percentage) => {
@@ -90,6 +104,14 @@ export default function ExamReportsPage() {
     if (p >= 60) return "bg-blue-100";
     if (p >= 40) return "bg-yellow-100";
     return "bg-red-100";
+  };
+
+  const getScoreColor = (percentage) => {
+    const p = parseFloat(percentage);
+    if (p >= 80) return "text-green-600";
+    if (p >= 60) return "text-blue-600";
+    if (p >= 40) return "text-yellow-600";
+    return "text-red-600";
   };
 
   if (loading) {
@@ -127,23 +149,23 @@ export default function ExamReportsPage() {
             type="text"
             placeholder="Search exams..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
           />
         </div>
       </div>
 
       {/* Exam List */}
-      <div className="grid grid-cols-1 gap-4 mb-6">
-        {filteredExams.map((exam) => (
-          <div
-            key={exam.id}
-            className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer ${
-              selectedExam === exam.id ? "ring-2 ring-[#0D7C66]" : ""
-            }`}
-            onClick={() => fetchExamDetail(exam.id)}
-          >
-            <div className="p-4 md:p-5">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+        <div className="divide-y">
+          {exams.map((exam) => (
+            <div
+              key={exam.id}
+              className={`p-4 md:p-5 hover:bg-gray-50 transition-all cursor-pointer ${
+                selectedExam === exam.id ? "bg-[#0D7C66]/5" : ""
+              }`}
+              onClick={() => fetchExamDetail(exam.id)}
+            >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -189,12 +211,36 @@ export default function ExamReportsPage() {
                 />
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* View All / Show Less Button */}
+        {!showAllExams && allExams.length > 5 && (
+          <div className="p-3 border-t text-center">
+            <button
+              onClick={handleShowAll}
+              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+            >
+              View All ({allExams.length} exams)
+              <Eye className="w-4 h-4" />
+            </button>
           </div>
-        ))}
-        {filteredExams.length === 0 && (
-          <div className="bg-white rounded-xl p-8 text-center text-gray-500">
-            No exams found
+        )}
+
+        {showAllExams && allExams.length > 5 && (
+          <div className="p-3 border-t text-center">
+            <button
+              onClick={handleShowLess}
+              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+            >
+              Show Less
+              <ChevronRight className="w-4 h-4 rotate-90" />
+            </button>
           </div>
+        )}
+
+        {exams.length === 0 && (
+          <div className="p-8 text-center text-gray-500">No exams found</div>
         )}
       </div>
 
