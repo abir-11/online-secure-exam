@@ -105,7 +105,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                  href="/community/blog"
                   className="hover:text-emerald-400 hover:translate-x-1 inline-block transition-all duration-300"
                 >
                   Blog
