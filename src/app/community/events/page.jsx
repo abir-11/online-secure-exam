@@ -237,7 +237,7 @@ const EventCard = ({ event }) => (
 const UpcomingEventCard = ({ event }) => {
   const [interested, setInterested] = useState(false);
   return (
-    <div className="bg-gray-800 dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-transform duration-300 hover:scale-105">
+    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-transform duration-300 hover:scale-105">
       <img
         src={event.image}
         alt={event.title}
@@ -267,7 +267,7 @@ const UpcomingEventCard = ({ event }) => {
 
 const EventsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 md:px-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#022c22] text-white px-4 sm:px-6 lg:px-12 py-16">
       <div className="max-w-7xl mx-auto text-center">
         <h1 className="text-4xl font-extrabold text-green-400 mb-12">
           Previous Events
