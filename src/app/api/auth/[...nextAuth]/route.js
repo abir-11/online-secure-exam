@@ -42,6 +42,14 @@ export const authOptions = {
             throw new Error("User not found");
           }
 
+          // Inactive user check
+          if (user.isActive === false) {
+            console.log(`Blocked login for inactive user: ${user.email}`);
+            throw new Error(
+              "Your account is inactive. Please contact the administrator.",
+            );
+          }
+
           // If profile is already locked, block login immediately
           if (user.isLocked) {
             throw new Error(
