@@ -133,7 +133,7 @@ export default function DashboardLayout({ children }) {
                   href="/dashboard/admin/users"
                   className={mobileLinkClass("/dashboard/admin/users")}
                 >
-                  <span>Active Users</span>
+                  <span>User Mangement</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
                 <Link
