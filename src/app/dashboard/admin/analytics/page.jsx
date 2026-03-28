@@ -287,7 +287,7 @@ export default function AdminAnalyticsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* New Registrations */}
         <ActivitySection
-          router={router} // ✅ router prop পাঠাচ্ছি
+          router={router}
           icon={UserPlus}
           title="New Registrations"
           count={activitiesByType.counts.registrations}
@@ -496,6 +496,8 @@ function ActivitySection({
   iconColor,
   type,
 }) {
+  const displayedActivities = activities.slice(0, 5);
+
   const getActionIcon = (action) => {
     switch (action) {
       case "purchased_course":
@@ -520,7 +522,6 @@ function ActivitySection({
     return `${Math.floor(diffMins / 60)} hour ago`;
   };
 
-  // View All click handler
   const handleViewAll = () => {
     switch (type) {
       case "registrations":
@@ -551,7 +552,6 @@ function ActivitySection({
             <p className="text-sm text-gray-500">{count} today</p>
           </div>
         </div>
-        {/* View All Button */}
         <button
           onClick={handleViewAll}
           className="text-sm text-[#0D7C66] hover:text-[#41B3A2] flex items-center gap-1 transition-colors"
@@ -561,8 +561,8 @@ function ActivitySection({
       </div>
 
       <div className="space-y-3">
-        {activities.length > 0 ? (
-          activities.map((act, i) => (
+        {displayedActivities.length > 0 ? (
+          displayedActivities.map((act, i) => (
             <div
               key={i}
               className="flex items-start gap-3 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
