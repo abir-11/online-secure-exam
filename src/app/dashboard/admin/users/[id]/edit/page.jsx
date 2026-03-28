@@ -81,7 +81,7 @@ export default function EditUserPage() {
         router.push("/dashboard/admin/users");
       }
     } catch (error) {
-      console.error("❌ Update error:", error);
+      console.error("Update error:", error);
       toast.error(error.response?.data?.error || "Failed to update user");
     } finally {
       setSaving(false);
@@ -154,7 +154,7 @@ export default function EditUserPage() {
               </div>
             </div>
 
-            {/* Department Field */}
+            {/* Department Field
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Department
@@ -167,7 +167,7 @@ export default function EditUserPage() {
                 }
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
               />
-            </div>
+            </div> */}
 
             {/* Status Field */}
             <div>
