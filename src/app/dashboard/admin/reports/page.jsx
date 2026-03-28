@@ -135,14 +135,14 @@ export default function AdminReportsPage() {
       path: "/dashboard/admin/reports/student-performance",
       color: "from-blue-500 to-blue-600",
     },
-    {
-      id: 2,
-      name: "Attendance",
-      icon: Users,
-      description: "Track student attendance",
-      path: "#",
-      color: "from-green-500 to-green-600",
-    },
+    // {
+    //   id: 2,
+    //   name: "Attendance",
+    //   icon: Users,
+    //   description: "Track student attendance",
+    //   path: "#",
+    //   color: "from-green-500 to-green-600",
+    // },
     {
       id: 3,
       name: "Exam Reports",
@@ -164,7 +164,7 @@ export default function AdminReportsPage() {
       name: "Course Progress",
       icon: Layers,
       description: "Track course completion",
-      path: "#",
+      path: "/dashboard/admin/reports/course-progress",
       color: "from-teal-500 to-teal-600",
     },
   ];
