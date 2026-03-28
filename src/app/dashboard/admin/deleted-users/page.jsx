@@ -38,7 +38,7 @@ export default function DeletedUsersPage() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPrevPage, setHasPrevPage] = useState(false);
 
-  // ✅ Count states - সব deleted users থেকে calculate করব
+  // Count states
   const [counts, setCounts] = useState({
     total: 0,
     admin: 0,
@@ -46,7 +46,7 @@ export default function DeletedUsersPage() {
     student: 0,
   });
 
-  // ✅ Load counts when component mounts
+  // Load counts when component mounts
   useEffect(() => {
     fetchCounts();
   }, []);
@@ -56,10 +56,10 @@ export default function DeletedUsersPage() {
     fetchDeletedUsers();
   }, [currentPage, filter, pageSize, searchTerm]);
 
-  // ✅ আলাদা function for counts
+  // function for counts
   const fetchCounts = async () => {
     try {
-      // সব deleted users নিয়ে আসি (limit 1000 যাতে সব আসে)
+      // deleted users(limit 1000)
       const response = await axios.get("/api/admin/deleted-users?limit=1000");
       const allDeletedUsers = response.data.users;
 
@@ -71,7 +71,7 @@ export default function DeletedUsersPage() {
         student: allDeletedUsers.filter((u) => u.role === "student").length,
       });
 
-      console.log("✅ Counts updated:", {
+      console.log("Counts updated:", {
         total: allDeletedUsers.length,
         admin: allDeletedUsers.filter((u) => u.role === "admin").length,
         instructor: allDeletedUsers.filter((u) => u.role === "instructor")
@@ -117,7 +117,7 @@ export default function DeletedUsersPage() {
       try {
         await axios.post(`/api/admin/deleted-users/${userId}`);
         toast.success("User restored successfully");
-        // ✅ Restore করার পর counts এবং users দুটোই refresh
+        // Restore counts এবং users refresh
         await fetchCounts();
         await fetchDeletedUsers();
       } catch (error) {
@@ -135,7 +135,7 @@ export default function DeletedUsersPage() {
       try {
         await axios.delete(`/api/admin/deleted-users/${userId}`);
         toast.success("User permanently deleted");
-        // ✅ Permanent delete করার পর counts এবং users refresh
+        // Permanent delete counts এবং users refresh
         await fetchCounts();
         await fetchDeletedUsers();
       } catch (error) {
@@ -172,7 +172,7 @@ export default function DeletedUsersPage() {
     setCurrentPage(1);
   };
 
-  // ✅ Refresh both counts and users
+  // Refresh both counts and users
   const handleRefresh = () => {
     fetchCounts();
     fetchDeletedUsers();
@@ -185,7 +185,7 @@ export default function DeletedUsersPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">
-              🗑️ Deleted Users Archive
+              Deleted Users Archive
             </h1>
             <p className="text-white/80 mt-1">
               Restore or permanently delete archived users
@@ -193,7 +193,7 @@ export default function DeletedUsersPage() {
           </div>
           <Link
             href="/dashboard/admin/users"
-            className="bg-white text-red-600 px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
+            className="bg-white text-red-400 px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
           >
             <Users className="w-5 h-5" />
             Back to Active Users
@@ -201,7 +201,7 @@ export default function DeletedUsersPage() {
         </div>
       </div>
 
-      {/* Stats Cards - ✅ এখন counts state থেকে দেখাচ্ছে */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
         <StatCard
           icon={Archive}
@@ -248,7 +248,7 @@ export default function DeletedUsersPage() {
             />
           </div>
 
-          {/* Filter Buttons - ✅ counts state থেকে দেখাচ্ছে */}
+          {/* Filter Buttons  */}
           <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
             {[
               { key: "all", label: "All", count: counts.total },
@@ -265,11 +265,11 @@ export default function DeletedUsersPage() {
                 onClick={() => {
                   setFilter(f.key);
                   setCurrentPage(1);
-                  fetchCounts(); // ✅ counts refresh
+                  fetchCounts(); // counts refresh
                 }}
                 className={`px-4 py-2 rounded-xl whitespace-nowrap transition ${
                   filter === f.key
-                    ? "bg-red-600 text-white shadow-md"
+                    ? "bg-red-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
