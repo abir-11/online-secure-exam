@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
 
       <main className="flex-1 p-6 md:p-10 max-w-5xl mx-auto w-full">
         {/* Heading */}
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 bg-gradient-to-r from-[#34d399] to-[#10b981] text-transparent bg-clip-text">
+        <h1 className=" text-4xl md:text-5xl font-bold text-center mb-10 bg-gradient-to-r from-[#34d399] to-[#10b981] text-transparent bg-clip-text">
           Privacy Policy
         </h1>
 
