@@ -64,7 +64,7 @@ export default function RegisterPage() {
 
   // animation mapping based on role selection
   const getAnimationForRole = {
-    admin: educationAnimation,
+    // admin: educationAnimation,
     instructor: learningAnimation,
     student: studentAnimation,
   };
@@ -119,7 +119,7 @@ export default function RegisterPage() {
 
           {/* Role Selection */}
           <div className="flex gap-2 mb-8 bg-gray-50 p-1.5 rounded-2xl">
-            {["admin", "instructor", "student"].map((item) => (
+            {["instructor", "student"].map((item) => (
               <button
                 key={item}
                 type="button"
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                {item === "admin" && "👑 Admin"}
+                {/* {item === "admin" && "👑 Admin"} */}
                 {item === "instructor" && "📚 Instructor"}
                 {item === "student" && "🎓 Student"}
               </button>
