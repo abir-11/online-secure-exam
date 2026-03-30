@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { getCollection } from "@/lib/dbConnect";
-import { sendResetEmail } from "@/lib/email";
+import { generateOTP, sendOTPEmail } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -11,51 +10,44 @@ export async function POST(request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
+    // Get users collection
     const usersCollection = await getCollection("users");
+
+    // Find user
     const user = await usersCollection.findOne({ email });
 
-    // Always return success for security (don't reveal if user exists)
     if (!user) {
+      // Security: Don't reveal if user exists
       return NextResponse.json({
         success: true,
-        message: "If an account exists, a reset link has been sent.",
+        message: "If account exists, OTP will be sent",
       });
     }
 
-    // Generate JWT token (expires in 1 hour)
-    const resetToken = jwt.sign(
-      {
-        email: user.email,
-        userId: user._id.toString(),
-        purpose: "password_reset",
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
-    );
+    // Generate OTP
+    const otp = generateOTP();
+    const expires = new Date(Date.now() + 10 * 60 * 1000);
 
-    const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
-
-    // Save token to database
+    // Save OTP to user document
     await usersCollection.updateOne(
       { email },
       {
         $set: {
-          resetToken: resetToken,
-          resetTokenExpires: resetTokenExpires,
+          resetPasswordOTP: otp,
+          resetPasswordExpires: expires,
         },
       },
     );
 
-    const resetLink = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
-
-    await sendResetEmail(email, resetLink);
+    // Send email
+    await sendOTPEmail(email, otp);
 
     return NextResponse.json({
       success: true,
-      message: "If an account exists, a reset link has been sent.",
+      message: "OTP sent successfully",
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 },
