@@ -138,7 +138,7 @@ export default function ResetPasswordPage() {
 
       <div className="w-full max-w-md bg-white rounded-2xl md:rounded-3xl shadow-xl p-6 md:p-8">
         <Link
-          href="/login"
+          href="/auth/login"
           className="inline-flex items-center text-gray-500 hover:text-[#0D7C66] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

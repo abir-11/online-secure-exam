@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
             in 1 hour.
           </p>
           <Link
-            href="/login"
+            href="/auth/login"
             className="inline-block w-full py-3 bg-[#0D7C66] text-white rounded-xl hover:bg-[#41B3A2] transition text-sm md:text-base"
           >
             Return to Login
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-md bg-white rounded-2xl md:rounded-3xl shadow-xl p-6 md:p-8">
         <Link
-          href="/login"
+          href="/auth/login"
           className="inline-flex items-center text-gray-500 hover:text-[#0D7C66] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
