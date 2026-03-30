@@ -247,7 +247,7 @@ export default function AboutSction() {
         </p>
 
         <Link
-          href="#"
+          href="/auth/login"
           className="mt-8 inline-block px-8 py-3 bg-emerald-500 text-black font-semibold rounded-lg hover:scale-105 transition"
         >
           Get Started
