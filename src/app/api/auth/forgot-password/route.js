@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 import { getCollection } from "@/lib/dbConnect";
-import { generateOTP, sendOTPEmail } from "@/lib/email";
+import { sendResetEmail } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -10,44 +11,51 @@ export async function POST(request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Get users collection
     const usersCollection = await getCollection("users");
-
-    // Find user
     const user = await usersCollection.findOne({ email });
 
+    // Always return success for security (don't reveal if user exists)
     if (!user) {
-      // Security: Don't reveal if user exists
       return NextResponse.json({
         success: true,
-        message: "If account exists, OTP will be sent",
+        message: "If an account exists, a reset link has been sent.",
       });
     }
 
-    // Generate OTP
-    const otp = generateOTP();
-    const expires = new Date(Date.now() + 10 * 60 * 1000);
+    // Generate JWT token (expires in 1 hour)
+    const resetToken = jwt.sign(
+      {
+        email: user.email,
+        userId: user._id.toString(),
+        purpose: "password_reset",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" },
+    );
 
-    // Save OTP to user document
+    const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
+
+    // Save token to database
     await usersCollection.updateOne(
       { email },
       {
         $set: {
-          resetPasswordOTP: otp,
-          resetPasswordExpires: expires,
+          resetToken: resetToken,
+          resetTokenExpires: resetTokenExpires,
         },
       },
     );
 
-    // Send email
-    await sendOTPEmail(email, otp);
+    const resetLink = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
+
+    await sendResetEmail(email, resetLink);
 
     return NextResponse.json({
       success: true,
-      message: "OTP sent successfully",
+      message: "If an account exists, a reset link has been sent.",
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Forgot password error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 },
