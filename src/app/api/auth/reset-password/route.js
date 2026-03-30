@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { getCollection } from "@/lib/dbConnect";
 
 export async function POST(request) {
   try {
-    const { token, newPassword } = await request.json();
+    const { email, otp, newPassword } = await request.json();
 
-    if (!token || !newPassword) {
+    if (!email || !otp || !newPassword) {
       return NextResponse.json(
-        { error: "Token and new password are required" },
+        { error: "All fields required" },
         { status: 400 },
       );
     }
@@ -21,32 +20,17 @@ export async function POST(request) {
       );
     }
 
-    // Verify token
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" },
-        { status: 400 },
-      );
-    }
-
-    if (decoded.purpose !== "password_reset") {
-      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
-    }
-
     const usersCollection = await getCollection("users");
 
     const user = await usersCollection.findOne({
-      email: decoded.email,
-      resetToken: token,
-      resetTokenExpires: { $gt: new Date() },
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordExpires: { $gt: new Date() },
     });
 
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid or expired token" },
+        { error: "Invalid or expired OTP" },
         { status: 400 },
       );
     }
@@ -54,10 +38,15 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await usersCollection.updateOne(
-      { email: decoded.email },
+      { email },
       {
-        $set: { password: hashedPassword },
-        $unset: { resetToken: "", resetTokenExpires: "" },
+        $set: {
+          password: hashedPassword,
+          // Reset lock state on successful password reset
+          failedLoginAttempts: 0,
+          isLocked: false,
+        },
+        $unset: { resetPasswordOTP: "", resetPasswordExpires: "" },
       },
     );
 
@@ -66,7 +55,6 @@ export async function POST(request) {
       message: "Password reset successfully",
     });
   } catch (error) {
-    console.error("Reset password error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 },
