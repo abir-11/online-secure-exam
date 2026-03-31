@@ -17,7 +17,7 @@
     "chart.js": "^4.5.1",
     "cloudinary": "^2.9.0",
     "daisyui": "^5.5.18",
-    "framer-motion": "^12.34.3",
+    "framer-motion": "^12.38.0",
     "jsonwebtoken": "^9.0.3",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.575.0",

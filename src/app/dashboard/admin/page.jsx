@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -11,11 +12,14 @@ import {
   Activity,
   ArrowUp,
   ArrowDown,
-  Eye,
-  ShoppingCart,
-  UserCheck,
-  Clock,
   ChevronRight,
+  Sparkles,
+  BarChart3,
+  PieChart,
+  Clock,
+  Zap,
+  Award,
+  Calendar,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -23,7 +27,6 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
   Tooltip,
   Legend,
   Filler,
@@ -37,12 +40,30 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
-  Title,
   Tooltip,
   Legend,
   Filler,
   ArcElement,
 );
+
+// Animation variants
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.1 } },
+};
+
+const cardHover = {
+  hover: {
+    scale: 1.02,
+    boxShadow: "0 20px 25px -12px rgba(0,0,0,0.1)",
+    transition: { duration: 0.2 },
+  },
+};
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
@@ -60,77 +81,19 @@ export default function AdminDashboard() {
       setLoading(true);
       const statsRes = await axios.get("/api/admin/analytics/stats");
       setStats(statsRes.data.data);
+
       const activitiesRes = await axios.get("/api/admin/analytics/activities");
       setRecentActivities(activitiesRes.data.activities.slice(0, 5));
+
       const revenueRes = await axios.get(
         "/api/admin/analytics/revenue?period=week",
       );
       setRevenueData(revenueRes.data.data);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const revenueChartData = {
-    labels: revenueData?.labels || [],
-    datasets: [
-      {
-        label: "Revenue ($)",
-        data: revenueData?.values || [],
-        borderColor: "#0D7C66",
-        backgroundColor: "rgba(13, 124, 102, 0.1)",
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#0D7C66",
-        pointBorderColor: "white",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-      },
-    ],
-  };
-
-  const userDistributionData = {
-    labels: ["Students", "Instructors", "Admins"],
-    datasets: [
-      {
-        data: [
-          stats?.users?.students || 0,
-          stats?.users?.instructors || 0,
-          stats?.users?.admins || 0,
-        ],
-        backgroundColor: ["#10B981", "#3B82F6", "#8B5CF6"],
-        borderWidth: 0,
-      },
-    ],
-  };
-
-  const lineOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: { color: "#e2e8f0" },
-        ticks: { callback: (v) => `$${v}` },
-      },
-      x: { grid: { display: false } },
-    },
-  };
-
-  const pieOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { usePointStyle: true, boxWidth: 10, padding: 15 },
-      },
-      tooltip: { backgroundColor: "#1F2937" },
-    },
   };
 
   const formatTimeAgo = (timestamp) => {
@@ -140,239 +103,352 @@ export default function AdminDashboard() {
     return `${Math.floor(mins / 60)} hour ago`;
   };
 
-  const getActivityIcon = (action) => {
-    if (action === "purchased_course") return "🛒";
-    if (action === "joined_platform") return "🎉";
-    if (action === "logged_in") return "🔓";
-    return "📌";
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#0D7C66] border-t-transparent"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-[#0D7C66] border-t-transparent rounded-full"
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <DashboardCard
+    <div className="min-h-screen bg-[var(--color-primary-dark)] p-4 md:p-6 lg:p-8">
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 "
+      ></motion.div>
+
+      {/* Stats Cards Grid */}
+      <motion.div
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 "
+      >
+        <StatsCard
           icon={Users}
           title="Total Users"
-          value={stats?.users?.total?.toLocaleString() || "0"}
-          change={`+${stats?.users?.newToday || 0} today`}
-          changeType="up"
-          color="bg-blue-500"
+          value={stats?.users?.total?.toLocaleString()}
+          trend="+12%"
+          color="bg-[#0D7C66]"
+          delay={0}
         />
-        <DashboardCard
+        <StatsCard
           icon={BookOpen}
           title="Total Courses"
-          value={stats?.courses?.total?.toLocaleString() || "0"}
-          color="bg-purple-500"
+          value={stats?.courses?.total?.toLocaleString()}
+          trend="+5%"
+          color="bg-[#0D7C66]"
+          delay={0.1}
         />
-        <DashboardCard
+        <StatsCard
           icon={DollarSign}
           title="Total Revenue"
-          value={`$${stats?.payments?.totalRevenue || "0"}`}
-          change={`$${stats?.payments?.todayRevenue || "0"} today`}
-          changeType="up"
-          color="bg-green-500"
+          value={`$${stats?.payments?.totalRevenue}`}
+          trend="+23%"
+          color="bg-[#0D7C66]"
+          delay={0.2}
         />
-        <DashboardCard
+        <StatsCard
           icon={Activity}
           title="Active Today"
-          value={stats?.activity?.activeToday?.toLocaleString() || "0"}
-          color="bg-orange-500"
+          value={stats?.activity?.activeToday?.toLocaleString()}
+          trend="+8%"
+          color="bg-[#0D7C66]"
+          delay={0.3}
         />
-      </div>
+      </motion.div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            📈 Revenue Trend (Last 7 Days)
-          </h2>
-          <div className="h-64">
+      {/* Charts Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8"
+      >
+        {/* Revenue Chart Card */}
+        <motion.div
+          whileHover="hover"
+          variants={cardHover}
+          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+        >
+          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-[#0D7C66]" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Revenue Trend
+                </h2>
+              </div>
+              <motion.div
+                whileHover={{ x: 5 }}
+                className="text-xs text-[#0D7C66] bg-[#0D7C66]/10 px-3 py-1 rounded-full"
+              >
+                Last 7 days
+              </motion.div>
+            </div>
+          </div>
+          <div className="p-5 h-72">
             {revenueData && (
-              <Line data={revenueChartData} options={lineOptions} />
+              <Line
+                data={{
+                  labels: revenueData.labels,
+                  datasets: [
+                    {
+                      data: revenueData.values,
+                      borderColor: "#0D7C66",
+                      backgroundColor: "rgba(13,124,102,0.05)",
+                      fill: true,
+                      tension: 0.4,
+                      pointBackgroundColor: "#0D7C66",
+                      pointBorderColor: "white",
+                      pointBorderWidth: 2,
+                      pointRadius: 4,
+                      pointHoverRadius: 6,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: {
+                    y: {
+                      grid: { color: "#f0f0f0" },
+                      ticks: { callback: (v) => `$${v}` },
+                    },
+                    x: { grid: { display: false } },
+                  },
+                }}
+              />
             )}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            👥 User Distribution
-          </h2>
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="w-48 h-48">
-              <Pie data={userDistributionData} options={pieOptions} />
-            </div>
-            <div className="flex-1 space-y-3">
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span>Students</span>
-                </div>
-                <span className="font-semibold">
-                  {stats?.users?.students || 0}
-                </span>
+        {/* User Distribution Card */}
+        <motion.div
+          whileHover="hover"
+          variants={cardHover}
+          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+        >
+          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center">
+                <PieChart className="w-5 h-5 text-purple-600" />
               </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span>Instructors</span>
-                </div>
-                <span className="font-semibold">
-                  {stats?.users?.instructors || 0}
-                </span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <span>Admins</span>
-                </div>
-                <span className="font-semibold">
-                  {stats?.users?.admins || 0}
-                </span>
-              </div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                User Distribution
+              </h2>
             </div>
           </div>
-        </div>
-      </div>
+          <div className="p-5 h-72 flex items-center justify-center">
+            <Pie
+              data={{
+                labels: ["Students", "Instructors", "Admins"],
+                datasets: [
+                  {
+                    data: [
+                      stats?.users?.students || 0,
+                      stats?.users?.instructors || 0,
+                      stats?.users?.admins || 0,
+                    ],
+                    backgroundColor: ["#10B981", "#3B82F6", "#8B5CF6"],
+                    borderWidth: 0,
+                    hoverOffset: 10,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                    labels: { usePointStyle: true, boxWidth: 10 },
+                  },
+                  tooltip: {
+                    backgroundColor: "#1F2937",
+                    titleColor: "#F3F4F6",
+                  },
+                },
+              }}
+            />
+          </div>
+        </motion.div>
+      </motion.div>
 
-      {/* Quick Actions & Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">💰 Payment Summary</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Transactions</span>
-              <span className="font-bold">
-                {stats?.payments?.totalTransactions || 0}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Average Transaction</span>
-              <span className="font-bold text-[#0D7C66]">
-                ${stats?.payments?.averageTransaction || "0.00"}
-              </span>
-            </div>
-            <div className="flex justify-between p-3 bg-green-50 rounded-lg">
-              <span className="font-medium text-green-700">
-                Today&apos;s Revenue
-              </span>
-              <span className="font-bold text-xl text-green-700">
-                ${stats?.payments?.todayRevenue || "0"}
-              </span>
+      {/* Action & Activity Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        {/* Quick Actions Card */}
+        <motion.div
+          whileHover="hover"
+          variants={cardHover}
+          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+        >
+          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-[#0D7C66]" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Quick Actions
+              </h2>
             </div>
           </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">⚡ Quick Actions</h2>
-          <div className="space-y-3">
-            <Link href="/dashboard/admin/users">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <div className="flex items-center gap-3">
-                  <Users className="w-4 h-4 text-blue-600" />
-                  <span>Manage Users</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-            <Link href="/dashboard/admin/inactive-users">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <div className="flex items-center gap-3">
-                  <Activity className="w-4 h-4 text-red-600" />
-                  <span>Inactive Users</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-            <Link href="/dashboard/admin/reports">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="w-4 h-4 text-purple-600" />
-                  <span>View Reports</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-            <Link href="/dashboard/admin/analytics">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                  <span>Analytics</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">🕒 Recent Activities</h2>
-          <div className="space-y-3">
-            {recentActivities.map((act, i) => (
-              <div
+          <div className="p-4 space-y-2">
+            {[
+              {
+                label: "Manage Users",
+                link: "/dashboard/admin/users",
+                icon: Users,
+                color: "text-blue-600",
+              },
+              {
+                label: "Inactive Users",
+                link: "/dashboard/admin/inactive-users",
+                icon: Activity,
+                color: "text-red-600",
+              },
+              {
+                label: "Reports",
+                link: "/dashboard/admin/reports",
+                icon: BarChart3,
+                color: "text-purple-600",
+              },
+              {
+                label: "Analytics",
+                link: "/dashboard/admin/analytics",
+                icon: TrendingUp,
+                color: "text-green-600",
+              },
+            ].map((item, i) => (
+              <motion.div
                 key={i}
-                className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + i * 0.1 }}
               >
-                <div className="w-8 h-8 rounded-full bg-[#0D7C66] flex items-center justify-center text-white">
-                  {getActivityIcon(act.action)}
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{act.userName}</p>
-                  <p className="text-xs text-gray-500">{act.details}</p>
-                  <p className="text-xs text-gray-400">
-                    {formatTimeAgo(act.timestamp)}
-                  </p>
-                </div>
-              </div>
+                <Link href={item.link}>
+                  <motion.div
+                    whileHover={{ x: 8, backgroundColor: "#F9FAFB" }}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded-lg ${item.color.replace("text", "bg")}/10 flex items-center justify-center`}
+                      >
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                      </div>
+                      <span className="text-gray-700 font-medium">
+                        {item.label}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#0D7C66] transition-colors" />
+                  </motion.div>
+                </Link>
+              </motion.div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+        {/* Recent Activities Card */}
+        <motion.div
+          whileHover="hover"
+          variants={cardHover}
+          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden lg:col-span-2"
+        >
+          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Recent Activities
+              </h2>
+            </div>
+          </div>
+          <div className="p-5">
+            <div className="space-y-3">
+              {recentActivities.map((act, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 + i * 0.1 }}
+                  whileHover={{ x: 5, backgroundColor: "#F9FAFB" }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] flex items-center justify-center text-white text-xs font-bold">
+                      {act.userName?.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        {act.userName}
+                      </p>
+                      <p className="text-xs text-gray-500">{act.details}</p>
+                    </div>
+                  </div>
+                  <motion.span
+                    className="text-xs text-gray-400 bg-white px-2 py-1 rounded-full shadow-sm"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {formatTimeAgo(act.timestamp)}
+                  </motion.span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
 
-function DashboardCard({
-  icon: Icon,
-  title,
-  value,
-  change,
-  changeType,
-  color,
-}) {
+/* Stats Card Component with Animation */
+function StatsCard({ icon: Icon, title, value, trend, color, delay }) {
+  const isPositive = trend?.startsWith("+");
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md">
-      <div className="flex items-start justify-between">
+    <motion.div
+      variants={fadeInUp}
+      transition={{ delay }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      className="bg-gradient-to-br from-teal-100 via-teal-50 to-white shadow-lg border border-gray-200 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 transition-transform duration-300 ease-in-out"
+    >
+      <div className="flex justify-between items-start">
         <div>
-          <p className="text-gray-500 text-sm mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-800">{value}</p>
-          {change && (
-            <p
-              className={`text-xs mt-2 flex items-center gap-1 ${changeType === "up" ? "text-green-600" : "text-red-600"}`}
-            >
-              {changeType === "up" ? (
-                <ArrowUp className="w-3 h-3" />
-              ) : (
-                <ArrowDown className="w-3 h-3" />
-              )}
-              {change}
-            </p>
-          )}
+          <p className="text-sm text-gray-500 mb-1">{title}</p>
+          <motion.h2
+            className="text-2xl md:text-3xl font-bold text-gray-800"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: delay + 0.2, type: "spring" }}
+          >
+            {value || 0}
+          </motion.h2>
         </div>
-        <div
-          className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}
+        <motion.div
+          whileHover={{ rotate: 12, scale: 1.1 }}
+          className={`w-12 h-12 rounded-xl bg-gradient-to-r ${color} flex items-center justify-center shadow-md`}
         >
           <Icon className="w-6 h-6 text-white" />
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
