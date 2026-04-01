@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function CreateExamPage() {
   const [title, setTitle] = useState("");
@@ -39,12 +41,40 @@ export default function CreateExamPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title.trim()) return alert("Exam title required");
-    if (duration <= 0) return alert("Invalid duration");
-    if (!startTime || !endTime) return alert("Time required");
-    if (new Date(endTime) <= new Date(startTime))
-      return alert("End time must be after start time");
-    if (selectedBatches.length === 0) return alert("Select at least one batch");
+    if (!title.trim()) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Exam title required",
+      });
+    }
+
+    if (duration <= 0) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid duration",
+      });
+    }
+
+    if (!startTime || !endTime) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Start and end time required",
+      });
+    }
+
+    if (new Date(endTime) <= new Date(startTime)) {
+      return Swal.fire({
+        icon: "warning",
+        title: "End time must be after start time",
+      });
+    }
+
+    if (selectedBatches.length === 0) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Select at least one batch",
+      });
+    }
 
     const res = await fetch("/api/exams", {
       method: "POST",
@@ -61,9 +91,22 @@ export default function CreateExamPage() {
     });
 
     const data = await res.json();
-    if (!res.ok) return alert(data.message || "Failed");
 
-    alert("Exam created successfully");
+    if (!res.ok) {
+      return Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: data.message || "Failed to create exam",
+      });
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "Exam created successfully 🎉",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
     setTitle("");
     setTotalQuestions(0);
     setSelectedBatches([]);

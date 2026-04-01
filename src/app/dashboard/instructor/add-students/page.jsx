@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { UserPlus, Users } from "lucide-react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function AddStudentsPage() {
   const [batches, setBatches] = useState([]);
@@ -14,19 +16,35 @@ export default function AddStudentsPage() {
       .then((data) => {
         setBatches(data);
       })
-      .catch((error) => console.error("Failed to load batches", error));
+      .catch((error) => {
+        console.error("Failed to load batches", error);
+
+        Swal.fire({
+          icon: "error",
+          title: "Failed to load batches",
+          text: "Please refresh the page.",
+        });
+      });
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!selectedBatch) {
-      alert("Please select a batch");
+      Swal.fire({
+        icon: "warning",
+        title: "Batch Required",
+        text: "Please select a batch",
+      });
       return;
     }
 
     if (!emails) {
-      alert("Please enter student emails");
+      Swal.fire({
+        icon: "warning",
+        title: "Emails Required",
+        text: "Please enter student emails",
+      });
       return;
     }
 
@@ -50,15 +68,31 @@ export default function AddStudentsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message,
+        });
         return;
       }
 
-      alert("Students added successfully");
+      Swal.fire({
+        icon: "success",
+        title: "Success 🎉",
+        text: "Students added successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
       setEmails("");
     } catch (error) {
       console.error(error);
-      alert("Something went wrong");
+
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        text: "Please try again later.",
+      });
     }
   };
 

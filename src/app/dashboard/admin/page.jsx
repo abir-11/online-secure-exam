@@ -1,3 +1,88 @@
+// "use client";
+
+// import { useSession } from "next-auth/react";
+// import Link from "next/link";
+
+// export default function AdminDashboard() {
+//   const { data: session } = useSession();
+
+//   return (
+//     <div className="p-6">
+//       {/* <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+//       <p>Welcome, {session?.user?.name}!</p>
+//       <p>Role: {session?.user?.role}</p> */}
+
+//       {/* Quick Actions - Now Clickable */}
+//       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <Link href="/dashboard/admin/users">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               👥 Manage Users
+//             </h3>
+//             <p className="text-gray-600">
+//               View, add, edit, and manage all users
+//             </p>
+//           </div>
+//         </Link>
+
+//         <Link href="/dashboard/admin/deleted-users">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               👥 Deleted Users
+//             </h3>
+//             <p className="text-gray-600">
+//               View the issues reported by users and take necessary actions
+//             </p>
+//           </div>
+//         </Link>
+//         <Link href="/dashboard/admin/reports">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               👥 Reports
+//             </h3>
+//             <p className="text-gray-600">
+//               View the issues reported by users and take necessary actions
+//             </p>
+//           </div>
+//         </Link>
+//         <Link href="/dashboard/admin/analytics">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               👥 Analytics
+//             </h3>
+//             <p className="text-gray-600">
+//               View the issues reported by users and take necessary actions
+//             </p>
+//           </div>
+//         </Link>
+//         <Link href="/dashboard/admin/reportissue">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               👥 Report Issues
+//             </h3>
+//             <p className="text-gray-600">
+//               View the issues reported by users and take necessary actions
+//             </p>
+//           </div>
+//         </Link>
+
+//         {/* <Link href="/dashboard/admin/reports">
+//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
+//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
+//               📊 Reports & Analytics
+//             </h3>
+//             <p className="text-gray-600">
+//               View exam reports and system analytics
+//             </p>
+//           </div>
+//         </Link> */}
+//       </div>
+//     </div>
+//   );
+// }
+
+// icons
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -34,6 +119,13 @@ import {
 } from "chart.js";
 import { Line, Pie } from "react-chartjs-2";
 import axios from "axios";
+import {
+  FiUsers,
+  FiTrash2,
+  FiAlertCircle,
+  FiBarChart2,
+  FiFlag,
+} from "react-icons/fi";
 
 ChartJS.register(
   CategoryScale,
@@ -43,7 +135,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
-  ArcElement,
+  ArcElement
 );
 
 // Animation variants
@@ -86,7 +178,7 @@ export default function AdminDashboard() {
       setRecentActivities(activitiesRes.data.activities.slice(0, 5));
 
       const revenueRes = await axios.get(
-        "/api/admin/analytics/revenue?period=week",
+        "/api/admin/analytics/revenue?period=week"
       );
       setRevenueData(revenueRes.data.data);
     } catch (err) {
@@ -349,7 +441,10 @@ export default function AdminDashboard() {
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-8 h-8 rounded-lg ${item.color.replace("text", "bg")}/10 flex items-center justify-center`}
+                        className={`w-8 h-8 rounded-lg ${item.color.replace(
+                          "text",
+                          "bg"
+                        )}/10 flex items-center justify-center`}
                       >
                         <item.icon className={`w-4 h-4 ${item.color}`} />
                       </div>

@@ -1,8 +1,9 @@
-//dashboard/instructor/theory-submissions/[examId]/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function InstructorTheorySubmissionsPage() {
   const { examId } = useParams();
@@ -105,8 +106,21 @@ export default function InstructorTheorySubmissionsPage() {
   );
 
   async function gradeSubmission(submissionId, qid, score, maxMarks) {
-    if (score < 0) return alert("Cannot be negative");
-    if (score > maxMarks) return alert(`Cannot exceed ${maxMarks}`);
+    if (score < 0) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Score",
+        text: "Cannot be negative",
+      });
+    }
+
+    if (score > maxMarks) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Score",
+        text: `Cannot exceed ${maxMarks}`,
+      });
+    }
 
     const res = await fetch(`/api/instructor/theory-submissions/${examId}`, {
       method: "POST",
@@ -115,11 +129,21 @@ export default function InstructorTheorySubmissionsPage() {
     });
 
     if (res.ok) {
-      alert("Graded successfully");
+      await Swal.fire({
+        icon: "success",
+        title: "Graded Successfully",
+        text: "The score has been saved.",
+        confirmButtonColor: "#0d9488",
+      });
       location.reload();
     } else {
       const data = await res.json();
-      alert(data.message);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: data.message,
+      });
     }
   }
 }
