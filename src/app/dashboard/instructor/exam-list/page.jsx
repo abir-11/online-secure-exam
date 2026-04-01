@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
+
 import {
   FileText,
   Clock,
@@ -32,6 +35,12 @@ export default function ExamListPage() {
         setExams(data.exams || []);
       } catch (err) {
         console.error("Failed to fetch exams:", err);
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to fetch exams",
+        });
       } finally {
         setLoading(false);
       }
@@ -42,12 +51,17 @@ export default function ExamListPage() {
 
   // Publish exam
   const handlePublish = async (examId) => {
-    if (
-      !confirm(
-        "Publish this exam? Students will be notified and MCQs cannot be edited after publishing.",
-      )
-    )
-      return;
+    const result = await Swal.fire({
+      title: "Publish this exam?",
+      text: "Students will be notified and MCQs cannot be edited after publishing.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#6366f1",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, publish it!",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch("/api/exams/publish", {
@@ -57,7 +71,12 @@ export default function ExamListPage() {
       });
 
       const data = await res.json();
-      alert(data.message);
+
+      await Swal.fire({
+        icon: res.ok ? "success" : "error",
+        title: res.ok ? "Success" : "Error",
+        text: data.message,
+      });
 
       if (res.ok) {
         setExams((prev) =>
@@ -70,7 +89,12 @@ export default function ExamListPage() {
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to publish exam");
+
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Failed to publish exam",
+      });
     }
   };
 
@@ -83,20 +107,56 @@ export default function ExamListPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Failed to load questions");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message || "Failed to load questions",
+        });
         return;
       }
 
       setSelectedExam(data.exam || data);
     } catch (error) {
       console.error(error);
-      alert("Error loading questions");
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error loading questions",
+      });
     } finally {
       setQuestionLoading(false);
     }
   };
 
-  if (loading) return <p className="p-6">Loading exams...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
+        <svg
+          className="w-6 h-6 animate-spin text-teal-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+        <span className="text-teal-700 animate-pulse tracking-wide">
+          Loading Exams...
+        </span>
+      </div>
+    );
 
   return (
     <main className="p-8 bg-primary max-w-full mx-auto min-h-screen">
@@ -191,7 +251,7 @@ export default function ExamListPage() {
                     {!exam.published && (
                       <button
                         onClick={() => handlePublish(exam._id)}
-                        className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="flex items-center gap-1 bg-teal-400 hover:bg-green-200 text-white px-3 py-1 rounded-md text-sm transition"
                       >
                         <Send size={14} />
                         Publish
@@ -200,30 +260,22 @@ export default function ExamListPage() {
 
                     <button
                       onClick={() => handleViewQuestions(exam._id)}
-                      className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md text-sm transition"
+                      className="flex items-center gap-1 bg-teal-700 hover:bg-green-300 text-white px-3 py-1 rounded-md text-sm transition"
                     >
                       <Eye size={14} />
                       {questionLoading && selectedExam?._id === exam._id
                         ? "Loading..."
                         : "View"}
                     </button>
-                    {/* <button
-                      onClick={() =>
-                        window.open(
-                          `/dashboard/instructor/exam/${exam._id}/questions`,
-                          "_blank",
-                        )
-                      }
-                      className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md text-sm transition"
-                    >
-                      View to edit
-                    </button> */}
+
                     <button
                       onClick={() => {
                         if (exam?.status === "published") {
-                          alert(
-                            "This question set has been published, you cannot edit anymore",
-                          );
+                          Swal.fire({
+                            icon: "warning",
+                            title: "Not allowed",
+                            text: "This question set has been published, you cannot edit anymore",
+                          });
                           return;
                         }
 
@@ -232,7 +284,7 @@ export default function ExamListPage() {
                           "_blank",
                         );
                       }}
-                      className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md text-sm transition"
+                      className="flex items-center gap-1 bg-teal-700 hover:bg-green-300 text-white px-3 py-1 rounded-md text-sm transition"
                     >
                       View to edit
                     </button>
@@ -257,7 +309,6 @@ export default function ExamListPage() {
                             <li key={q._id}>
                               {q.questionText || "-"}{" "}
                               <span className="text-green-700 text-xs">
-                                {/* (Answer: {q.correctOption || "-"}) */}
                                 (Answer:{" "}
                                 {exam.type === "mcq"
                                   ? (q.correctOption ?? "-")

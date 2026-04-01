@@ -27,13 +27,14 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     {
       name: "Features",
-      submenu: [
-        { name: "Exam Builder", href: "/features/exam-builder" },
-        { name: "Analytics Dashboard", href: "/features/analytics" },
-        { name: "Question Bank", href: "/features/question-bank" },
-        { name: "Notifications", href: "/features/notifications" },
-        { name: "Integrations", href: "/features/integrations" },
-      ],
+      href: "/features",
+      // submenu: [
+      //   { name: "Exam Builder", href: "/features/exam-builder" },
+      //   { name: "Analytics Dashboard", href: "/features/analytics" },
+      //   { name: "Question Bank", href: "/features/question-bank" },
+      //   { name: "Notifications", href: "/features/notifications" },
+      //   { name: "Integrations", href: "/features/integrations" },
+      // ],
     },
     {
       name: "How It Works",
@@ -87,7 +88,7 @@ export default function Navbar() {
       {navLinks.map((link) => {
         const isSingleActive = pathname === link.href;
         const isDropdownActive = link.submenu?.some((sub) =>
-          pathname.startsWith(sub.href)
+          pathname.startsWith(sub.href),
         );
         const isActive = isSingleActive || isDropdownActive;
 
@@ -123,7 +124,10 @@ export default function Navbar() {
               }`}
             >
               {link.name}
-              <IoChevronDown size={14} className={`transition-transform ${isActive ? "text-emerald-400" : ""}`} />
+              <IoChevronDown
+                size={14}
+                className={`transition-transform ${isActive ? "text-emerald-400" : ""}`}
+              />
             </div>
             <ul
               tabIndex={0}
@@ -150,7 +154,7 @@ export default function Navbar() {
           </li>
         );
       })}
-      
+
       {/* ✅ DASHBOARD (ONLY WHEN LOGGED IN) */}
       {session && (
         <li>
@@ -175,7 +179,7 @@ export default function Navbar() {
       {navLinks.map((link) => {
         const isSingleActive = pathname === link.href;
         const isDropdownActive = link.submenu?.some((sub) =>
-          pathname.startsWith(sub.href)
+          pathname.startsWith(sub.href),
         );
         const isActive = isSingleActive || isDropdownActive;
 
@@ -227,7 +231,7 @@ export default function Navbar() {
           </li>
         );
       })}
-      
+
       {/* ✅ DASHBOARD (ONLY WHEN LOGGED IN) */}
       {session && (
         <li>
@@ -249,14 +253,16 @@ export default function Navbar() {
       <div className="drawer-content flex flex-col pt-[4.5rem]">
         {/* Main Navbar Wrapper (Completely Fixed Flex Layout) */}
         <div className="w-full fixed top-0 z-50 bg-emerald-950/80 backdrop-blur-xl px-4 lg:px-8 border-b border-emerald-800/40 shadow-sm transition-all flex items-center justify-between min-h-[4.5rem]">
-          
           {/* 1. START: Logo */}
           <div className="flex items-center flex-shrink-0">
             <Link
               href="/"
               className="flex items-center gap-2 font-extrabold text-2xl tracking-tight text-white group"
             >
-              <IoShield size={28} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+              <IoShield
+                size={28}
+                className="text-emerald-400 group-hover:scale-110 transition-transform"
+              />
               SecureExam
             </Link>
           </div>
@@ -280,7 +286,11 @@ export default function Navbar() {
                     className="btn btn-ghost btn-circle avatar hover:bg-transparent"
                   >
                     <div className="w-10 rounded-full border-2 border-emerald-500/30 hover:border-emerald-400 transition-colors shadow-sm">
-                      <img src={profileImage} alt="Profile" referrerPolicy="no-referrer" />
+                      <img
+                        src={profileImage}
+                        alt="Profile"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                   </div>
                   <ul
@@ -288,19 +298,27 @@ export default function Navbar() {
                     className="mt-3 z-50 p-2 shadow-xl menu menu-sm dropdown-content bg-emerald-900/95 backdrop-blur-xl rounded-xl w-56 border border-emerald-700/50"
                   >
                     <li className="px-4 py-3 pointer-events-none">
-                      <p className="font-bold text-white text-base block">{profileName}</p>
+                      <p className="font-bold text-white text-base block">
+                        {profileName}
+                      </p>
                       <span className="text-xs text-emerald-200/60 truncate block mt-0.5">
                         {profileEmail}
                       </span>
                     </li>
                     <div className="h-[1px] bg-emerald-800/50 w-full my-1"></div>
                     <li>
-                      <Link href={dashboardHref} className="hover:bg-emerald-800/60 hover:text-emerald-300 text-emerald-100 py-2">
+                      <Link
+                        href={dashboardHref}
+                        className="hover:bg-emerald-800/60 hover:text-emerald-300 text-emerald-100 py-2"
+                      >
                         Dashboard
                       </Link>
                     </li>
                     <li>
-                      <button onClick={handleLogout} className="text-red-400 hover:bg-red-500/10 hover:text-red-300 py-2 mt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="text-red-400 hover:bg-red-500/10 hover:text-red-300 py-2 mt-1"
+                      >
                         Logout
                       </button>
                     </li>
@@ -308,8 +326,8 @@ export default function Navbar() {
                 </div>
               ) : (
                 <>
-                  <Link 
-                    href="/auth/login" 
+                  <Link
+                    href="/auth/login"
                     className="font-medium text-emerald-100/80 hover:text-emerald-300 px-4 py-2 transition-colors"
                   >
                     Log in
@@ -335,7 +353,6 @@ export default function Navbar() {
               </label>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -347,7 +364,6 @@ export default function Navbar() {
           className="drawer-overlay"
         ></label>
         <div className="menu p-6 w-80 min-h-full bg-emerald-950 text-emerald-100 flex flex-col gap-2 border-r border-emerald-800/50">
-          
           {/* Mobile Header */}
           <div className="flex items-center gap-2 font-bold text-2xl mb-6 pb-4 border-b border-emerald-800/50 text-white">
             <IoShield size={28} className="text-emerald-400" />
@@ -356,9 +372,7 @@ export default function Navbar() {
 
           {/* Mobile Links */}
           <div className="flex-1 overflow-y-auto">
-            <ul className="list-none p-0 m-0">
-               {renderMobileNavLinks()}
-            </ul>
+            <ul className="list-none p-0 m-0">{renderMobileNavLinks()}</ul>
           </div>
 
           {/* Mobile Auth/Dashboard Buttons */}
@@ -373,7 +387,9 @@ export default function Navbar() {
                     referrerPolicy="no-referrer"
                   />
                   <div className="overflow-hidden">
-                    <p className="font-bold text-sm text-white truncate">{profileName}</p>
+                    <p className="font-bold text-sm text-white truncate">
+                      {profileName}
+                    </p>
                     <p className="text-xs text-emerald-200/60 truncate">
                       {profileEmail}
                     </p>

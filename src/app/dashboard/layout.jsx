@@ -163,6 +163,14 @@ export default function DashboardLayout({ children }) {
                 >
                   <span>Analytics</span>
                 </Link>
+                {/* Global Link: Report Issue */}
+                <Link
+                  href="/dashboard/admin/reportissue"
+                  className={mobileLinkClass("/dashboard/reportissue")}
+                >
+                  <span>Report Issue</span>
+                  <ChevronRight className="w-4 h-4 lg:hidden" />
+                </Link>
               </>
             )}
 
@@ -211,7 +219,7 @@ export default function DashboardLayout({ children }) {
                     "/dashboard/instructor/question-bank",
                   )}
                 >
-                  <span>Question Bank</span>
+                  <span>Create Question</span>
                   <ChevronRight className="w-4 h-4 lg:hidden" />
                 </Link>
                 <Link

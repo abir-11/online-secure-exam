@@ -79,9 +79,9 @@ export default function StudentAwardsPage() {
                   Awarded on: {award.date}
                 </p>
 
-                <button className="mt-4 w-full bg-secondary text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                {/* <button className="mt-4 w-full bg-secondary text-white py-2 rounded-lg hover:bg-blue-700 transition">
                   View Details
-                </button>
+                </button> */}
               </div>
             ))}
           </div>
