@@ -1,9 +1,9 @@
-//dashboard/student/exam/[examId]/page.jsx
-
 "use client";
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function StudentExamPage() {
   const { examId } = useParams();
@@ -11,13 +11,32 @@ export default function StudentExamPage() {
 
   const [exam, setExam] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({}); // { questionId: selectedOptionIndex or text }
+  const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [warningMessage, setWarningMessage] = useState(""); // new state for warnings
+  const [warningMessage, setWarningMessage] = useState("");
   const timerRef = useRef(null);
+
+  // ------------------- Copy/Paste/Cut Disabled -------------------
+  useEffect(() => {
+    const handleDisable = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("copy", handleDisable);
+    document.addEventListener("paste", handleDisable);
+    document.addEventListener("cut", handleDisable);
+    document.addEventListener("contextmenu", handleDisable);
+
+    return () => {
+      document.removeEventListener("copy", handleDisable);
+      document.removeEventListener("paste", handleDisable);
+      document.removeEventListener("cut", handleDisable);
+      document.removeEventListener("contextmenu", handleDisable);
+    };
+  }, []);
 
   // Fetch exam + questions
   useEffect(() => {
@@ -36,8 +55,14 @@ export default function StudentExamPage() {
         setTimeLeft(data.exam.duration * 60);
       } catch (err) {
         console.error(err);
-        alert(err.message);
-        router.push("/dashboard/student");
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err.message,
+        }).then(() => {
+          router.push("/dashboard/student");
+        });
       } finally {
         setLoading(false);
       }
@@ -72,12 +97,11 @@ export default function StudentExamPage() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-          handleSubmit(true); // auto-submit
-          setWarningMessage(""); // clear warning
+          handleSubmit(true);
+          setWarningMessage("");
           return 0;
         }
 
-        // Show warning message if less than 5 minutes left
         if (prev <= 5 * 60) {
           setWarningMessage(
             `⏰ Time left: ${formatTime(prev)} — get ready to submit your answers!`,
@@ -100,10 +124,26 @@ export default function StudentExamPage() {
     if (hasSubmitted) return;
 
     if (!auto && Object.keys(answers).length !== questions.length) {
-      return alert("Please answer all questions before submitting.");
+      return Swal.fire({
+        icon: "warning",
+        title: "Incomplete Exam",
+        text: "Please answer all questions before submitting.",
+      });
     }
 
-    if (!auto && !confirm("Submit your answers?")) return;
+    if (!auto) {
+      const result = await Swal.fire({
+        title: "Submit Exam?",
+        text: "Are you sure you want to submit your answers?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Submit",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#0D7C66",
+      });
+
+      if (!result.isConfirmed) return;
+    }
 
     setSubmitting(true);
     try {
@@ -112,10 +152,17 @@ export default function StudentExamPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ examId, answers }),
       });
+
       const data = await res.json();
 
       if (!res.ok) {
-        if (!auto) alert(data.message || "Submit failed");
+        if (!auto) {
+          Swal.fire({
+            icon: "error",
+            title: "Submit Failed",
+            text: data.message || "Submit failed",
+          });
+        }
         return;
       }
 
@@ -123,15 +170,29 @@ export default function StudentExamPage() {
       clearInterval(timerRef.current);
 
       if (!auto) {
-        alert(`Submitted! Your score: ${data.score}`);
+        await Swal.fire({
+          icon: "success",
+          title: "Exam Submitted",
+          text: `Your score: ${data.score}`,
+          confirmButtonColor: "#0D7C66",
+        });
       } else {
-        alert("Time is up! Your exam was submitted automatically.");
+        await Swal.fire({
+          icon: "info",
+          title: "Time is Up",
+          text: "Your exam was submitted automatically.",
+        });
       }
 
       router.push("/dashboard/student/result");
     } catch (err) {
       console.error(err);
-      alert("Failed to submit exam");
+
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: "Failed to submit exam",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -145,12 +206,41 @@ export default function StudentExamPage() {
     return `${m}:${s}`;
   };
 
-  if (loading) return <p className="p-6 mt-20">Loading exam...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
+        <svg
+          className="w-6 h-6 animate-spin text-teal-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+        <span className="text-teal-700 animate-pulse tracking-wide">
+          Loading Exam...
+        </span>
+      </div>
+    );
   if (!exam) return <p className="p-6 mt-20 text-red-500">Exam not found</p>;
 
   return (
-    <main className="bg-primary min-h-screen">
-      <div className="p-6  max-w-4xl mx-auto ">
+    <main
+      className="bg-primary min-h-screen select-none" /* disable selection via CSS */
+    >
+      <div className="p-6 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-4">{exam.title}</h1>
 
         {hasSubmitted && (
@@ -164,6 +254,7 @@ export default function StudentExamPage() {
             <div className="mb-2 p-3 bg-blue-100 text-blue-800 rounded font-semibold">
               Time Left: {formatTime(timeLeft)}
             </div>
+
             {warningMessage && (
               <div className="mb-4 p-2 bg-red-100 text-red-700 rounded font-medium animate-pulse">
                 {warningMessage}
@@ -175,12 +266,13 @@ export default function StudentExamPage() {
         <p className="mb-2">Type: {exam.type.toUpperCase()}</p>
         <p className="mb-2">Duration: {exam.duration} min</p>
         <p className="mb-4">Total Questions: {questions.length}</p>
+
         <hr className="my-4" />
 
         {questions.map((q, i) => (
           <div
             key={q._id}
-            className="mb-6 p-4  border-teal-500 border-4 rounded-2xl"
+            className="mb-6 p-4 border-teal-500 border-4 rounded-2xl"
           >
             <p className="font-medium mb-2">
               Q{i + 1}: {q.questionText} ({q.marks} marks)

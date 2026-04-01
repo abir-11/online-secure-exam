@@ -1,3 +1,4 @@
+//...
 "use client";
 
 import { ShieldCheck, Lock, EyeOff, UserCheck, Server } from "lucide-react";
@@ -11,8 +12,8 @@ const BRAND_GREEN = "#0D7C66";
 
 export default function SecurityPage() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900 overflow-hidden">
-      {/* Brand Glow (same green, opacity only) */}
+    <div className="relative min-h-screen bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#022c22] text-gray-200 overflow-hidden">
+      {/* Brand Glow */}
       <div
         className="absolute -top-36 -left-36 w-[320px] h-[320px] rounded-full blur-3xl opacity-20"
         style={{ backgroundColor: BRAND_GREEN }}
@@ -43,7 +44,7 @@ export default function SecurityPage() {
           </span>
         </h1>
 
-        <p className="mt-4 max-w-2xl text-slate-600 text-lg">
+        <p className="mt-4 max-w-2xl text-gray-300 text-lg">
           SecureExam is engineered with strict access control, protected
           sessions, and tamper-resistant exam workflows to ensure fairness and
           trust.
@@ -96,9 +97,9 @@ export default function SecurityPage() {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="relative z-10 text-center text-slate-500 text-sm pb-10">
+      {/* <footer className="relative z-10 text-center text-gray-400 text-sm pb-10">
         © {new Date().getFullYear()} SecureExam · Secure • Fair • Reliable
-      </footer>
+      </footer> */}
 
       {/* ================= ANIMATION ================= */}
       <style jsx>{`
@@ -126,7 +127,7 @@ export default function SecurityPage() {
 function SecurityCard({ icon, title, description, color }) {
   return (
     <div
-      className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 border"
+      className="group bg-white/5 backdrop-blur-md rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 border"
       style={{
         borderColor: "rgba(13,124,102,0.25)",
       }}
@@ -141,9 +142,9 @@ function SecurityCard({ icon, title, description, color }) {
         {icon}
       </div>
 
-      <h3 className="text-xl font-semibold mb-2 text-slate-900">{title}</h3>
+      <h3 className="text-xl font-semibold mb-2 text-gray-100">{title}</h3>
 
-      <p className="text-slate-600 text-sm leading-relaxed">{description}</p>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }

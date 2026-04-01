@@ -1,8 +1,9 @@
-//dashboard/instructor/question-bank/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function QuestionBankPage() {
   const { data: session } = useSession();
@@ -58,7 +59,14 @@ export default function QuestionBankPage() {
     });
 
     const data = await res.json();
-    alert(data.message);
+
+    await Swal.fire({
+      icon: res.ok ? "success" : "error",
+      title: res.ok ? "MCQ Added!" : "Error",
+      text: data.message,
+      timer: res.ok ? 2000 : undefined,
+      showConfirmButton: !res.ok,
+    });
 
     if (res.ok) {
       setQuestionText("");
@@ -85,7 +93,14 @@ export default function QuestionBankPage() {
     });
 
     const data = await res.json();
-    alert(data.message);
+
+    await Swal.fire({
+      icon: res.ok ? "success" : "error",
+      title: res.ok ? "Theory Question Added!" : "Error",
+      text: data.message,
+      timer: res.ok ? 2000 : undefined,
+      showConfirmButton: !res.ok,
+    });
 
     if (res.ok) {
       setTheoryQuestion("");
