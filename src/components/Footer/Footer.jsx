@@ -78,14 +78,14 @@ export default function Footer() {
                   Pricing
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/demo"
                   className="hover:text-emerald-400 hover:translate-x-1 inline-block transition-all duration-300"
                 >
                   Request Demo
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -105,7 +105,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                  href="/community/blog"
                   className="hover:text-emerald-400 hover:translate-x-1 inline-block transition-all duration-300"
                 >
                   Blog

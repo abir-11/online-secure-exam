@@ -3,6 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import {
   FaUser,
   FaEnvelope,
@@ -45,6 +47,7 @@ export default function ProfilePage() {
 
   const handleSaveImage = async () => {
     if (!selectedImage) return;
+
     const formData = new FormData();
     formData.append("file", selectedImage);
 
@@ -53,51 +56,108 @@ export default function ProfilePage() {
         method: "POST",
         body: formData,
       });
+
       const data = await uploadRes.json();
-      if (!data.url) return alert("Upload failed");
+
+      if (!data.url) {
+        return Swal.fire({
+          icon: "error",
+          title: "Upload Failed",
+          text: "Image upload failed",
+        });
+      }
 
       const updateRes = await fetch("/api/update-user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: data.url }),
       });
+
       const updateData = await updateRes.json();
-      if (updateData.error) return alert(updateData.error);
+
+      if (updateData.error) {
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: updateData.error,
+        });
+      }
 
       session.user.image = data.url;
       setPreview(null);
       setSelectedImage(null);
-      alert("Profile image updated successfully!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Profile image updated successfully!",
+      });
     } catch (error) {
       console.error(error);
-      alert("Upload failed");
+
+      Swal.fire({
+        icon: "error",
+        title: "Upload Failed",
+        text: "Something went wrong while uploading",
+      });
     }
   };
 
   // --- Name handlers ---
   const handleSaveName = async () => {
-    if (!newName) return alert("Name cannot be empty");
+    if (!newName) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Invalid Name",
+        text: "Name cannot be empty",
+      });
+    }
+
     try {
       const res = await fetch("/api/update-user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName }),
       });
+
       const data = await res.json();
-      if (data.error) return alert(data.error);
+
+      if (data.error) {
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.error,
+        });
+      }
 
       session.user.name = newName;
       setIsEditingName(false);
-      alert("Name updated successfully!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Name updated successfully!",
+      });
     } catch (error) {
       console.error(error);
-      alert("Error updating name");
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error updating name",
+      });
     }
   };
 
   // --- Password handler ---
   const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword) return alert("Fill both fields");
+    if (!currentPassword || !newPassword) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Fill both password fields",
+      });
+    }
 
     try {
       const res = await fetch("/api/update-user", {
@@ -105,16 +165,34 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
+
       const data = await res.json();
-      if (data.error) return alert(data.error);
+
+      if (data.error) {
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.error,
+        });
+      }
 
       setIsEditingPassword(false);
       setCurrentPassword("");
       setNewPassword("");
-      alert("Password updated successfully!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Password updated successfully!",
+      });
     } catch (error) {
       console.error(error);
-      alert("Error updating password");
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error updating password",
+      });
     }
   };
 
