@@ -4,14 +4,24 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
 import Swal from "sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaUser,
   FaEnvelope,
   FaUserShield,
   FaLock,
   FaCamera,
+  FaChevronRight,
+  FaSave,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
+
+// Animation Variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -29,15 +39,19 @@ export default function ProfilePage() {
 
   if (status === "loading") {
     return (
-      <div className="p-6 mt-20 text-center text-teal-700">
-        Loading profile...
+      <div className="min-h-screen flex items-center justify-center bg-emerald-950">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full"
+        />
       </div>
     );
   }
 
   if (!session) return null;
 
-  // --- Image handlers ---
+  // --- Handlers (Image, Name, Password) ---
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -47,25 +61,13 @@ export default function ProfilePage() {
 
   const handleSaveImage = async () => {
     if (!selectedImage) return;
-
     const formData = new FormData();
     formData.append("file", selectedImage);
 
     try {
-      const uploadRes = await fetch("/api/upload-profile", {
-        method: "POST",
-        body: formData,
-      });
-
+      const uploadRes = await fetch("/api/upload-profile", { method: "POST", body: formData });
       const data = await uploadRes.json();
-
-      if (!data.url) {
-        return Swal.fire({
-          icon: "error",
-          title: "Upload Failed",
-          text: "Image upload failed",
-        });
-      }
+      if (!data.url) throw new Error("Upload failed");
 
       const updateRes = await fetch("/api/update-user", {
         method: "PATCH",
@@ -73,292 +75,175 @@ export default function ProfilePage() {
         body: JSON.stringify({ image: data.url }),
       });
 
-      const updateData = await updateRes.json();
-
-      if (updateData.error) {
-        return Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: updateData.error,
-        });
-      }
-
       session.user.image = data.url;
       setPreview(null);
       setSelectedImage(null);
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Profile image updated successfully!",
-      });
+      Swal.fire({ icon: "success", title: "Profile Image Updated", background: "#064e3b", color: "#fff" });
     } catch (error) {
-      console.error(error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Upload Failed",
-        text: "Something went wrong while uploading",
-      });
+      Swal.fire({ icon: "error", title: "Update Failed", background: "#064e3b", color: "#fff" });
     }
   };
 
-  // --- Name handlers ---
   const handleSaveName = async () => {
-    if (!newName) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Name",
-        text: "Name cannot be empty",
-      });
-    }
-
+    if (!newName) return;
     try {
-      const res = await fetch("/api/update-user", {
+      await fetch("/api/update-user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName }),
       });
-
-      const data = await res.json();
-
-      if (data.error) {
-        return Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: data.error,
-        });
-      }
-
       session.user.name = newName;
       setIsEditingName(false);
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Name updated successfully!",
-      });
+      Swal.fire({ icon: "success", title: "Name Updated", background: "#064e3b", color: "#fff" });
     } catch (error) {
       console.error(error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Error updating name",
-      });
-    }
-  };
-
-  // --- Password handler ---
-  const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Missing Fields",
-        text: "Fill both password fields",
-      });
-    }
-
-    try {
-      const res = await fetch("/api/update-user", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      const data = await res.json();
-
-      if (data.error) {
-        return Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: data.error,
-        });
-      }
-
-      setIsEditingPassword(false);
-      setCurrentPassword("");
-      setNewPassword("");
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Password updated successfully!",
-      });
-    } catch (error) {
-      console.error(error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Error updating password",
-      });
     }
   };
 
   return (
-    <div className="min-h-screen p-6 bg-primary">
-      <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-teal-100 border-b border-teal-200">
-          <h2 className="text-2xl font-bold text-teal-900 flex items-center gap-2">
-            <FaUser /> My Profile
-          </h2>
+    <div className="min-h-screen bg-emerald-950 p-4 md:p-8 text-white relative overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-600/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/10 blur-[120px] rounded-full" />
 
-          {/* Profile Image */}
-          <div className="relative">
-            <Image
-              src={preview || session.user.image || "/default-avatar.png"}
-              alt="Profile"
-              width={60}
-              height={60}
-              className="rounded-full border-2 border-teal-600 object-cover"
-            />
-            <label className="absolute -bottom-1 -right-1 bg-teal-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-teal-700 flex items-center gap-1">
-              <FaCamera />
-              Edit
-              <input
-                type="file"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
+      <motion.div 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeInUp}
+        className="max-w-2xl mx-auto relative z-10"
+      >
+        {/* Profile Card */}
+        <div className="bg-emerald-900/30 backdrop-blur-xl border border-emerald-800/50 rounded-[2.5rem] shadow-2xl overflow-hidden">
+          
+          {/* Header/Avatar Section */}
+          <div className="relative h-32 bg-gradient-to-r from-emerald-800 to-teal-700">
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
+              <div className="relative group">
+                <Image
+                  src={preview || session.user.image || "/default-avatar.png"}
+                  alt="Profile"
+                  width={120}
+                  height={120}
+                  className="rounded-full border-4 border-emerald-950 object-cover shadow-2xl transition-transform group-hover:scale-105"
+                />
+                <label className="absolute bottom-1 right-1 bg-emerald-500 p-2 rounded-full cursor-pointer hover:bg-emerald-400 shadow-lg transition-colors border-2 border-emerald-950">
+                  <FaCamera className="text-white text-sm" />
+                  <input type="file" onChange={handleImageChange} className="hidden" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-16 pb-8 px-6 md:px-10 space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-emerald-50">{session.user.name}</h2>
+              <p className="text-emerald-400 font-medium uppercase tracking-widest text-xs">{session.user.role}</p>
+            </div>
+
+            {/* Save Image Button (Conditional) */}
+            <AnimatePresence>
+              {selectedImage && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={handleSaveImage}
+                  className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold rounded-2xl flex justify-center items-center gap-2 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  <FaSave /> Confirm New Profile Picture
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            {/* Info Rows */}
+            <div className="grid gap-4">
+              
+              {/* Name Row */}
+              <div className="group">
+                <div className="bg-emerald-800/20 border border-emerald-700/30 p-4 rounded-2xl flex justify-between items-center hover:bg-emerald-800/40 transition-all">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                      <FaUser />
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-100/40 uppercase font-bold tracking-wider">Full Name</p>
+                      <p className="text-emerald-50 font-medium">{session.user.name}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { setIsEditingName(!isEditingName); setNewName(session.user.name || ""); }}
+                    className="text-emerald-400 hover:text-emerald-300 text-sm font-bold px-3 py-1 rounded-lg hover:bg-emerald-400/10 transition-all"
+                  >
+                    Edit
+                  </button>
+                </div>
+                {isEditingName && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-3 bg-emerald-900/40 rounded-2xl border border-emerald-500/30 flex gap-2">
+                    <input 
+                      type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
+                      className="bg-emerald-950 border border-emerald-800 rounded-xl px-4 py-2 w-full text-sm focus:outline-none focus:border-emerald-500"
+                    />
+                    <button onClick={handleSaveName} className="bg-emerald-500 px-4 rounded-xl text-emerald-950 font-bold text-xs">Save</button>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Email Row (Read Only) */}
+              <div className="bg-emerald-800/20 border border-emerald-700/30 p-4 rounded-2xl flex items-center gap-4 opacity-80">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                  <FaEnvelope />
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-100/40 uppercase font-bold tracking-wider">Email Address</p>
+                  <p className="text-emerald-50 font-medium">{session.user.email}</p>
+                </div>
+              </div>
+
+              {/* Password Row */}
+              <div className="group">
+                <div className="bg-emerald-800/20 border border-emerald-700/30 p-4 rounded-2xl flex justify-between items-center hover:bg-emerald-800/40 transition-all">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                      <FaLock />
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-100/40 uppercase font-bold tracking-wider">Security</p>
+                      <p className="text-emerald-50 font-medium">••••••••••••</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsEditingPassword(!isEditingPassword)}
+                    className="text-emerald-400 hover:text-emerald-300 text-sm font-bold px-3 py-1 rounded-lg hover:bg-emerald-400/10 transition-all"
+                  >
+                    Change
+                  </button>
+                </div>
+
+                {isEditingPassword && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-4 bg-emerald-900/40 rounded-2xl border border-emerald-500/30 space-y-3">
+                    <div className="relative">
+                      <input 
+                        type={showPassword ? "text" : "password"} placeholder="Current Password" 
+                        value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="bg-emerald-950 border border-emerald-800 rounded-xl px-4 py-2 w-full text-sm focus:outline-none focus:border-emerald-500"
+                      />
+                      <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-2.5 text-emerald-500">
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    <input 
+                      type={showPassword ? "text" : "password"} placeholder="New Password" 
+                      value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                      className="bg-emerald-950 border border-emerald-800 rounded-xl px-4 py-2 w-full text-sm focus:outline-none focus:border-emerald-500"
+                    />
+                    <button onClick={handleChangePassword} className="w-full bg-emerald-500 py-2 rounded-xl text-emerald-950 font-bold text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update Password</button>
+                  </motion.div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="p-6 space-y-6">
-          {/* Save Image */}
-          {selectedImage && (
-            <button
-              onClick={handleSaveImage}
-              className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold flex justify-center items-center gap-2"
-            >
-              <FaCamera /> Save Profile Picture
-            </button>
-          )}
-
-          {/* Name */}
-          <div className="bg-teal-50 p-4 rounded-xl flex justify-between items-center shadow-sm border border-teal-100">
-            <div className="flex items-center gap-2">
-              <FaUser className="text-teal-600" />
-              <div>
-                <p className="text-sm text-teal-600">Name</p>
-                <p className="text-lg font-semibold text-teal-900">
-                  {session.user.name}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                setIsEditingName(!isEditingName);
-                setNewName(session.user.name || "");
-              }}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm"
-            >
-              Edit
-            </button>
-          </div>
-
-          {isEditingName && (
-            <div className="border rounded-xl p-4 space-y-3 bg-teal-50">
-              <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="w-full border px-3 py-2 rounded-lg"
-              />
-              <button
-                onClick={handleSaveName}
-                className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold"
-              >
-                Save Name
-              </button>
-            </div>
-          )}
-
-          {/* Email */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex items-center gap-2 border border-teal-100">
-            <FaEnvelope className="text-teal-600" />
-            <div>
-              <p className="text-sm text-teal-600">Email</p>
-              <p className="text-lg font-semibold text-teal-900">
-                {session.user.email}
-              </p>
-            </div>
-          </div>
-
-          {/* Role */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex items-center gap-2 border border-teal-100">
-            <FaUserShield className="text-teal-600" />
-            <div>
-              <p className="text-sm text-teal-600">Role</p>
-              <p className="text-lg font-semibold text-teal-900">
-                {session.user.role}
-              </p>
-            </div>
-          </div>
-
-          {/* Password */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex justify-between items-center border border-teal-100">
-            <div className="flex items-center gap-2">
-              <FaLock className="text-teal-600" />
-              <div>
-                <p className="text-sm text-teal-600">Password</p>
-                <p>Change your password</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsEditingPassword(!isEditingPassword)}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm"
-            >
-              Change
-            </button>
-          </div>
-
-          {isEditingPassword && (
-            <div className="border rounded-xl p-4 space-y-3 bg-teal-50">
-              <div className="flex justify-between items-center gap-2">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Current password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg"
-                />
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="px-3 py-1 text-sm bg-teal-200 rounded-lg"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-
-              <div className="flex justify-between items-center gap-2">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="New password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg"
-                />
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="px-3 py-1 text-sm bg-teal-200 rounded-lg"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-
-              <button
-                onClick={handleChangePassword}
-                className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold"
-              >
-                Update Password
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

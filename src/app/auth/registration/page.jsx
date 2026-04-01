@@ -14,7 +14,6 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 import learningAnimation from "@/assets/learning.json"; // Instructor
 import studentAnimation from "@/assets/Student.json"; // Student
-import educationAnimation from "@/assets/Educatin.json"; // Admin
 
 export default function RegisterPage() {
   const [role, setRole] = useState("student");
@@ -40,7 +39,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // Extra safety validation (JS level)
     const phoneRegex = /^\+[1-9]\d{7,14}$/;
     if (!phoneRegex.test(phone)) {
       Swal.fire({
@@ -66,13 +64,11 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Automatically sign in after successful registration
         await signIn("credentials", { email, password, redirect: false });
 
         const sessionRes = await fetch("/api/auth/session");
         const sessionData = await sessionRes.json();
         
-        // Role-based Redirect Logic for Manual Registration
         const userRole = sessionData?.user?.role || role;
 
         Swal.fire({
@@ -115,9 +111,8 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
-  // ✅ Added Admin Animation
+  // ✅ Admin animation removed
   const getAnimationForRole = {
-    admin: educationAnimation,
     instructor: learningAnimation,
     student: studentAnimation,
   };
@@ -125,7 +120,6 @@ export default function RegisterPage() {
   const inputStyles =
     "w-full px-4 py-3 bg-emerald-950/60 border border-emerald-700/60 rounded-xl focus:bg-emerald-900/80 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400 transition-all text-white placeholder-gray-400 shadow-inner";
 
-  // Framer Motion Variants
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: { 
@@ -142,7 +136,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center rounded-2xl p-4 md:p-8 relative overflow-hidden">
-      {/* Background Decorative Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
@@ -152,7 +145,7 @@ export default function RegisterPage() {
         animate="visible"
         className="max-w-6xl w-full bg-emerald-900/40 backdrop-blur-xl border border-emerald-700/50 rounded-3xl shadow-[0_8px_32px_rgb(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row relative z-10 my-10"
       >
-        {/* Left Side: Lottie Animation (Hidden on Mobile) */}
+        {/* Left Side */}
         <div className="hidden md:flex w-full md:w-1/2 bg-gradient-to-br from-emerald-900/60 to-emerald-950 flex-col justify-center items-center p-12 relative overflow-hidden border-r border-emerald-700/50">
           <AnimatePresence mode="wait">
             <motion.div
@@ -202,9 +195,9 @@ export default function RegisterPage() {
             </p>
           </motion.div>
 
-          {/* ✅ Role Selection - Admin Added Here */}
+          {/* ✅ Role Selection - Admin Removed */}
           <motion.div variants={itemVariants} className="flex gap-2 mb-8 bg-emerald-950/70 border border-emerald-700/60 p-1.5 rounded-2xl shadow-inner">
-            {["admin", "instructor", "student"].map((item) => (
+            {["instructor", "student"].map((item) => (
               <button
                 key={item}
                 type="button"
@@ -223,7 +216,6 @@ export default function RegisterPage() {
                   />
                 )}
                 <span className="relative z-10 whitespace-nowrap">
-                  {item === "admin" && "👑 Admin"}
                   {item === "instructor" && "📚 Instructor"}
                   {item === "student" && "🎓 Student"}
                 </span>
@@ -231,7 +223,6 @@ export default function RegisterPage() {
             ))}
           </motion.div>
 
-          {/* Form */}
           <form className="space-y-4" onSubmit={handleRegister}>
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -318,7 +309,6 @@ export default function RegisterPage() {
             </motion.button>
           </form>
 
-          {/* DIVIDER */}
           <motion.div variants={itemVariants} className="my-6 flex items-center gap-3">
             <div className="flex-1 h-px bg-emerald-700/60"></div>
             <span className="text-gray-300 text-sm font-medium tracking-wide">

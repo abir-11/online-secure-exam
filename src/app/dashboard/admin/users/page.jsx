@@ -3,21 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  UserPlus,
-  Search,
-  Edit,
-  Trash2,
-  RefreshCw,
-  Shield,
-  GraduationCap,
-  Users,
-  Mail,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+  UserPlus, Search, Edit, Trash2, RefreshCw,
+  Shield, GraduationCap, Users, Mail, Calendar,
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
+  MoreVertical, UserCheck, UserX, Loader2, Filter
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -45,17 +36,14 @@ export default function UsersPage() {
     student: 0,
   });
 
-  // Load counts when component mounts
   useEffect(() => {
     fetchCounts();
   }, []);
 
-  // Load users when page, filter, or pageSize changes
   useEffect(() => {
     fetchUsers();
   }, [currentPage, filter, pageSize]);
 
-  // Fetch counts separately
   const fetchCounts = async () => {
     try {
       const response = await axios.get("/api/admin/users/count");
@@ -70,7 +58,6 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-
       const response = await axios.get("/api/admin/users", {
         params: {
           page: currentPage,
@@ -80,8 +67,6 @@ export default function UsersPage() {
       });
 
       setUsers(response.data.users);
-
-      // Update pagination info
       if (response.data.pagination) {
         setTotalPages(response.data.pagination.totalPages);
         setTotalUsers(response.data.pagination.totalUsers);
@@ -95,22 +80,19 @@ export default function UsersPage() {
     }
   };
 
-  //handle delete
   const handleDelete = async (userId, userName) => {
     if (window.confirm(`Are you sure you want to delete ${userName}?`)) {
       try {
         await axios.delete(`/api/admin/users/${userId}`);
         toast.success("User deleted");
-
-        await fetchCounts();
-        await fetchUsers();
+        fetchCounts();
+        fetchUsers();
       } catch (error) {
         toast.error(error.response?.data?.error || "Failed to delete user");
       }
     }
   };
 
-  // Filter users locally (search)
   const filteredUsers = users.filter((user) => {
     if (searchTerm) {
       return (
@@ -121,398 +103,230 @@ export default function UsersPage() {
     return true;
   });
 
-  // Role badge color
-  const getRoleBadge = (role) => {
-    const colors = {
-      admin: "bg-purple-100 text-purple-800 border-purple-200",
-      instructor: "bg-blue-100 text-blue-800 border-blue-200",
-      student: "bg-green-100 text-green-800 border-green-200",
+  const getRoleStyle = (role) => {
+    const styles = {
+      admin: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      instructor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      student: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     };
-    return colors[role] || "bg-gray-100 text-gray-800";
-  };
-
-  // Pagination handlers
-  const goToFirstPage = () => setCurrentPage(1);
-  const goToPrevPage = () => setCurrentPage((prev) => Math.max(1, prev - 1));
-  const goToNextPage = () =>
-    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
-  const goToLastPage = () => setCurrentPage(totalPages);
-
-  const handlePageSizeChange = (e) => {
-    setPageSize(parseInt(e.target.value));
-    setCurrentPage(1);
-  };
-
-  // Refresh both counts and users
-  const handleRefresh = () => {
-    fetchCounts();
-    fetchUsers();
+    return styles[role] || "bg-gray-500/10 text-gray-400 border-gray-500/20";
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-      {/* Header with gradient - Mobile optimized */}
-      <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 text-white">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
-              User Management
-            </h1>
-            <p className="text-white/80 text-xs sm:text-sm mt-1">
-              Manage all users in the system
-            </p>
-          </div>
-          <Link
-            href="/dashboard/admin/users/add"
-            className="bg-white text-[#0D7C66] px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl hover:bg-gray-100 transition flex items-center gap-1 sm:gap-2 shadow-lg text-sm sm:text-base"
+    <div className="min-h-screen bg-emerald-950 text-emerald-50 p-4 md:p-8">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+            <Users className="text-emerald-500 w-8 h-8" /> User Directory
+          </h1>
+          <p className="text-emerald-100/40 text-sm mt-1 uppercase tracking-widest font-bold">
+            Access Control & Member Management
+          </p>
+        </motion.div>
+
+        <Link
+          href="/dashboard/admin/users/add"
+          className="group relative flex items-center gap-2 bg-emerald-500 text-emerald-950 font-black px-6 py-3 rounded-2xl hover:bg-white transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+        >
+          <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          Enroll New User
+        </Link>
+      </div>
+
+      {/* Stats Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[
+          { label: "Grand Total", count: counts.total, icon: Users, color: "text-white", bg: "bg-emerald-900/20" },
+          { label: "Administrators", count: counts.admin, icon: Shield, color: "text-purple-400", bg: "bg-purple-500/5" },
+          { label: "Instructors", count: counts.instructor, icon: GraduationCap, color: "text-blue-400", bg: "bg-blue-500/5" },
+          { label: "Students", count: counts.student, icon: UserCheck, color: "text-emerald-400", bg: "bg-emerald-500/5" },
+        ].map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={`${stat.bg} backdrop-blur-sm border border-white/5 p-5 rounded-[2rem] flex items-center justify-between group hover:border-emerald-500/30 transition-all`}
           >
-            <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-            Add New User
-          </Link>
-        </div>
+            <div>
+              <p className="text-emerald-100/30 text-xs font-black uppercase tracking-tighter mb-1">{stat.label}</p>
+              <h3 className={`text-3xl font-black ${stat.color}`}>{stat.count}</h3>
+            </div>
+            <stat.icon className={`w-10 h-10 ${stat.color} opacity-20 group-hover:opacity-100 transition-opacity`} />
+          </motion.div>
+        ))}
       </div>
 
-      {/* Stats Cards - Mobile: 1 column, Tablet: 2 columns, Desktop: 4 columns */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <StatCard
-          icon={Users}
-          count={counts.total}
-          label="Total Users"
-          color="text-[#0D7C66]"
-          bg="bg-[#0D7C66]/10"
-        />
-        <StatCard
-          icon={Shield}
-          count={counts.admin}
-          label="Admins"
-          color="text-purple-600"
-          bg="bg-purple-100"
-        />
-        <StatCard
-          icon={GraduationCap}
-          count={counts.instructor}
-          label="Instructors"
-          color="text-blue-600"
-          bg="bg-blue-100"
-        />
-        <StatCard
-          icon={Users}
-          count={counts.student}
-          label="Students"
-          color="text-green-600"
-          bg="bg-green-100"
-        />
-      </div>
-
-      {/* Search & Filter - Mobile optimized */}
-      <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search Bar */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+      {/* Main Controls Section */}
+      <div className="bg-emerald-900/10 border border-white/5 rounded-[2.5rem] p-6 mb-8 backdrop-blur-md">
+        <div className="flex flex-col xl:flex-row gap-6">
+          {/* Search Box */}
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 w-5 h-5 group-focus-within:scale-110 transition-transform" />
             <input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder="Filter by name or secure email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2] focus:border-transparent"
+              className="w-full bg-emerald-950/50 border border-emerald-800/30 rounded-2xl pl-12 pr-4 py-4 text-emerald-50 focus:outline-none focus:border-emerald-500/50 transition-all placeholder:text-emerald-100/20"
             />
           </div>
 
-          {/* Filter Buttons - Horizontal scroll on mobile */}
-          <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {/* Role Filters */}
+          <div className="flex flex-wrap items-center gap-2">
             {[
-              { key: "all", label: "All", count: counts.total },
-              { key: "admin", label: "Admin", count: counts.admin },
-              {
-                key: "instructor",
-                label: "Instructor",
-                count: counts.instructor,
-              },
-              { key: "student", label: "Student", count: counts.student },
+              { key: "all", label: "All Records" },
+              { key: "admin", label: "Admins" },
+              { key: "instructor", label: "Instructors" },
+              { key: "student", label: "Students" },
             ].map((f) => (
               <button
                 key={f.key}
-                onClick={() => {
-                  setFilter(f.key);
-                  setCurrentPage(1);
-                }}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl whitespace-nowrap text-xs sm:text-sm transition ${
-                  filter === f.key
-                    ? "bg-[#0D7C66] text-white shadow-md"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                onClick={() => { setFilter(f.key); setCurrentPage(1); }}
+                className={`px-5 py-3 rounded-xl text-sm font-bold transition-all ${
+                  filter === f.key 
+                    ? "bg-emerald-500 text-emerald-950 shadow-lg" 
+                    : "bg-emerald-800/20 text-emerald-100/40 hover:bg-emerald-800/40"
                 }`}
               >
-                {f.label} ({f.count})
+                {f.label}
               </button>
             ))}
-            <button
-              onClick={handleRefresh}
-              className="p-1.5 sm:p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
-              title="Refresh"
+            <button 
+              onClick={() => { fetchCounts(); fetchUsers(); }}
+              className="p-3 bg-emerald-800/20 rounded-xl hover:bg-emerald-500 hover:text-emerald-950 transition-all"
             >
-              <RefreshCw
-                className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`}
-              />
+              <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      {/* Users Data Display */}
+      <div className="bg-emerald-900/10 border border-white/5 rounded-[2.5rem] overflow-hidden backdrop-blur-md shadow-2xl">
         {loading ? (
-          <div className="text-center py-8 sm:py-12">
-            <div className="inline-block animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
-            <p className="mt-2 text-sm text-gray-500">Loading users...</p>
+          <div className="py-32 flex flex-col items-center justify-center space-y-4">
+            <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+            <p className="text-emerald-100/30 font-black uppercase tracking-widest text-xs">Syncing Database...</p>
           </div>
         ) : (
-          <>
-            {/* Desktop Table - Hidden on mobile */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      User
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Email
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Role
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Joined
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Status
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
+          <div className="overflow-x-auto overflow-y-visible">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-emerald-950/40 text-emerald-100/30 text-[10px] uppercase font-black tracking-[0.2em]">
+                  <th className="px-8 py-5">Identified User</th>
+                  <th className="px-8 py-5">Credentials</th>
+                  <th className="px-8 py-5">Role Authority</th>
+                  <th className="px-8 py-5">Status</th>
+                  <th className="px-8 py-5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                <AnimatePresence mode="popLayout">
                   {filteredUsers.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50 transition">
-                      <td className="px-4 sm:px-6 py-3 sm:py-4">
-                        <div className="font-medium text-gray-900 text-sm sm:text-base">
-                          {user.name}
+                    <motion.tr 
+                      key={user._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="group hover:bg-white/[0.02] transition-colors"
+                    >
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 font-black">
+                            {user.name.charAt(0)}
+                          </div>
+                          <span className="font-bold text-white tracking-tight">{user.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-600 text-sm">
-                        {user.email}
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2 text-emerald-100/40 text-sm">
+                          <Mail size={14} className="text-emerald-500/50" /> {user.email}
+                        </div>
                       </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4">
-                        <span
-                          className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadge(user.role)}`}
-                        >
+                      <td className="px-8 py-6">
+                        <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase border ${getRoleStyle(user.role)}`}>
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${user.isActive !== false ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500'}`} />
+                          <span className={`text-xs font-bold ${user.isActive !== false ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            {user.isActive !== false ? "Active" : "Locked"}
+                          </span>
+                        </div>
                       </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4">
-                        <span
-                          className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
-                            user.isActive !== false
-                              ? "bg-green-100 text-green-800 border border-green-200"
-                              : "bg-red-100 text-red-800 border border-red-200"
-                          }`}
-                        >
-                          {user.isActive !== false ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4">
-                        <div className="flex gap-1.5 sm:gap-2">
-                          <Link
-                            href={`/dashboard/admin/users/${user._id}/edit`}
-                            className="p-1.5 sm:p-2 hover:bg-blue-100 rounded-lg transition group"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4 text-blue-600 group-hover:scale-110" />
+                      <td className="px-8 py-6">
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/admin/users/${user._id}/edit`} className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-all" title="Edit Profile">
+                            <Edit size={18} />
                           </Link>
-                          <Link
-                            href={`/dashboard/admin/users/change-role/${user._id}`}
-                            className="p-1.5 sm:p-2 hover:bg-green-100 rounded-lg transition group"
-                            title="Change Role"
-                          >
-                            <Shield className="w-4 h-4 text-green-600 group-hover:scale-110" />
+                          <Link href={`/dashboard/admin/users/change-role/${user._id}`} className="p-2 hover:bg-emerald-500/20 text-emerald-400 rounded-xl transition-all" title="Modify Access">
+                            <Shield size={18} />
                           </Link>
-                          <button
-                            onClick={() => handleDelete(user._id, user.name)}
-                            className="p-1.5 sm:p-2 hover:bg-red-100 rounded-lg transition group"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600 group-hover:scale-110" />
+                          <button onClick={() => handleDelete(user._id, user.name)} className="p-2 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-all" title="Terminate User">
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Card View - Always visible on mobile */}
-            <div className="md:hidden divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
-                <div key={user._id} className="p-3 sm:p-4 hover:bg-gray-50">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                        {user.name}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                        <Mail className="w-3 h-3" />
-                        {user.email}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium border ml-2 ${getRoleBadge(user.role)}`}
-                    >
-                      {user.role}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-3">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs ${
-                        user.isActive !== false
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {user.isActive !== false ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2 pt-2 border-t">
-                    <Link
-                      href={`/dashboard/admin/users/${user._id}/edit`}
-                      className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 bg-blue-50 text-blue-600 rounded-lg text-xs sm:text-sm hover:bg-blue-100"
-                    >
-                      Edit
-                    </Link>
-                    <Link
-                      href={`/dashboard/admin/users/change-role/${user._id}`}
-                      className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 bg-green-50 text-green-600 rounded-lg text-xs sm:text-sm hover:bg-green-100"
-                    >
-                      Change Role
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(user._id, user.name)}
-                      className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 bg-red-50 text-red-600 rounded-lg text-xs sm:text-sm hover:bg-red-100"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* No Results */}
-            {filteredUsers.length === 0 && (
-              <div className="text-center py-8 sm:py-12 text-gray-500 text-sm">
-                No users found matching your criteria.
-              </div>
-            )}
-          </>
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* Pagination Controls - Mobile optimized */}
-      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-        {/* Page Size Selector */}
-        <div className="flex items-center gap-2 order-2 sm:order-1">
-          <span className="text-xs sm:text-sm text-gray-600">Show</span>
-          <select
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
+      {/* Pagination Bar */}
+      <div className="mt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="flex items-center gap-3 bg-emerald-900/20 border border-white/5 px-4 py-2 rounded-2xl">
+          <span className="text-xs font-bold text-emerald-100/30 uppercase tracking-tighter">View</span>
+          <select 
+            value={pageSize} 
+            onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+            className="bg-transparent text-emerald-500 font-black text-sm outline-none cursor-pointer"
           >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
+            {[5, 10, 20, 50].map(v => <option key={v} value={v} className="bg-emerald-950">{v}</option>)}
           </select>
-          <span className="text-xs sm:text-sm text-gray-600">entries</span>
+          <span className="text-xs font-bold text-emerald-100/30 uppercase tracking-tighter">Entries</span>
         </div>
 
-        {/* Pagination Buttons */}
-        <div className="flex items-center gap-1 sm:gap-2 order-1 sm:order-2">
-          <button
-            onClick={goToFirstPage}
-            disabled={!hasPrevPage}
-            className="p-1.5 sm:p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="First Page"
-          >
-            <ChevronsLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-          <button
-            onClick={goToPrevPage}
-            disabled={!hasPrevPage}
-            className="p-1.5 sm:p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Previous Page"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+        <div className="flex items-center gap-4 bg-emerald-900/20 border border-white/5 p-2 rounded-2xl">
+          <div className="flex gap-1">
+            <PaginationBtn onClick={() => setCurrentPage(1)} disabled={!hasPrevPage} icon={ChevronsLeft} />
+            <PaginationBtn onClick={() => setCurrentPage(p => p - 1)} disabled={!hasPrevPage} icon={ChevronLeft} />
+          </div>
+          
+          <div className="text-xs font-black text-white px-4">
+            {currentPage} <span className="text-emerald-500 mx-1">/</span> {totalPages}
+          </div>
 
-          <span className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm text-gray-700">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={goToNextPage}
-            disabled={!hasNextPage}
-            className="p-1.5 sm:p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Next Page"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-          <button
-            onClick={goToLastPage}
-            disabled={!hasNextPage}
-            className="p-1.5 sm:p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Last Page"
-          >
-            <ChevronsRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+          <div className="flex gap-1">
+            <PaginationBtn onClick={() => setCurrentPage(p => p + 1)} disabled={!hasNextPage} icon={ChevronRight} />
+            <PaginationBtn onClick={() => setCurrentPage(totalPages)} disabled={!hasNextPage} icon={ChevronsRight} />
+          </div>
         </div>
 
-        {/* Showing info */}
-        <div className="text-xs sm:text-sm text-gray-600 order-3">
-          Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, totalUsers)} of {totalUsers} entries
-        </div>
+        <p className="text-[10px] font-black text-emerald-100/20 uppercase tracking-[0.2em]">
+          Registry: {totalUsers} Records found
+        </p>
       </div>
     </div>
   );
 }
 
-// Stat Card Component
-function StatCard({ icon: Icon, count, label, color, bg }) {
+// Sub-components
+function PaginationBtn({ onClick, disabled, icon: Icon }) {
   return (
-    <div
-      className={`${bg} rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition`}
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="p-2.5 rounded-xl hover:bg-emerald-500 hover:text-emerald-950 disabled:opacity-10 disabled:hover:bg-transparent disabled:hover:text-inherit transition-all"
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-gray-600 text-xs sm:text-sm">{label}</p>
-          <p className={`text-base sm:text-xl md:text-2xl font-bold ${color}`}>
-            {count}
-          </p>
-        </div>
-        <Icon
-          className={`w-5 h-5 sm:w-8 sm:h-8 md:w-10 md:h-10 ${color} opacity-80`}
-        />
-      </div>
-    </div>
+      <Icon size={18} />
+    </button>
   );
 }
