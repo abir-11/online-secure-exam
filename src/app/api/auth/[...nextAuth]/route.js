@@ -1,10 +1,8 @@
-// ----------- role added
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { getCollection } from "@/lib/dbConnect";
-
 import { logActivity } from "@/lib/activityLogger";
 
 export const authOptions = {
@@ -13,11 +11,13 @@ export const authOptions = {
   },
 
   providers: [
+    // ---------------- Google Provider ----------------
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
 
+    // -------------- Credentials Provider --------------
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -131,17 +131,94 @@ export const authOptions = {
     }),
   ],
 
+  // ---------------- Callbacks ----------------
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.image = user.image;
+    // ১. signIn কলব্যাক: গুগল ইউজারকে ডাটাবেসে সেভ করা বা চেক করা
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        try {
+          const usersCollection = await getCollection("users");
+          const dbUser = await usersCollection.findOne({ email: user.email });
+
+          if (!dbUser) {
+            // নতুন ইউজার হলে ডাটাবেসে ডিফল্ট রোল দিয়ে সেভ করুন
+            const newUser = {
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              role: "student", // ডিফল্ট রোল
+              isActive: true,
+              isLocked: false,
+              authProvider: "google",
+              createdAt: new Date(),
+            };
+            const result = await usersCollection.insertOne(newUser);
+
+            // নতুন ইউজারের লগ অ্যাক্টিভিটি
+            await logActivity({
+              userId: result.insertedId.toString(),
+              userName: newUser.name,
+              userEmail: newUser.email,
+              userRole: "student",
+              action: "registered_google",
+              details: "User registered via Google",
+            });
+          } else {
+            // ইউজার আগে থেকেই থাকলে, চেক করুন অ্যাকাউন্ট ব্লকড বা লকড কিনা
+            if (dbUser.isActive === false) {
+              return "/auth/login?error=inactive"; // inactive এরর পাঠাবে
+            }
+            if (dbUser.isLocked) {
+              return "/auth/login?error=locked"; // locked এরর পাঠাবে
+            }
+
+            // পুরনো ইউজারের লগ অ্যাক্টিভিটি
+            await logActivity({
+              userId: dbUser._id.toString(),
+              userName: dbUser.name,
+              userEmail: dbUser.email,
+              userRole: dbUser.role,
+              action: "logged_in_google",
+              details: "User logged in via Google",
+            });
+          }
+          return true; // লগিন সফল
+        } catch (error) {
+          console.error("Google Auth Database Error:", error);
+          return false; // কোনো এরর হলে লগিন বাতিল করবে
+        }
+      }
+      return true; // Credentials provider-এর জন্য ডিফল্টভাবে true
+    },
+
+    // ২. jwt কলব্যাক: ডাটাবেস থেকে ইউজারের ডাটা টোকেনে আনা
+    async jwt({ token, user, account }) {
+      // account অবজেক্টটি শুধুমাত্র লগিন করার সময়ই পাওয়া যায়
+      if (account) {
+        if (account.provider === "google") {
+          // গুগল লগিনের ক্ষেত্রে ডাটাবেস থেকে আসল রোল ও আইডি নিয়ে আসা
+          const usersCollection = await getCollection("users");
+          const dbUser = await usersCollection.findOne({ email: user.email });
+
+          if (dbUser) {
+            token.id = dbUser._id.toString();
+            token.role = dbUser.role;
+            token.image = dbUser.image || user.image;
+          }
+        } else if (user) {
+          // Credentials লগিনের ক্ষেত্রে authorize ফাংশন থেকে পাওয়া ডাটা
+          token.id = user.id;
+          token.role = user.role;
+          token.image = user.image;
+        }
       }
       return token;
     },
 
+    // ৩. session কলব্যাক: টোকেন থেকে সেশনে ডাটা পাঠানো
     async session({ session, token }) {
       if (session?.user) {
+        session.user.id = token.id;
         session.user.role = token.role;
         session.user.image = token.image;
       }
