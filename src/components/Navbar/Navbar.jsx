@@ -59,7 +59,6 @@ export default function Navbar() {
       submenu: [
         { name: "Documentation", href: "/resources/docs" },
         { name: "Tutorials", href: "/resources/tutorials" },
-        { name: "API Reference", href: "/resources/api" },
       ],
     },
     {

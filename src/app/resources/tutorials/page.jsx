@@ -1,61 +1,61 @@
 import Link from "next/link";
-import { FaArrowLeft, FaPlay, FaClock, FaUser, FaVideo } from "react-icons/fa";
+import { FaArrowLeft, FaClock, FaUser } from "react-icons/fa";
 
 export default function TutorialsPage() {
   const tutorials = [
     {
       id: 1,
-      title: "Getting Started with SecureExam",
-      description: "Learn the basics of setting up your first exam and understanding the dashboard.",
-      duration: "15 min",
+      title: "HTML & CSS Full Course - Beginner to Pro",
+      description: "Complete guide to HTML and CSS fundamentals, from basic markup to advanced styling techniques.",
+      duration: "2+ hours",
       level: "Beginner",
-      instructor: "Sarah Johnson",
-      thumbnail: "/images/tutorial-1.jpg"
+      instructor: "SuperSimpleDev",
+      embedUrl: "https://www.youtube.com/embed/mU6anWqZJcc"
     },
     {
       id: 2,
-      title: "Creating Your First Exam",
-      description: "Step-by-step guide to building comprehensive exams with various question types.",
-      duration: "25 min",
+      title: "JavaScript Tutorial for Beginners: Learn JavaScript in 1 Hour",
+      description: "Comprehensive introduction to JavaScript programming, covering variables, functions, and DOM manipulation.",
+      duration: "1 hour",
       level: "Beginner",
-      instructor: "Mike Chen",
-      thumbnail: "/images/tutorial-2.jpg"
+      instructor: "Programming with Mosh",
+      embedUrl: "https://www.youtube.com/embed/W6NZfCO5SIk"
     },
     {
       id: 3,
-      title: "Advanced Security Configuration",
-      description: "Configure advanced security features including browser lockdown and identity verification.",
-      duration: "35 min",
-      level: "Advanced",
-      instructor: "Dr. Emily Davis",
-      thumbnail: "/images/tutorial-3.jpg"
+      title: "React Tutorial for Beginners",
+      description: "Learn React from scratch with practical examples and build your first React applications.",
+      duration: "1.5 hours",
+      level: "Intermediate",
+      instructor: "Programming with Mosh",
+      embedUrl: "https://www.youtube.com/embed/SqcY0GlETPk"
     },
     {
       id: 4,
-      title: "Analytics and Reporting",
-      description: "Understand exam analytics, generate reports, and track student performance.",
-      duration: "20 min",
+      title: "Node.js and Express.js - Full Course",
+      description: "Build server-side applications with Node.js and create REST APIs using Express.js framework.",
+      duration: "3 hours",
       level: "Intermediate",
-      instructor: "Alex Rodriguez",
-      thumbnail: "/images/tutorial-4.jpg"
+      instructor: "freeCodeCamp.org",
+      embedUrl: "https://www.youtube.com/embed/Oe421EPjeBE"
     },
     {
       id: 5,
-      title: "Managing Question Banks",
-      description: "Create, organize, and manage large collections of questions for your exams.",
-      duration: "30 min",
-      level: "Intermediate",
-      instructor: "Lisa Wang",
-      thumbnail: "/images/tutorial-5.jpg"
+      title: "Tailwind CSS Full Course",
+      description: "Master utility-first CSS framework and learn to build modern, responsive web interfaces.",
+      duration: "2 hours",
+      level: "Beginner",
+      instructor: "Developedbyed",
+      embedUrl: "https://www.youtube.com/embed/3m3j-0d3j-U"
     },
     {
       id: 6,
-      title: "Troubleshooting Common Issues",
-      description: "Solutions for the most frequently encountered problems and error scenarios.",
-      duration: "18 min",
-      level: "Intermediate",
-      instructor: "Tom Anderson",
-      thumbnail: "/images/tutorial-6.jpg"
+      title: "Python for Beginners - Learn Python in 1 Hour",
+      description: "Quick introduction to Python programming language, perfect for getting started with coding.",
+      duration: "1 hour",
+      level: "Beginner",
+      instructor: "Programming with Mosh",
+      embedUrl: "https://www.youtube.com/embed/kqtD5dpn9C8"
     }
   ];
 
@@ -80,8 +80,8 @@ export default function TutorialsPage() {
             <FaArrowLeft className="mr-2" />
             Back to Resources
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold">Video Tutorials</h1>
-          <p className="text-xl mt-2">Step-by-step video guides to master SecureExam</p>
+          <h1 className="text-3xl md:text-4xl font-bold">Free Educational Videos</h1>
+          <p className="text-xl mt-2">Access high-quality programming tutorials from expert instructors</p>
         </div>
       </div>
 
@@ -91,12 +91,14 @@ export default function TutorialsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tutorials.map((tutorial) => (
             <div key={tutorial.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              {/* Thumbnail */}
-              <div className="relative bg-gray-200 h-48 flex items-center justify-center">
-                <FaVideo className="text-gray-400 text-4xl" />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <FaPlay className="text-white text-3xl" />
-                </div>
+              {/* Video Embed */}
+              <div className="relative">
+                <iframe 
+                  className="w-full aspect-video" 
+                  src={tutorial.embedUrl} 
+                  title={tutorial.title} 
+                  allowFullScreen
+                ></iframe>
               </div>
 
               {/* Content */}
@@ -119,16 +121,10 @@ export default function TutorialsPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center text-sm text-gray-500 mb-4">
+                <div className="flex items-center text-sm text-gray-500">
                   <FaUser className="mr-1" />
                   {tutorial.instructor}
                 </div>
-
-                {/* Watch Button */}
-                <button className="w-full bg-[#0D7C66] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#41B3A2] transition-colors duration-300 flex items-center justify-center">
-                  <FaPlay className="mr-2" />
-                  Watch Tutorial
-                </button>
               </div>
             </div>
           ))}
@@ -137,23 +133,23 @@ export default function TutorialsPage() {
         {/* Call to Action */}
         <div className="mt-16 bg-white rounded-lg shadow-lg p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Can't Find What You're Looking For?
+            Enhance Your Learning Journey
           </h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Our tutorial library is constantly growing. If you need help with a specific feature or have questions about SecureExam, reach out to our support team.
+            These free educational videos are designed to strengthen your programming skills and prepare you for technical challenges. Continue exploring our platform resources or reach out for additional support.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/support/contact"
+              href="/resources/docs"
               className="bg-[#0D7C66] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#41B3A2] transition-colors duration-300"
             >
-              Contact Support
+              View Documentation
             </Link>
             <Link
-              href="/community/forum"
+              href="/support/contact"
               className="border border-[#0D7C66] text-[#0D7C66] px-6 py-3 rounded-lg font-medium hover:bg-[#0D7C66] hover:text-white transition-colors duration-300"
             >
-              Ask Community
+              Get Support
             </Link>
           </div>
         </div>
