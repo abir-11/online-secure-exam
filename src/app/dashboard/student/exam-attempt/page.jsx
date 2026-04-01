@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function ExamAttempt({ searchParams }) {
   const examId = searchParams.examId;
@@ -15,7 +17,14 @@ export default function ExamAttempt({ searchParams }) {
   useEffect(() => {
     async function fetchExam() {
       const res = await fetch(`/api/exams/${examId}`);
-      if (!res.ok) return alert("Exam not found or access denied");
+      if (!res.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Exam not found or access denied",
+        });
+        return;
+      }
       const data = await res.json();
 
       setExam(data);
@@ -72,17 +81,52 @@ export default function ExamAttempt({ searchParams }) {
 
     const data = await res.json();
     if (!res.ok) {
-      alert(data.message);
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: data.message,
+      });
       return;
     }
 
-    alert(
-      `Exam submitted successfully | Marks: ${data.score} / ${data.totalMarks}`,
-    );
+    Swal.fire({
+      icon: "success",
+      title: "Exam Submitted",
+      html: `Marks: <strong>${data.score} / ${data.totalMarks}</strong>`,
+      confirmButtonColor: "#0D7C66",
+    });
+
     setSubmitted(true);
   };
 
-  if (!exam) return <div>Loading exam...</div>;
+  if (!exam)
+    return (
+      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
+        <svg
+          className="w-6 h-6 animate-spin text-teal-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+        <span className="text-teal-700 animate-pulse tracking-wide">
+          Loading Exam...
+        </span>
+      </div>
+    );
   if (submitted)
     return <div className="p-6 mt-20">Exam submitted successfully!</div>;
 

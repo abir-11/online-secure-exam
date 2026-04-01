@@ -27,19 +27,19 @@ export default function AddUserPage() {
     }
   }, [formData.role]);
 
-  // ✅ API call with role filter
+  // API call with role filter
   const fetchInstructors = async () => {
     try {
       console.log("📡 Fetching instructors with role filter...");
 
-      // ✅ API call with role parameter
+      // API call with role parameter
       const response = await axios.get("/api/admin/users?role=instructor");
 
-      console.log("✅ API Response:", response.data);
+      console.log("API Response:", response.data);
 
       if (response.data.success) {
         const instructorsList = response.data.users;
-        console.log(`👨‍🏫 Found ${instructorsList.length} instructors`);
+        console.log(`Found ${instructorsList.length} instructors`);
         setInstructors(instructorsList);
 
         if (instructorsList.length === 0) {
@@ -47,7 +47,7 @@ export default function AddUserPage() {
         }
       }
     } catch (error) {
-      console.error("❌ Error fetching instructors:", error);
+      console.error("Error fetching instructors:", error);
       toast.error("Could not load instructors list");
       setInstructors([]);
     }
@@ -152,19 +152,19 @@ export default function AddUserPage() {
                   {
                     value: "admin",
                     label: "Admin",
-                    icon: "👑",
+
                     color: "purple",
                   },
                   {
                     value: "instructor",
                     label: "Instructor",
-                    icon: "📚",
+
                     color: "blue",
                   },
                   {
                     value: "student",
                     label: "Student",
-                    icon: "🎓",
+
                     color: "green",
                   },
                 ].map((role) => (
@@ -275,7 +275,7 @@ export default function AddUserPage() {
               </Link>
             </div>
 
-            {/* ✅ Info message about default password */}
+            {/* Info message about default password */}
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
               <p className="text-sm text-blue-700">
                 <span className="font-semibold">ℹ️ Note:</span> New users can

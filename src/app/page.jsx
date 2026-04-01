@@ -17,8 +17,6 @@ export default function Home() {
       <Trusted />
       <CourseCategories></CourseCategories>
       <Feature />
-
-      
       <PricingSection></PricingSection>
        <LearnerResources />
        <StudentReviews></StudentReviews>

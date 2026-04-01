@@ -53,20 +53,40 @@ export default function LoginContent() {
 
       if (!result || result.error) {
         setLoading(false);
-        // Check if backend reported locked profile
-        if (result?.error?.toLowerCase().includes("profile is locked")) {
+
+        const errorMsg = result?.error || "";
+        console.log("🔍 Login error received:", errorMsg);
+
+        // Check for inactive account
+        if (errorMsg.includes("inactive")) {
+          Swal.fire({
+            icon: "warning",
+            title: "⚠️ Account Deactivated",
+            html: `
+            <p>Your account has been deactivated by the administrator.</p>
+            <p class="text-sm text-gray-500 mt-2">Please contact support for assistance.</p>
+          `,
+            confirmButtonColor: "#0D7C66",
+            confirmButtonText: "OK",
+          });
+        }
+        // Check for locked profile
+        else if (errorMsg.toLowerCase().includes("locked")) {
           setIsLocked(true);
-        } else {
+        }
+        // Default error
+        else {
           Swal.fire({
             icon: "error",
             title: "Login Failed",
-            text: "Invalid email or password",
+            text: errorMsg || "Invalid email or password",
             confirmButtonColor: "#0D7C66",
           });
         }
         return;
       }
 
+      // Login successful
       const sessionRes = await fetch("/api/auth/session");
       const sessionData = await sessionRes.json();
       const dbRole = sessionData?.user?.role;
@@ -237,7 +257,7 @@ export default function LoginContent() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-between text-sm pt-2">
+            {/* <div className="flex items-center justify-between text-sm pt-2">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -257,7 +277,7 @@ export default function LoginContent() {
               >
                 Forgot password?
               </Link>
-            </div>
+            </div> */}
 
             <button
               type="submit"

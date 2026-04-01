@@ -32,14 +32,14 @@ export default function ChangeRolePage() {
       console.log("📡 Fetching user with ID:", userId);
 
       const response = await axios.get(`/api/admin/users/${userId}`);
-      console.log("✅ User data:", response.data);
+      console.log("User data:", response.data);
 
       if (response.data.success) {
         setUser(response.data.user);
         setNewRole(response.data.user.role);
       }
     } catch (error) {
-      console.error("❌ Error:", error);
+      console.error(" Error:", error);
       toast.error(error.response?.data?.error || "Failed to load user");
       setTimeout(() => router.push("/dashboard/admin/users"), 2000);
     } finally {
@@ -55,13 +55,13 @@ export default function ChangeRolePage() {
       return;
     }
 
-    // ✅ Check if user is student and trying to become instructor only
+    // Check if user is student and trying to become instructor only
     if (user.role === "student" && newRole !== "instructor") {
       toast.error("Students can only be promoted to Instructor");
       return;
     }
 
-    // ✅ Block other role changes
+    // Block other role changes
     if (user.role !== "student") {
       toast.error("Role change is only allowed for students");
       return;
@@ -82,7 +82,7 @@ export default function ChangeRolePage() {
         router.push("/dashboard/admin/users");
       }
     } catch (error) {
-      console.error("❌ Error:", error);
+      console.error("Error:", error);
       toast.error(error.response?.data?.error || "Failed to update role");
     } finally {
       setUpdating(false);
@@ -120,7 +120,7 @@ export default function ChangeRolePage() {
     return colors[role] || "gray";
   };
 
-  // ✅ Check if role change is allowed for this user
+  // Check if role change is allowed for this user
   const isRoleChangeAllowed = user.role === "student";
 
   return (
@@ -170,12 +170,12 @@ export default function ChangeRolePage() {
               </div>
             </div>
 
-            <div className="p-3 bg-gray-50 rounded-xl">
+            {/* <div className="p-3 bg-gray-50 rounded-xl">
               <p className="text-xs text-gray-500 mb-1">Department</p>
               <p className="font-medium">
                 {user.department || "Not specified"}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
