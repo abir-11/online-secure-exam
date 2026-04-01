@@ -41,7 +41,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
         {/* admin panel */}
         {session?.user?.role === "admin" && <AdminDashboard></AdminDashboard>}
         {/* Instructor Panel */}
