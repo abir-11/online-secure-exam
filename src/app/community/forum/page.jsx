@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FiSearch, FiMessageCircle, FiThumbsUp, FiSend } from "react-icons/fi";
 import Swal from "sweetalert2";
+import { motion, AnimatePresence } from "framer-motion";
 
 // ✅ STATIC POSTS (keep forever)
 const staticPosts = [
@@ -24,7 +25,7 @@ const staticPosts = [
   },
 ];
 
-export default function Page() {
+export default function ForumPage() {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,8 @@ export default function Page() {
         title: "Missing Fields",
         text: "Please fill all fields",
         confirmButtonColor: "#10b981",
+        background: "#022c22",
+        color: "#fff",
       });
     }
 
@@ -86,6 +89,8 @@ export default function Page() {
           title: "Posted!",
           text: "Your post has been published.",
           confirmButtonColor: "#10b981",
+          background: "#022c22",
+          color: "#fff",
         });
 
         setNewPost({ title: "", content: "" });
@@ -96,6 +101,9 @@ export default function Page() {
         icon: "error",
         title: "Error",
         text: "Failed to post",
+        confirmButtonColor: "#10b981",
+        background: "#022c22",
+        color: "#fff",
       });
     } finally {
       setLoading(false);
@@ -106,82 +114,138 @@ export default function Page() {
     post.title?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#022c22] text-white px-4 sm:px-6 lg:px-12 py-16">
-      {/* HEADER */}
-      <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-4xl font-bold">
-          Community <span className="text-emerald-400">Forum</span>
-        </h1>
+  // --- Framer Motion Variants ---
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
 
-        <div className="mt-6 flex items-center bg-white/10 border border-white/20 rounded-lg px-4 py-2 backdrop-blur">
-          <FiSearch />
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+  };
+
+  return (
+    <div className="min-h-screen bg-emerald-950 text-white px-4 sm:px-6 lg:px-12 py-20 relative overflow-hidden">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-4xl mx-auto relative z-10"
+      >
+        {/* HEADER */}
+        <motion.div variants={itemVariants} className="text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-sm">
+            Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Forum</span>
+          </h1>
+          <p className="text-emerald-100/70 mb-8 font-medium">Join the discussion, ask questions, and share insights.</p>
+
+          {/* Search Bar */}
+          <div className="flex items-center bg-emerald-900/40 border border-emerald-700/50 rounded-2xl px-4 py-3 backdrop-blur-md shadow-inner focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400/50 transition-all max-w-2xl mx-auto">
+            <FiSearch className="text-emerald-400 text-xl" />
+            <input
+              type="text"
+              placeholder="Search discussions..."
+              className="bg-transparent outline-none ml-3 w-full text-white placeholder-emerald-300/50 font-medium"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </motion.div>
+
+        {/* CREATE POST */}
+        <motion.div 
+          variants={itemVariants}
+          className="mt-12 bg-emerald-900/40 backdrop-blur-xl border border-emerald-700/50 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_rgb(0,0,0,0.3)]"
+        >
+          <h2 className="text-xl font-bold text-emerald-300 mb-6 flex items-center gap-2">
+            <FiMessageCircle /> Create a Discussion
+          </h2>
+
           <input
             type="text"
-            placeholder="Search posts..."
-            className="bg-transparent outline-none ml-2 w-full text-white"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Discussion title..."
+            value={newPost.title}
+            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            className="w-full bg-emerald-950/60 border border-emerald-700/60 rounded-xl px-4 py-3 mb-4 text-white placeholder-emerald-300/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 transition-all shadow-inner"
           />
-        </div>
-      </div>
 
-      {/* CREATE POST */}
-      <div className="max-w-4xl mx-auto mt-10 bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-lg">
-        <h2 className="text-lg font-semibold text-emerald-400 mb-4">
-          Create a Post
-        </h2>
+          <textarea
+            placeholder="What's on your mind? Write your question or thought here..."
+            value={newPost.content}
+            onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+            className="w-full bg-emerald-950/60 border border-emerald-700/60 rounded-xl px-4 py-3 h-32 text-white placeholder-emerald-300/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 transition-all shadow-inner resize-none"
+          ></textarea>
 
-        <input
-          type="text"
-          placeholder="Post title..."
-          value={newPost.title}
-          onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-          className="input input-bordered w-full mb-4 bg-white/10 border-white/20 text-white"
-        />
-
-        <textarea
-          placeholder="Write your question..."
-          value={newPost.content}
-          onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-          className="textarea textarea-bordered w-full h-24 bg-white/10 border-white/20 text-white"
-        ></textarea>
-
-        <button
-          onClick={handlePost}
-          disabled={loading}
-          className="mt-4 px-6 py-2 bg-emerald-500 text-black rounded-lg hover:scale-105 transition flex items-center gap-2"
-        >
-          {loading ? "Posting..." : "Post"} <FiSend />
-        </button>
-      </div>
-
-      {/* POSTS */}
-      <div className="max-w-4xl mx-auto mt-10 space-y-6">
-        {filteredPosts.map((post) => (
-          <div
-            key={post._id}
-            className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:scale-[1.02] transition"
-          >
-            <h3 className="text-xl font-semibold">{post.title}</h3>
-
-            <p className="text-gray-300 mt-2 text-sm">{post.content}</p>
-
-            {/* <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
-              <span>Posted by {post.author}</span>
-
-              <div className="flex gap-4">
-                <span className="flex items-center gap-1">
-                  <FiThumbsUp /> {post.likes}
-                </span>
-                <span className="flex items-center gap-1">
-                  <FiMessageCircle /> {post.replies}
-                </span>
-              </div>
-            </div> */}
+          <div className="flex justify-end mt-4">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handlePost}
+              disabled={loading}
+              className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-400 text-white font-bold rounded-xl shadow-md hover:from-emerald-400 hover:to-teal-300 transition-all flex items-center gap-2 disabled:opacity-70 border border-emerald-400/30"
+            >
+              {loading ? "Posting..." : "Publish Post"} <FiSend />
+            </motion.button>
           </div>
-        ))}
-      </div>
+        </motion.div>
+
+        {/* POSTS LIST */}
+        <div className="mt-12 space-y-6">
+          <AnimatePresence>
+            {filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => (
+                <motion.div
+                  key={post._id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-emerald-900/30 backdrop-blur-lg border border-emerald-700/40 rounded-2xl p-6 shadow-lg hover:shadow-emerald-900/50 transition-all group"
+                >
+                  <h3 className="text-2xl font-bold text-emerald-100 group-hover:text-emerald-300 transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-emerald-50/80 mt-3 text-base leading-relaxed">
+                    {post.content}
+                  </p>
+
+                  {/* Commented out section (styled beautifully if you want to uncomment it later) */}
+                  {/* <div className="flex flex-wrap justify-between items-center mt-6 pt-4 border-t border-emerald-700/30 text-sm text-emerald-300/70 font-medium">
+                    <span className="bg-emerald-950/50 px-3 py-1 rounded-lg">Posted by <span className="text-emerald-200">{post.author || "Anonymous"}</span></span>
+
+                    <div className="flex gap-4 mt-3 sm:mt-0">
+                      <span className="flex items-center gap-1.5 hover:text-emerald-400 cursor-pointer transition-colors">
+                        <FiThumbsUp /> {post.likes || 0}
+                      </span>
+                      <span className="flex items-center gap-1.5 hover:text-emerald-400 cursor-pointer transition-colors">
+                        <FiMessageCircle /> {post.replies || 0}
+                      </span>
+                    </div>
+                  </div> */}
+                </motion.div>
+              ))
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                className="text-center py-10 text-emerald-300/60 font-medium"
+              >
+                No discussions found matching "{search}"
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </div>
   );
 }
