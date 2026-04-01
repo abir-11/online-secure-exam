@@ -13,6 +13,8 @@ export default function PrivacyPolicyPage() {
           Privacy Policy
         </h1>
 
+
+
         <section className="space-y-6 text-gray-800">
           <p>
             At <span className="font-semibold text-secondary">SecureExam</span>,
