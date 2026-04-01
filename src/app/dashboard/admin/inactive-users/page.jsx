@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Search,
   RefreshCw,
   Shield,
@@ -15,15 +16,14 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  RotateCcw,
+  UserCheck,
   Trash2,
-  Archive,
-  AlertCircle,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
-export default function DeletedUsersPage() {
+export default function InactiveUsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,48 +46,30 @@ export default function DeletedUsersPage() {
     student: 0,
   });
 
-  // Load counts when component mounts
   useEffect(() => {
     fetchCounts();
-  }, []);
-
-  // Load users when page, filter, or pageSize changes
-  useEffect(() => {
-    fetchDeletedUsers();
+    fetchUsers();
   }, [currentPage, filter, pageSize, searchTerm]);
 
-  // function for counts
   const fetchCounts = async () => {
     try {
-      // deleted users(limit 1000)
-      const response = await axios.get("/api/admin/deleted-users?limit=1000");
-      const allDeletedUsers = response.data.users;
-
+      const response = await axios.get("/api/admin/inactive-users");
+      const allUsers = response.data.users;
       setCounts({
-        total: allDeletedUsers.length,
-        admin: allDeletedUsers.filter((u) => u.role === "admin").length,
-        instructor: allDeletedUsers.filter((u) => u.role === "instructor")
-          .length,
-        student: allDeletedUsers.filter((u) => u.role === "student").length,
-      });
-
-      console.log("Counts updated:", {
-        total: allDeletedUsers.length,
-        admin: allDeletedUsers.filter((u) => u.role === "admin").length,
-        instructor: allDeletedUsers.filter((u) => u.role === "instructor")
-          .length,
-        student: allDeletedUsers.filter((u) => u.role === "student").length,
+        total: allUsers.length,
+        admin: allUsers.filter((u) => u.role === "admin").length,
+        instructor: allUsers.filter((u) => u.role === "instructor").length,
+        student: allUsers.filter((u) => u.role === "student").length,
       });
     } catch (error) {
       console.error("Error fetching counts:", error);
     }
   };
 
-  const fetchDeletedUsers = async () => {
+  const fetchUsers = async () => {
     try {
       setLoading(true);
-
-      const response = await axios.get("/api/admin/deleted-users", {
+      const response = await axios.get("/api/admin/inactive-users", {
         params: {
           page: currentPage,
           limit: pageSize,
@@ -98,7 +80,6 @@ export default function DeletedUsersPage() {
 
       setUsers(response.data.users);
 
-      // Update pagination info
       if (response.data.pagination) {
         setTotalPages(response.data.pagination.totalPages);
         setTotalUsers(response.data.pagination.totalUsers);
@@ -106,45 +87,58 @@ export default function DeletedUsersPage() {
         setHasPrevPage(response.data.pagination.hasPrevPage);
       }
     } catch (error) {
-      toast.error("Failed to load deleted users");
+      toast.error("Failed to load inactive users");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRestore = async (userId, userName) => {
-    if (window.confirm(`Are you sure you want to restore ${userName}?`)) {
+  const handleActivate = async (userId, userName) => {
+    const result = await Swal.fire({
+      title: `Activate ${userName}?`,
+      text: "This user will be able to login again.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#0D7C66",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Activate",
+    });
+
+    if (result.isConfirmed) {
       try {
-        await axios.post(`/api/admin/deleted-users/${userId}`);
-        toast.success("User restored successfully");
-        // Restore counts এবং users refresh
-        await fetchCounts();
-        await fetchDeletedUsers();
+        await axios.put(`/api/admin/users/${userId}`, { isActive: true });
+        toast.success(`${userName} activated successfully`);
+        fetchUsers();
+        fetchCounts();
       } catch (error) {
-        toast.error(error.response?.data?.error || "Failed to restore user");
+        toast.error("Failed to activate user");
       }
     }
   };
 
-  const handlePermanentDelete = async (userId, userName) => {
-    if (
-      window.confirm(
-        `Are you sure you want to permanently delete ${userName}? This action cannot be undone!`,
-      )
-    ) {
+  const handleDelete = async (userId, userName) => {
+    const result = await Swal.fire({
+      title: `Delete ${userName}?`,
+      text: "This user will be permanently deleted. This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#0D7C66",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/admin/deleted-users/${userId}`);
-        toast.success("User permanently deleted");
-        // Permanent delete counts এবং users refresh
-        await fetchCounts();
-        await fetchDeletedUsers();
+        await axios.delete(`/api/admin/users/${userId}`);
+        toast.success(`${userName} deleted permanently`);
+        fetchUsers();
+        fetchCounts();
       } catch (error) {
-        toast.error("Failed to permanently delete user");
+        toast.error("Failed to delete user");
       }
     }
   };
 
-  // Role badge color
   const getRoleBadge = (role) => {
     const colors = {
       admin: "bg-purple-100 text-purple-800 border-purple-200",
@@ -166,18 +160,6 @@ export default function DeletedUsersPage() {
     setCurrentPage(1);
   };
 
-  // Handle search with debounce
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  // Refresh both counts and users
-  const handleRefresh = () => {
-    fetchCounts();
-    fetchDeletedUsers();
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Header */}
@@ -185,17 +167,17 @@ export default function DeletedUsersPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">
-              Deleted Users Archive
+              🚫 Inactive Users
             </h1>
             <p className="text-white/80 mt-1">
-              Restore or permanently delete archived users
+              Users who cannot login to the system
             </p>
           </div>
           <Link
             href="/dashboard/admin/users"
-            className="bg-white text-red-400 px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
+            className="bg-white text-red-600 px-4 py-2 rounded-xl hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
           >
-            <Users className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
             Back to Active Users
           </Link>
         </div>
@@ -204,9 +186,9 @@ export default function DeletedUsersPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
         <StatCard
-          icon={Archive}
+          icon={Users}
           count={counts.total}
-          label="Total Deleted"
+          label="Total Inactive"
           color="text-red-600"
           bg="bg-red-100"
         />
@@ -236,19 +218,16 @@ export default function DeletedUsersPage() {
       {/* Search & Filter */}
       <div className="bg-white rounded-xl shadow-md p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
-          {/* Search Bar */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search deleted users by name or email..."
+              placeholder="Search by name or email..."
               value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2] focus:border-transparent"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
             />
           </div>
-
-          {/* Filter Buttons  */}
           <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
             {[
               { key: "all", label: "All", count: counts.total },
@@ -265,11 +244,10 @@ export default function DeletedUsersPage() {
                 onClick={() => {
                   setFilter(f.key);
                   setCurrentPage(1);
-                  fetchCounts(); // counts refresh
                 }}
                 className={`px-4 py-2 rounded-xl whitespace-nowrap transition ${
                   filter === f.key
-                    ? "bg-red-500 text-white shadow-md"
+                    ? "bg-red-600 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -277,9 +255,11 @@ export default function DeletedUsersPage() {
               </button>
             ))}
             <button
-              onClick={handleRefresh}
+              onClick={() => {
+                fetchUsers();
+                fetchCounts();
+              }}
               className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
-              title="Refresh"
             >
               <RefreshCw
                 className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
@@ -289,28 +269,14 @@ export default function DeletedUsersPage() {
         </div>
       </div>
 
-      {/* Warning Message */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-        <div className="flex gap-2">
-          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-          <p className="text-sm text-yellow-700">
-            <strong>Note:</strong> Deleted users are stored for 30 days. After
-            that, they will be automatically permanently deleted. You can
-            restore them anytime within this period.
-          </p>
-        </div>
-      </div>
-
       {/* Users Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent"></div>
-            <p className="mt-2 text-gray-500">Loading deleted users...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent mx-auto"></div>
           </div>
         ) : (
           <>
-            {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
@@ -325,25 +291,19 @@ export default function DeletedUsersPage() {
                       Role
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Deleted At
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Status
+                      Deactivated On
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y">
                   {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50 transition">
+                    <tr key={user._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="font-medium text-gray-900">
                           {user.name}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          Original ID: {user.originalId?.slice(-6)}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{user.email}</td>
@@ -355,31 +315,25 @@ export default function DeletedUsersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gray-500 text-sm">
-                        {new Date(user.deletedAt).toLocaleDateString()} at{" "}
-                        {new Date(user.deletedAt).toLocaleTimeString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
-                          Deleted
-                        </span>
+                        {user.updatedAt
+                          ? new Date(user.updatedAt).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleRestore(user._id, user.name)}
+                            onClick={() => handleActivate(user._id, user.name)}
                             className="p-2 hover:bg-green-100 rounded-lg transition group"
-                            title="Restore User"
+                            title="Activate User"
                           >
-                            <RotateCcw className="w-4 h-4 text-green-600 group-hover:scale-110" />
+                            <UserCheck className="w-5 h-5 text-green-600" />
                           </button>
                           <button
-                            onClick={() =>
-                              handlePermanentDelete(user._id, user.name)
-                            }
+                            onClick={() => handleDelete(user._id, user.name)}
                             className="p-2 hover:bg-red-100 rounded-lg transition group"
                             title="Permanently Delete"
                           >
-                            <Trash2 className="w-4 h-4 text-red-600 group-hover:scale-110" />
+                            <Trash2 className="w-5 h-5 text-red-600" />
                           </button>
                         </div>
                       </td>
@@ -390,18 +344,15 @@ export default function DeletedUsersPage() {
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-gray-200">
+            <div className="md:hidden divide-y">
               {users.map((user) => (
-                <div key={user._id} className="p-4 hover:bg-gray-50">
+                <div key={user._id} className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-semibold text-gray-900">
                         {user.name}
                       </h3>
-                      <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
-                        <Mail className="w-3 h-3" />
-                        {user.email}
-                      </p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadge(user.role)}`}
@@ -409,56 +360,41 @@ export default function DeletedUsersPage() {
                       {user.role}
                     </span>
                   </div>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {new Date(user.deletedAt).toLocaleDateString()}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700">
-                      Deleted
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2 pt-2 border-t">
+                  <div className="flex gap-2 mt-3 pt-2 border-t">
                     <button
-                      onClick={() => handleRestore(user._id, user.name)}
-                      className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100"
+                      onClick={() => handleActivate(user._id, user.name)}
+                      className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg text-sm"
                     >
-                      Restore
+                      Activate
                     </button>
                     <button
-                      onClick={() => handlePermanentDelete(user._id, user.name)}
-                      className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100"
+                      onClick={() => handleDelete(user._id, user.name)}
+                      className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm"
                     >
-                      Delete Permanently
+                      Delete
                     </button>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* No Results */}
             {users.length === 0 && (
               <div className="text-center py-12 text-gray-500">
-                <Archive className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p>No deleted users found.</p>
-                <p className="text-sm mt-1">Deleted users will appear here.</p>
+                No inactive users found
               </div>
             )}
           </>
         )}
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        {/* Page Size Selector */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Show</span>
           <select
             value={pageSize}
             onChange={handlePageSizeChange}
-            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
+            className="px-3 py-2 border rounded-xl text-sm"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
@@ -468,69 +404,58 @@ export default function DeletedUsersPage() {
           <span className="text-sm text-gray-600">entries</span>
         </div>
 
-        {/* Pagination Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={goToFirstPage}
             disabled={!hasPrevPage}
-            className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="First Page"
+            className="p-2 rounded-xl bg-gray-100 disabled:opacity-50"
           >
             <ChevronsLeft className="w-5 h-5" />
           </button>
           <button
             onClick={goToPrevPage}
             disabled={!hasPrevPage}
-            className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Previous Page"
+            className="p-2 rounded-xl bg-gray-100 disabled:opacity-50"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-
-          <span className="px-4 py-2 text-sm text-gray-700">
+          <span className="px-4 py-2 text-sm">
             Page {currentPage} of {totalPages}
           </span>
-
           <button
             onClick={goToNextPage}
             disabled={!hasNextPage}
-            className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Next Page"
+            className="p-2 rounded-xl bg-gray-100 disabled:opacity-50"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
           <button
             onClick={goToLastPage}
             disabled={!hasNextPage}
-            className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Last Page"
+            className="p-2 rounded-xl bg-gray-100 disabled:opacity-50"
           >
             <ChevronsRight className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Showing info */}
         <div className="text-sm text-gray-600">
           Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, totalUsers)} of {totalUsers} entries
+          {Math.min(currentPage * pageSize, totalUsers)} of {totalUsers} users
         </div>
       </div>
     </div>
   );
 }
 
-// Stat Card Component
 function StatCard({ icon: Icon, count, label, color, bg }) {
   return (
-    <div
-      className={`${bg} rounded-xl p-4 shadow-sm hover:shadow-md transition`}
-    >
+    <div className={`${bg} rounded-xl p-4 shadow-sm`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-600 text-xs md:text-sm">{label}</p>
-          <p className={`text-xl md:text-2xl font-bold ${color}`}>{count}</p>
+          <p className="text-gray-600 text-sm">{label}</p>
+          <p className={`text-2xl font-bold ${color}`}>{count}</p>
         </div>
-        <Icon className={`w-8 h-8 md:w-10 md:h-10 ${color} opacity-80`} />
+        <Icon className={`w-8 h-8 ${color} opacity-80`} />
       </div>
     </div>
   );

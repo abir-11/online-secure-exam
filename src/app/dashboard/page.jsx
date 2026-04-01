@@ -18,28 +18,27 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen  bg-primary pt-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-12 text-center text-teal-800">
-          SecureExam Dashboard
-        </h1>
-
-        {/* Welcome Card */}
-        <div className="flex justify-center mb-12">
-          <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-200 transform transition-all duration-700 ease-in-out hover:scale-105 hover:shadow-2xl animate-fadeIn">
-            <h2 className="text-3xl font-bold mb-4 text-teal-700">
-              {session.user.role.charAt(0).toUpperCase() +
-                session.user.role.slice(1)}{" "}
-              Dashboard
-            </h2>
-            <p className="text-lg mb-2">
-              Welcome,{" "}
-              <span className="font-semibold">{session.user.name}</span>!
-            </p>
-            <p className="text-md text-gray-600">
-              <span className="font-bold">Role:</span>{" "}
-              <span className="font-medium text-teal-700">
-                {session.user.role}
+        {/* Welcome Section */}
+        <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-2xl p-6 mb-6 text-white">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Welcome back, {session?.user?.name}!
+              </h1>
+            </div>
+            <div className="flex gap-3">
+              <span className="bg-white/20 px-4 py-2 rounded-xl text-sm">
+                {session?.user?.role}
               </span>
-            </p>
+              <span className="bg-white/20 px-4 py-2 rounded-xl text-sm">
+                📅{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           </div>
         </div>
 
