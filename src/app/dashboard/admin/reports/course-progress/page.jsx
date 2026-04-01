@@ -2,25 +2,36 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   BookOpen,
   Users,
   TrendingUp,
   Award,
-  Calendar,
   Search,
   ChevronRight,
   BarChart3,
   CheckCircle,
-  Clock,
-  PlayCircle,
-  Star,
-  UserCheck,
-  Timer,
+  RefreshCw,
+  LayoutDashboard,
+  Calendar,
+  Layers,
+  GraduationCap
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
 
 export default function CourseProgressPage() {
   const router = useRouter();
@@ -48,7 +59,6 @@ export default function CourseProgressPage() {
       setCourses(courseList.slice(0, 5));
     } catch (error) {
       toast.error("Failed to load courses");
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -58,27 +68,14 @@ export default function CourseProgressPage() {
     try {
       setDetailLoading(true);
       setSelectedCourse(courseId);
-      const res = await axios.get(
-        `/api/admin/reports/course-progress?courseId=${courseId}`,
-      );
+      const res = await axios.get(`/api/admin/reports/course-progress?courseId=${courseId}`);
       setCourseDetail(res.data);
       setPagination(res.data.pagination || {});
     } catch (error) {
       toast.error("Failed to load course details");
-      console.error(error);
     } finally {
       setDetailLoading(false);
     }
-  };
-
-  const handleShowAll = () => {
-    setShowAllCourses(true);
-    setCourses(allCourses);
-  };
-
-  const handleShowLess = () => {
-    setShowAllCourses(false);
-    setCourses(allCourses.slice(0, 5));
   };
 
   const handleSearch = (term) => {
@@ -86,401 +83,240 @@ export default function CourseProgressPage() {
     const filtered = allCourses.filter(
       (course) =>
         course.title?.toLowerCase().includes(term.toLowerCase()) ||
-        course.instructor?.toLowerCase().includes(term.toLowerCase()),
+        course.instructor?.toLowerCase().includes(term.toLowerCase())
     );
-    if (showAllCourses) {
-      setCourses(filtered);
-    } else {
-      setCourses(filtered.slice(0, 5));
-    }
+    setCourses(showAllCourses ? filtered : filtered.slice(0, 5));
   };
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    if (selectedCourse) {
-      fetchCourseDetail(selectedCourse);
-    }
-  };
-
-  const getProgressColor = (progress) => {
-    const p = parseFloat(progress);
-    if (p >= 80) return "text-green-600 bg-green-100";
-    if (p >= 60) return "text-blue-600 bg-blue-100";
-    if (p >= 40) return "text-yellow-600 bg-yellow-100";
-    if (p >= 20) return "text-orange-600 bg-orange-100";
-    return "text-red-600 bg-red-100";
+  const getProgressColor = (p) => {
+    if (p >= 80) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    if (p >= 60) return "text-blue-400 bg-blue-500/10 border-blue-500/20";
+    if (p >= 40) return "text-amber-400 bg-amber-500/10 border-amber-500/20";
+    return "text-rose-400 bg-rose-500/10 border-rose-500/20";
   };
 
   const getStatusBadge = (status) => {
-    const badges = {
-      Completed: "bg-green-100 text-green-800",
-      Advanced: "bg-blue-100 text-blue-800",
-      Halfway: "bg-yellow-100 text-yellow-800",
-      Started: "bg-orange-100 text-orange-800",
-      "Just Started": "bg-purple-100 text-purple-800",
-      "Not Started": "bg-gray-100 text-gray-800",
+    const styles = {
+      Completed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+      Advanced: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+      Halfway: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+      Started: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+      "Not Started": "bg-emerald-900/40 text-emerald-100/40 border-emerald-800/50",
     };
-    return badges[status] || "bg-gray-100 text-gray-800";
+    return styles[status] || styles["Not Started"];
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#0D7C66] border-t-transparent"></div>
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-emerald-800 border-t-emerald-400 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      {/* Back Button */}
+    <div className="min-h-screen bg-emerald-950 p-4 md:p-8 text-emerald-100/70 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/5 blur-[120px] pointer-events-none" />
+
+      {/* Top Nav */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-600 hover:text-[#0D7C66] mb-4 md:mb-6 transition-colors"
+        className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 mb-6 transition-all group"
       >
-        <ArrowLeft className="w-4 h-4" />
-        <span className="text-sm">Back to Reports</span>
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-medium">Back to Reports</span>
       </button>
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-xl md:rounded-2xl p-5 md:p-6 mb-6 text-white">
-        <h1 className="text-xl md:text-2xl font-bold">📚 Course Progress</h1>
-        <p className="text-white/80 text-sm mt-1">
-          Track student course completion and progress
-        </p>
-      </div>
-
-      {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
-          <input
-            type="text"
-            placeholder="Search courses by title or instructor..."
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
-          />
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-emerald-800/50 rounded-lg border border-emerald-700/50 shadow-inner">
+            <BookOpen className="w-6 h-6 text-emerald-400" />
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Course <span className="text-emerald-400">Progress</span>
+          </h1>
         </div>
+        <p className="text-emerald-100/60 ml-12 italic">Monitor curriculum completion and engagement rates</p>
+      </motion.div>
+
+      {/* Search Bar */}
+      <div className="relative mb-8 max-w-2xl">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500/60 w-5 h-5" />
+        <input
+          type="text"
+          placeholder="Search by course title or instructor..."
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="w-full bg-emerald-900/20 border border-emerald-800/50 rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all backdrop-blur-md placeholder:text-emerald-700"
+        />
       </div>
 
-      {/* Course List */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="divide-y">
+      {/* Course Cards Grid */}
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+        <AnimatePresence mode="popLayout">
           {courses.map((course) => (
-            <div
+            <motion.div
               key={course.id}
-              className={`p-4 md:p-5 hover:bg-gray-50 transition-all cursor-pointer ${
-                selectedCourse === course.id ? "bg-[#0D7C66]/5" : ""
-              }`}
+              variants={itemVariants}
+              layout
               onClick={() => fetchCourseDetail(course.id)}
+              className={`group p-5 rounded-3xl border transition-all cursor-pointer relative overflow-hidden ${
+                selectedCourse === course.id 
+                ? "bg-emerald-800/40 border-emerald-400/50 shadow-[0_0_20px_rgba(16,185,129,0.1)]" 
+                : "bg-emerald-900/30 border-emerald-800/50 hover:border-emerald-600/50"
+              }`}
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BookOpen className="w-5 h-5 text-[#0D7C66]" />
-                    <h2 className="font-semibold text-gray-800 text-base md:text-lg">
-                      {course.title}
-                    </h2>
-                    <span className="text-xs text-gray-500">
-                      by {course.instructor || "Unknown"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
-                      <span>{course.totalStudents} students</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" />
-                      <span>Avg Progress: {course.averageProgress}%</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Award className="w-3 h-3" />
-                      <span>Completion: {course.completionRate}%</span>
-                    </div>
-                  </div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-10 h-10 bg-emerald-950/60 rounded-xl flex items-center justify-center border border-emerald-800/50">
+                  <Layers className="w-5 h-5 text-emerald-400" />
                 </div>
-                <ChevronRight
-                  className={`w-5 h-5 text-gray-400 transition-transform ${
-                    selectedCourse === course.id ? "rotate-90" : ""
-                  }`}
-                />
+                <ChevronRight className={`w-5 h-5 transition-all ${selectedCourse === course.id ? "rotate-90 text-emerald-400" : "text-emerald-700 group-hover:text-emerald-400"}`} />
               </div>
-            </div>
+              <h3 className="text-white font-bold text-lg leading-tight mb-2 group-hover:text-emerald-400 transition-colors line-clamp-1">{course.title}</h3>
+              <p className="text-xs text-emerald-500 mb-4 font-medium">Instructor: {course.instructor || "N/A"}</p>
+              
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="flex items-center gap-1.5 text-emerald-100/50 bg-emerald-950/40 p-2 rounded-lg">
+                  <Users className="w-3.5 h-3.5 text-emerald-500" /> {course.totalStudents} Enrolled
+                </div>
+                <div className="flex items-center gap-1.5 text-emerald-100/50 bg-emerald-950/40 p-2 rounded-lg">
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-500" /> {course.averageProgress}% Avg
+                </div>
+              </div>
+            </motion.div>
           ))}
-        </div>
+        </AnimatePresence>
+      </motion.div>
 
-        {/* View All / Show Less Button */}
-        {!showAllCourses && allCourses.length > 5 && (
-          <div className="p-3 border-t text-center">
-            <button
-              onClick={handleShowAll}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
-            >
-              View All ({allCourses.length} courses)
-              <BookOpen className="w-4 h-4" />
-            </button>
+      {/* Detailed View Section */}
+      <AnimatePresence>
+        {detailLoading ? (
+          <div className="flex flex-col items-center py-20 bg-emerald-900/10 rounded-3xl border border-emerald-800/20">
+            <RefreshCw className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
+            <p className="text-emerald-400 animate-pulse font-medium">Analyzing course data...</p>
           </div>
-        )}
+        ) : courseDetail && (
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+            
+            {/* Stats Overview */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard icon={Users} title="Enrolled" value={courseDetail.stats.totalStudents} color="text-blue-400" bg="bg-blue-500/5" />
+              <StatCard icon={TrendingUp} title="Avg Progress" value={courseDetail.stats.averageProgress} suffix="%" color="text-emerald-400" bg="bg-emerald-500/5" />
+              <StatCard icon={Award} title="Completion" value={courseDetail.stats.completionRate} suffix="%" color="text-purple-400" bg="bg-purple-500/5" />
+              <StatCard icon={CheckCircle} title="Completed" value={courseDetail.stats.completedCount} color="text-amber-400" bg="bg-amber-500/5" />
+            </div>
 
-        {showAllCourses && allCourses.length > 5 && (
-          <div className="p-3 border-t text-center">
-            <button
-              onClick={handleShowLess}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
-            >
-              Show Less
-              <ChevronRight className="w-4 h-4 rotate-90" />
-            </button>
-          </div>
-        )}
-
-        {courses.length === 0 && (
-          <div className="p-8 text-center text-gray-500">No courses found</div>
-        )}
-      </div>
-
-      {/* Course Details */}
-      {detailLoading && (
-        <div className="bg-white rounded-xl p-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent mx-auto"></div>
-          <p className="text-sm text-gray-500 mt-2">
-            Loading course details...
-          </p>
-        </div>
-      )}
-
-      {courseDetail && !detailLoading && (
-        <div className="space-y-6">
-          {/* Course Info */}
-          <div className="bg-gradient-to-r from-[#0D7C66]/10 to-[#41B3A2]/10 rounded-xl p-4 md:p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <BookOpen className="w-8 h-8 text-[#0D7C66]" />
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
-                  {courseDetail.course.title}
+            {/* Distribution Map */}
+            <div className="bg-emerald-900/20 border border-emerald-800/50 rounded-[2rem] p-6 md:p-8 backdrop-blur-sm">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                   <BarChart3 className="w-6 h-6 text-emerald-400" /> Progress Distribution
                 </h2>
-                <p className="text-sm text-gray-500">
-                  Instructor: {courseDetail.course.instructor || "Not assigned"}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {courseDetail.course.totalModules} modules total
-                </p>
-              </div>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <StatCard
-                icon={Users}
-                title="Enrolled Students"
-                value={courseDetail.stats.totalStudents}
-                color="bg-blue-50 text-blue-600"
-              />
-              <StatCard
-                icon={TrendingUp}
-                title="Avg Progress"
-                value={courseDetail.stats.averageProgress}
-                suffix="%"
-                color="bg-green-50 text-green-600"
-              />
-              <StatCard
-                icon={Award}
-                title="Completion Rate"
-                value={courseDetail.stats.completionRate}
-                suffix="%"
-                color="bg-purple-50 text-purple-600"
-              />
-              <StatCard
-                icon={CheckCircle}
-                title="Completed"
-                value={courseDetail.stats.completedCount}
-                color="bg-yellow-50 text-yellow-600"
-              />
-            </div>
-          </div>
-
-          {/* Progress Distribution */}
-          <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
-            <h2 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-[#0D7C66]" />
-              Student Progress Distribution
-            </h2>
-            <div className="space-y-3">
-              {[
-                {
-                  label: "Not Started",
-                  key: "notStarted",
-                  color: "bg-gray-500",
-                },
-                {
-                  label: "Just Started (0-25%)",
-                  key: "started",
-                  color: "bg-red-500",
-                },
-                {
-                  label: "Halfway (25-50%)",
-                  key: "halfway",
-                  color: "bg-orange-500",
-                },
-                {
-                  label: "Advanced (50-75%)",
-                  key: "advanced",
-                  color: "bg-yellow-500",
-                },
-                {
-                  label: "Nearly Done (75-99%)",
-                  key: "nearlyDone",
-                  color: "bg-blue-500",
-                },
-                { label: "Completed", key: "completed", color: "bg-green-500" },
-              ].map((item) => {
-                const count = courseDetail.stats.distribution[item.key];
-                const percentage =
-                  courseDetail.stats.totalStudents > 0
-                    ? (count / courseDetail.stats.totalStudents) * 100
-                    : 0;
-                return (
-                  <div key={item.key}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">{item.label}</span>
-                      <span className="text-gray-500">
-                        {count} students ({percentage.toFixed(1)}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`${item.color} rounded-full h-2`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Student Progress Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="p-4 border-b bg-gray-50">
-              <h2 className="font-semibold flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#0D7C66]" />
-                Student Progress in {courseDetail.course.title}
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[500px]">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Student
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Progress
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Modules
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Last Activity
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {courseDetail.studentProgress?.map((student, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium text-sm">
-                            {student.studentName}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {student.studentEmail}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-[#0D7C66] rounded-full h-2"
-                              style={{ width: `${student.progress}%` }}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                    {[
+                      { label: "Not Started", key: "notStarted", color: "bg-emerald-800" },
+                      { label: "Just Started (0-25%)", key: "started", color: "bg-rose-500" },
+                      { label: "Halfway (25-50%)", key: "halfway", color: "bg-orange-500" },
+                      { label: "Advanced (50-75%)", key: "advanced", color: "bg-amber-500" },
+                      { label: "Nearly Done (75-99%)", key: "nearlyDone", color: "bg-blue-500" },
+                      { label: "Completed", key: "completed", color: "bg-emerald-500" },
+                    ].map((item) => {
+                      const count = courseDetail.stats.distribution[item.key];
+                      const percentage = courseDetail.stats.totalStudents > 0 ? (count / courseDetail.stats.totalStudents) * 100 : 0;
+                      return (
+                        <div key={item.key} className="space-y-2">
+                          <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span className="text-emerald-100/40">{item.label}</span>
+                            <span className="text-emerald-400">{count} students</span>
+                          </div>
+                          <div className="h-2 w-full bg-emerald-950 rounded-full overflow-hidden border border-emerald-800/30">
+                            <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: `${percentage}%` }} 
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className={`h-full ${item.color} shadow-[0_0_10px_rgba(0,0,0,0.5)]`} 
                             />
                           </div>
-                          <span
-                            className={`text-xs font-medium ${getProgressColor(student.progress)} px-2 py-0.5 rounded-full`}
-                          >
-                            {student.progress}%
-                          </span>
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        {student.completedModules} / {student.totalModules}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(student.status)}`}
-                        >
-                          {student.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {student.lastActivity
-                          ? new Date(student.lastActivity).toLocaleDateString()
-                          : "Not started"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      );
+                    })}
+                </div>
             </div>
 
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t flex justify-between items-center">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={!pagination.hasPrevPage}
-                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-gray-500">
-                  Page {pagination.currentPage} of {pagination.totalPages}
-                </span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!pagination.hasNextPage}
-                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
+            {/* Students Table */}
+            <div className="bg-emerald-900/20 border border-emerald-800/50 rounded-[2rem] overflow-hidden backdrop-blur-md shadow-2xl">
+              <div className="p-6 border-b border-emerald-800/50 bg-emerald-900/40">
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-emerald-400" /> Student Progress Report
+                </h2>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="text-emerald-400/50 text-[10px] uppercase tracking-widest bg-emerald-950/50 font-bold">
+                      <th className="px-6 py-5">Learner</th>
+                      <th className="px-6 py-5">Visual Progress</th>
+                      <th className="px-6 py-5">Modules</th>
+                      <th className="px-6 py-5">Current Status</th>
+                      <th className="px-6 py-5">Last Online</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-emerald-800/30">
+                    {courseDetail.studentProgress?.map((student, i) => (
+                      <tr key={i} className="hover:bg-emerald-800/20 transition-colors group">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">{student.studentName}</p>
+                          <p className="text-xs text-emerald-100/30">{student.studentEmail}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-24 h-1.5 bg-emerald-950 rounded-full overflow-hidden border border-emerald-800/50">
+                                <div className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" style={{ width: `${student.progress}%` }} />
+                            </div>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${getProgressColor(student.progress)}`}>
+                              {student.progress}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-emerald-100/60 font-mono text-sm">
+                          {student.completedModules} <span className="text-emerald-800">/</span> {student.totalModules}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-tighter shadow-sm ${getStatusBadge(student.status)}`}>
+                            {student.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs text-emerald-100/40">
+                          {student.lastActivity ? new Date(student.lastActivity).toLocaleDateString() : "Never"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 // Stat Card Component
-function StatCard({ icon: Icon, title, value, suffix = "", color }) {
+function StatCard({ icon: Icon, title, value, suffix = "", color, bg }) {
   return (
-    <div className={`${color} rounded-xl p-3 md:p-4 shadow-sm`}>
-      <div className="flex items-center justify-between">
+    <div className={`${bg} border border-emerald-800/50 p-6 rounded-[1.5rem] shadow-xl group hover:border-emerald-500/40 transition-all`}>
+      <div className="flex justify-between items-center">
         <div>
-          <p className="text-xs md:text-sm opacity-80">{title}</p>
-          <p className="text-lg md:text-xl font-bold mt-1">
-            {value}
-            {suffix}
+          <p className="text-[10px] font-bold text-emerald-100/30 uppercase tracking-widest mb-1">{title}</p>
+          <p className={`text-2xl font-black ${color}`}>
+            {value}{suffix}
           </p>
         </div>
-        <Icon className="w-5 h-5 md:w-6 md:h-6 opacity-80" />
+        <div className={`p-3 rounded-2xl bg-emerald-950/60 border border-emerald-800/50 ${color} group-hover:scale-110 transition-transform`}>
+          <Icon className="w-6 h-6" />
+        </div>
       </div>
     </div>
   );
