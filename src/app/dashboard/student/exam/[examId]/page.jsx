@@ -28,6 +28,7 @@ export default function StudentExamPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [warningMessage, setWarningMessage] = useState("");
   const timerRef = useRef(null);
+  const [violations, setViolations] = useState(0);
 
   // 🛡️ Security: Disable Copy/Paste/Right-Click
   useEffect(() => {
@@ -36,11 +37,43 @@ export default function StudentExamPage() {
     document.addEventListener("paste", handleDisable);
     document.addEventListener("cut", handleDisable);
     document.addEventListener("contextmenu", handleDisable);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setViolations(prev => prev + 1);
+        Swal.fire({
+          icon: "warning",
+          title: "Tab Switching Detected!",
+          text: "Please stay on this exam tab. Multiple violations may result in exam termination.",
+          background: '#dc2626',
+          color: '#fff',
+          confirmButtonColor: '#064e3b'
+        });
+      }
+    };
+
+    const handleBlur = () => {
+      setViolations(prev => prev + 1);
+      Swal.fire({
+        icon: "warning",
+        title: "Focus Lost!",
+        text: "Please keep this window in focus.",
+        background: '#dc2626',
+        color: '#fff',
+        confirmButtonColor: '#064e3b'
+      });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleBlur);
+
     return () => {
       document.removeEventListener("copy", handleDisable);
       document.removeEventListener("paste", handleDisable);
       document.removeEventListener("cut", handleDisable);
       document.removeEventListener("contextmenu", handleDisable);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 

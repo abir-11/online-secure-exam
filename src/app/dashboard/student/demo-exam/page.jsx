@@ -13,6 +13,7 @@ import {
   Target
 } from "lucide-react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DEMO_QUESTIONS = [
@@ -45,6 +46,7 @@ export default function DemoExamPage() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [violations, setViolations] = useState(0);
 
   // 🛡️ Security Implementation
   useEffect(() => {
@@ -71,11 +73,42 @@ export default function DemoExamPage() {
     document.addEventListener("contextmenu", preventAction);
     document.addEventListener("keydown", preventKeyboard);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setViolations(prev => prev + 1);
+        Swal.fire({
+          icon: "warning",
+          title: "Tab Switching Detected!",
+          text: "This may affect your exam.",
+          background: '#dc2626',
+          color: '#fff',
+          confirmButtonColor: '#064e3b'
+        });
+      }
+    };
+
+    const handleBlur = () => {
+      setViolations(prev => prev + 1);
+      Swal.fire({
+        icon: "warning",
+        title: "Focus Lost!",
+        text: "Please stay on this tab.",
+        background: '#dc2626',
+        color: '#fff',
+        confirmButtonColor: '#064e3b'
+      });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleBlur);
+
     return () => {
       document.removeEventListener("copy", preventAction);
       document.removeEventListener("paste", preventAction);
       document.removeEventListener("contextmenu", preventAction);
       document.removeEventListener("keydown", preventKeyboard);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 
