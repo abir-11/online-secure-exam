@@ -8,6 +8,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { FcGoogle } from "react-icons/fc";
 import { IoShield } from "react-icons/io5";
+import { Eye, EyeOff } from "lucide-react"; // আইকন ইমপোর্ট করা হয়েছে
 import { motion, AnimatePresence } from "framer-motion";
 
 // Disable SSR for Lottie
@@ -25,6 +26,7 @@ export default function LoginContent() {
   const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // পাসওয়ার্ড স্টেটের জন্য
   const [loading, setLoading] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
@@ -132,11 +134,8 @@ export default function LoginContent() {
       });
 
       setTimeout(() => {
-        if (callbackUrl) {
-          router.push(callbackUrl);
-          return;
-        }
-        router.push("/dashboard");
+        // ✅ Fixed: Redirect to /dashboard as requested
+        router.push(callbackUrl || "/dashboard");
       }, 1200);
     } catch (error) {
       setLoading(false);
@@ -151,17 +150,16 @@ export default function LoginContent() {
     }
   };
 
-  // 🔴 Updated for better readability: White text and clear placeholder
   const inputStyles =
     "w-full px-4 py-3 bg-emerald-950/60 border border-emerald-700/60 rounded-xl focus:bg-emerald-900/80 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400 transition-all text-white placeholder-gray-400 shadow-inner";
 
   // Framer Motion Variants
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { duration: 0.5, staggerChildren: 0.1 } 
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5, staggerChildren: 0.1 },
     },
   };
 
@@ -208,7 +206,6 @@ export default function LoginContent() {
                 </span>
               </h2>
 
-              {/* 🔴 Made text much brighter */}
               <p className="mt-4 text-emerald-50 text-center max-w-sm leading-relaxed text-lg font-medium">
                 Log in to your account to continue your secure and reliable educational journey.
               </p>
@@ -230,7 +227,6 @@ export default function LoginContent() {
             <h3 className="text-2xl font-bold text-white drop-shadow-sm">
               Login to your account
             </h3>
-            {/* 🔴 Subtitle made brighter */}
             <p className="text-gray-300 mt-2 text-base">
               Please enter your credentials to access your dashboard.
             </p>
@@ -246,7 +242,7 @@ export default function LoginContent() {
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 relative ${
                   role === item
                     ? "text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-emerald-800/50" // 🔴 Unselected text improved
+                    : "text-gray-400 hover:text-white hover:bg-emerald-800/50"
                 }`}
               >
                 {role === item && (
@@ -268,7 +264,6 @@ export default function LoginContent() {
           {/* FORM */}
           <form className="space-y-5" onSubmit={handleLogin}>
             <motion.div variants={itemVariants}>
-              {/* 🔴 Label made white and bold */}
               <label className="text-sm font-semibold text-white mb-2 block">
                 Email Address
               </label>
@@ -282,25 +277,34 @@ export default function LoginContent() {
               />
             </motion.div>
 
-            <motion.div variants={itemVariants}>
-              {/* 🔴 Label made white and bold */}
+            {/* ✅ Password Field with Toggle Icon */}
+            <motion.div variants={itemVariants} className="relative">
               <label className="text-sm font-semibold text-white mb-2 block">
                 Password
               </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={inputStyles}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className={inputStyles}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-400/70 hover:text-emerald-400 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </motion.div>
             
             <motion.div variants={itemVariants} className="flex justify-end">
               <Link
                 href="/forgot-password"
-                className="text-emerald-300 hover:text-white hover:underline text-sm font-semibold transition-colors" // 🔴 Link color brighter
+                className="text-emerald-300 hover:text-white hover:underline text-sm font-semibold transition-colors"
               >
                 Forgot password?
               </Link>
@@ -331,7 +335,6 @@ export default function LoginContent() {
           {/* DIVIDER */}
           <motion.div variants={itemVariants} className="my-8 flex items-center gap-3">
             <div className="flex-1 h-px bg-emerald-700/60"></div>
-            {/* 🔴 Divider text improved */}
             <span className="text-gray-300 text-sm font-medium tracking-wide">
               or continue with
             </span>
@@ -343,19 +346,20 @@ export default function LoginContent() {
             variants={itemVariants}
             whileHover={{ scale: 1.02, backgroundColor: "rgba(6, 78, 59, 0.6)" }}
             whileTap={{ scale: 0.98 }}
-            onClick={() =>
-              signIn("google", {
-                callbackUrl: callbackUrl || "/dashboard/student",
-              })
-            }
-            // 🔴 Button text made white
+            type="button" 
+            onClick={() => {
+              // ✅ Fixed: Redirect directly to /dashboard for Google Login as well
+              const targetPath = callbackUrl || "/dashboard";
+              const absoluteUrl = `${window.location.origin}${targetPath}`;
+              
+              signIn("google", { callbackUrl: absoluteUrl });
+            }}
             className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-emerald-950/60 border border-emerald-600/60 transition-all duration-300 text-white font-bold shadow-sm hover:border-emerald-400/80"
           >
             <FcGoogle size={24} />
             <span>Sign in with Google</span>
           </motion.button>
 
-          {/* 🔴 Sign up text brighter */}
           <motion.p variants={itemVariants} className="mt-8 text-center text-base text-gray-300">
             Do not have an account?{" "}
             <Link
@@ -383,7 +387,6 @@ export default function LoginContent() {
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-emerald-900 border border-emerald-600/80 rounded-3xl p-8 max-w-sm w-full flex flex-col items-center shadow-2xl relative overflow-hidden"
             >
-              {/* Modal Glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500/30 blur-[50px] rounded-full"></div>
               
               <Lottie
@@ -394,7 +397,6 @@ export default function LoginContent() {
               <h2 className="mt-4 text-2xl font-bold text-white text-center relative z-10">
                 Profile Locked!
               </h2>
-              {/* 🔴 Modal description brighter */}
               <p className="mt-2 text-emerald-50 text-center text-base font-medium leading-relaxed relative z-10">
                 For your security, your account has been locked after 3 failed
                 login attempts.
