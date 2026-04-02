@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { FaArrowLeft, FaBook, FaGraduationCap, FaChalkboardTeacher, FaFileAlt, FaVideo, FaDownload, FaExternalLinkAlt } from "react-icons/fa";
+import { 
+  FaArrowLeft, 
+  FaBook, 
+  FaGraduationCap, 
+  FaFileAlt, 
+  FaVideo 
+} from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -10,8 +16,9 @@ export default function DocsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Authentication check
   useEffect(() => {
-    if (status === "loading") return; // Still loading
+    if (status === "loading") return;
     if (!session) {
       router.push("/auth/login");
     }
@@ -71,66 +78,29 @@ export default function DocsPage() {
     }
   ];
 
-  const teacherResources = [
-    {
-      title: "Teaching Methodologies",
-      description: "Explore different teaching approaches, classroom management, and student engagement techniques.",
-      icon: <FaChalkboardTeacher className="text-red-500 text-2xl" />,
-      items: [
-        "Active Learning Techniques",
-        "Differentiated Instruction",
-        "Project-Based Learning",
-        "Flipped Classroom Model",
-        "Assessment Strategies"
-      ]
-    },
-    {
-      title: "Curriculum Development",
-      description: "Learn to design effective curricula, create lesson plans, and align with educational standards.",
-      icon: <FaGraduationCap className="text-orange-500 text-2xl" />,
-      items: [
-        "Curriculum Mapping",
-        "Lesson Planning Templates",
-        "Bloom's Taxonomy Application",
-        "Standards-Based Planning",
-        "Assessment Design"
-      ]
-    },
-    {
-      title: "Educational Technology",
-      description: "Integrate technology in teaching, use learning management systems, and digital tools.",
-      icon: <FaDownload className="text-teal-500 text-2xl" />,
-      items: [
-        "Google Classroom Setup",
-        "Interactive Whiteboard Tools",
-        "Online Assessment Platforms",
-        "Video Conferencing Best Practices",
-        "Educational Apps Integration"
-      ]
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-[#0D7C66] text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button - Now correctly imported and functional */}
           <Link
-            href="/resources"
-            className="inline-flex items-center text-white hover:text-gray-200 mb-4 transition-colors duration-300"
+            href="/dashboard/student/online-courses/free-resources"
+            className="inline-flex items-center text-white hover:text-gray-200 mb-6 transition-colors duration-300"
           >
             <FaArrowLeft className="mr-2" />
-            Back to Resources
+            Back to Free Resources
           </Link>
+
           <h1 className="text-3xl md:text-4xl font-bold">Educational Resources</h1>
-          <p className="text-xl mt-2">Comprehensive learning materials for students and teaching guides for educators</p>
+          <p className="text-xl mt-2">Comprehensive learning materials for students</p>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Students Section */}
-        <section className="mb-16">
+        <section>
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
               <FaGraduationCap className="text-[#0D7C66] text-4xl mr-3" />
@@ -143,13 +113,17 @@ export default function DocsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {studentResources.map((resource, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+              <div 
+                key={index} 
+                className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+              >
                 <div className="flex items-center mb-4">
                   {resource.icon}
                   <h3 className="text-xl font-bold text-gray-800 ml-3">{resource.title}</h3>
                 </div>
                 <p className="text-gray-600 mb-4">{resource.description}</p>
-                <ul className="space-y-2">
+                
+                <ul className="space-y-2 mb-6">
                   {resource.items.map((item, itemIndex) => (
                     <li key={itemIndex} className="flex items-center text-sm text-gray-700">
                       <span className="w-2 h-2 bg-[#0D7C66] rounded-full mr-3 flex-shrink-0"></span>
@@ -157,62 +131,20 @@ export default function DocsPage() {
                     </li>
                   ))}
                 </ul>
+
                 <Link
                   href={
-                    index === 0 ? "https://www.khanacademy.org/study-skills" :
-                    index === 1 ? "https://owl.purdue.edu/" :
-                    "https://www.coursera.org/"
+                    index === 0 
+                      ? "https://www.khanacademy.org/study-skills" 
+                      : index === 1 
+                      ? "https://owl.purdue.edu/" 
+                      : "https://www.coursera.org/"
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 w-full bg-[#0D7C66] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#41B3A2] transition-colors duration-300 text-center block"
+                  className="w-full bg-[#0D7C66] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#41B3A2] transition-colors duration-300 text-center block"
                 >
                   Explore Resources
-                </Link>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Teachers Section */}
-        <section>
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <FaChalkboardTeacher className="text-[#0D7C66] text-4xl mr-3" />
-              <h2 className="text-3xl font-bold text-gray-800">For Teachers</h2>
-            </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access professional development resources, teaching strategies, and tools to enhance your instructional effectiveness and create engaging learning environments.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teacherResources.map((resource, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  {resource.icon}
-                  <h3 className="text-xl font-bold text-gray-800 ml-3">{resource.title}</h3>
-                </div>
-                <p className="text-gray-600 mb-4">{resource.description}</p>
-                <ul className="space-y-2">
-                  {resource.items.map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-center text-sm text-gray-700">
-                      <span className="w-2 h-2 bg-[#0D7C66] rounded-full mr-3 flex-shrink-0"></span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={
-                    index === 0 ? "https://www.edutopia.org/" :
-                    index === 1 ? "https://www.ascd.org/" :
-                    "https://www.iste.org/"
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 w-full bg-[#0D7C66] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#41B3A2] transition-colors duration-300 text-center block"
-                >
-                  Access Guides
                 </Link>
               </div>
             ))}
@@ -225,7 +157,7 @@ export default function DocsPage() {
             Need More Specific Resources?
           </h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Our educational resource library is continuously growing. If you need materials for a specific subject, grade level, or teaching methodology, let us know.
+            Our educational resource library is continuously growing. If you need materials for a specific subject, grade level, or skill, let us know.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

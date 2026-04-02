@@ -43,7 +43,8 @@ export default function FreeResourcesPage() {
             href="/dashboard/student/online-courses"
             className="group flex items-center gap-3 px-6 py-3 bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-400 border border-emerald-800/50 rounded-2xl transition-all font-bold text-sm"
           >
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> Back to Categories
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
+            Back to Categories
           </Link>
         </div>
 
@@ -69,12 +70,12 @@ export default function FreeResourcesPage() {
               icon={<ShieldCheck size={24} className="text-emerald-400" />}
               title="Getting Started Guides"
               description="Step-by-step documentation for absolute beginners to kickstart their journey."
-              href="#"
+              href="/resources/docs"           // ← Update this if needed
             />
 
-            {/* Video Card - Highlighted */}
+            {/* Video Tutorials Card - Highlighted */}
             <Link 
-              href="/dashboard/student/online-courses/free-videos"
+              href="/resources/tutorials"          // ← Changed to your actual tutorials page
               className="group p-8 rounded-[2rem] border-2 border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all flex flex-col justify-between"
             >
               <div>
@@ -98,15 +99,15 @@ export default function FreeResourcesPage() {
               icon={<FileText size={24} className="text-emerald-400" />}
               title="Practice Worksheets"
               description="Downloadable PDF exercises designed to reinforce your practical skills."
-              href="#"
+              href="#" 
             />
 
-            {/* Community Card */}
+            {/* Community Forum Card - FIXED */}
             <ResourceCard 
               icon={<Users size={24} className="text-emerald-400" />}
               title="Community Forum"
               description="Connect with thousands of peers and mentors for shared learning and support."
-              href="#"
+              href="/community/forum"
             />
 
           </div>
@@ -114,18 +115,20 @@ export default function FreeResourcesPage() {
 
         {/* Bottom Tagline */}
         <div className="mt-12 text-center">
-          <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-[0.5em]">Education is a right, not a privilege</p>
+          <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-[0.5em]">
+            Education is a right, not a privilege
+          </p>
         </div>
       </div>
     </main>
   );
 }
 
-// Reusable Sub-component for Cards
+// Reusable ResourceCard using Next.js Link (Fixed)
 function ResourceCard({ icon, title, description, href }) {
   return (
-    <a 
-      href={href} 
+    <Link 
+      href={href}
       className="group p-8 bg-emerald-950/40 border border-emerald-800/50 rounded-[2rem] hover:border-emerald-500/40 transition-all flex flex-col justify-between"
     >
       <div>
@@ -138,6 +141,6 @@ function ResourceCard({ icon, title, description, href }) {
       <div className="mt-8 flex items-center text-emerald-800 font-black text-xs uppercase tracking-widest gap-2 group-hover:text-emerald-500 transition-colors">
         Access Content <ChevronRight size={14} />
       </div>
-    </a>
+    </Link>
   );
 }
