@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Plus, ArrowLeft, BookOpen, CheckCircle2, ListNumbers } from "lucide-react";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function ExamQuestionsPage() {
   const { examId } = useParams();
@@ -13,12 +15,10 @@ export default function ExamQuestionsPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit modal state
+  // Modals state
   const [editOpen, setEditOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState(null);
-
-  // Add modal state
   const [addOpen, setAddOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
 
   // Form state
   const [qText, setQText] = useState("");
@@ -27,7 +27,13 @@ export default function ExamQuestionsPage() {
   const [marks, setMarks] = useState(1);
   const [category, setCategory] = useState("");
 
-  // Fetch exam & questions
+  const swalTheme = {
+    background: "#022c22",
+    color: "#fff",
+    confirmButtonColor: "#10B981",
+    cancelButtonColor: "#ef4444",
+  };
+
   useEffect(() => {
     async function fetchExam() {
       try {
@@ -37,8 +43,7 @@ export default function ExamQuestionsPage() {
         setExam(data.exam);
         setQuestions(data.exam.questions || []);
       } catch (err) {
-        console.error(err);
-        Swal.fire("Error", err.message, "error");
+        Swal.fire({ icon: "error", title: "Error", text: err.message, ...swalTheme });
       } finally {
         setLoading(false);
       }
@@ -46,7 +51,6 @@ export default function ExamQuestionsPage() {
     fetchExam();
   }, [examId]);
 
-  // ------------------- Add Question -------------------
   const openAdd = () => {
     setEditingQuestion(null);
     setQText("");
@@ -59,21 +63,10 @@ export default function ExamQuestionsPage() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-
-    const endpoint =
-      exam.type === "mcq" ? "/api/questions/create" : "/api/theory-questions";
-
-    const payload =
-      exam.type === "mcq"
-        ? {
-            examId,
-            questionText: qText,
-            options,
-            correctOption,
-            marks,
-            category,
-          }
-        : { examId, questionText: qText, marks, category };
+    const endpoint = exam.type === "mcq" ? "/api/questions/create" : "/api/theory-questions";
+    const payload = exam.type === "mcq" 
+      ? { examId, questionText: qText, options, correctOption, marks, category }
+      : { examId, questionText: qText, marks, category };
 
     try {
       const res = await fetch(endpoint, {
@@ -81,27 +74,17 @@ export default function ExamQuestionsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to add question");
 
       setQuestions((prev) => [...prev, data.question]);
-
       setAddOpen(false);
-      Swal.fire({
-        icon: "success",
-        title: "Question Added",
-        text: "Question added successfully",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      Swal.fire({ icon: "success", title: "Added!", timer: 1500, showConfirmButton: false, ...swalTheme });
     } catch (err) {
-      console.error(err);
-      Swal.fire("Error", err.message, "error");
+      Swal.fire({ icon: "error", title: "Error", text: err.message, ...swalTheme });
     }
   };
 
-  // ------------------- Edit Question -------------------
   const openEdit = (q) => {
     setEditingQuestion(q);
     setQText(q.questionText);
@@ -116,29 +99,10 @@ export default function ExamQuestionsPage() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editingQuestion) return;
-
-    const endpoint =
-      exam.type === "mcq"
-        ? "/api/questions/edit"
-        : "/api/theory-questions/edit";
-
-    const payload =
-      exam.type === "mcq"
-        ? {
-            questionId: editingQuestion._id,
-            questionText: qText,
-            options,
-            correctOption,
-            marks,
-            category,
-          }
-        : {
-            questionId: editingQuestion._id,
-            questionText: qText,
-            marks,
-            category,
-          };
+    const endpoint = exam.type === "mcq" ? "/api/questions/edit" : "/api/theory-questions/edit";
+    const payload = exam.type === "mcq"
+      ? { questionId: editingQuestion._id, questionText: qText, options, correctOption, marks, category }
+      : { questionId: editingQuestion._id, questionText: qText, marks, category };
 
     try {
       const res = await fetch(endpoint, {
@@ -146,59 +110,28 @@ export default function ExamQuestionsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) throw new Error("Update failed");
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to edit question");
-
-      setQuestions((prev) =>
-        prev.map((q) =>
-          q._id === editingQuestion._id
-            ? {
-                ...q,
-                questionText: qText,
-                marks,
-                category,
-                options: exam.type === "mcq" ? options : q.options,
-                correctOption:
-                  exam.type === "mcq" ? correctOption : q.correctOption,
-              }
-            : q,
-        ),
-      );
-
+      setQuestions((prev) => prev.map((q) => q._id === editingQuestion._id ? { ...q, questionText: qText, marks, category, options, correctOption } : q));
       setEditOpen(false);
-      setEditingQuestion(null);
-
-      Swal.fire({
-        icon: "success",
-        title: "Question Updated",
-        text: "Question updated successfully",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      Swal.fire({ icon: "success", title: "Updated!", timer: 1500, showConfirmButton: false, ...swalTheme });
     } catch (err) {
-      console.error(err);
-      Swal.fire("Error", err.message, "error");
+      Swal.fire({ icon: "error", title: "Error", text: err.message, ...swalTheme });
     }
   };
 
-  // ------------------- Delete Question -------------------
   const handleDelete = async (q) => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This question will be permanently deleted!",
+      title: "Delete Question?",
+      text: "This action cannot be undone!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes, delete",
+      ...swalTheme
     });
 
     if (!result.isConfirmed) return;
-
-    const endpoint =
-      exam.type === "mcq"
-        ? "/api/questions/delete"
-        : "/api/theory-questions/delete";
+    const endpoint = exam.type === "mcq" ? "/api/questions/delete" : "/api/theory-questions/delete";
 
     try {
       const res = await fetch(endpoint, {
@@ -206,321 +139,198 @@ export default function ExamQuestionsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ questionId: q._id }),
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to delete question");
-
+      if (!res.ok) throw new Error("Delete failed");
       setQuestions((prev) => prev.filter((item) => item._id !== q._id));
-
-      Swal.fire({
-        icon: "success",
-        title: "Deleted!",
-        text: "Question deleted successfully",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      Swal.fire({ icon: "success", title: "Deleted!", timer: 1500, ...swalTheme });
     } catch (err) {
-      console.error(err);
-      Swal.fire("Error", err.message, "error");
+      Swal.fire({ icon: "error", title: "Error", text: err.message, ...swalTheme });
     }
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
-        <svg
-          className="w-6 h-6 animate-spin text-teal-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-          ></path>
-        </svg>
-        <span className="text-teal-700 animate-pulse tracking-wide">
-          Loading Exams...
-        </span>
-      </div>
-    );
+  if (loading) return (
+    <div className="min-h-screen bg-emerald-950 flex flex-col items-center justify-center text-emerald-400">
+      <div className="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="animate-pulse">Loading Exam Data...</p>
+    </div>
+  );
 
   return (
-    <main className="bg-primary min-h-screen">
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          Exam: {exam?.title || "-"}
-        </h1>
+    <main className="min-h-screen bg-emerald-950 p-4 sm:p-8 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div className="mb-4">
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <div>
+            <Link href="/instructor/exams" className="text-emerald-400 flex items-center gap-2 text-sm hover:underline mb-2">
+              <ArrowLeft size={14} /> Back to Exams
+            </Link>
+            <h1 className="text-3xl font-black text-white">
+              {exam?.title} <span className="text-emerald-500 text-lg font-normal ml-2">({exam?.type?.toUpperCase()})</span>
+            </h1>
+          </div>
           <button
             onClick={openAdd}
-            className="px-4 py-2 bg-teal-600 text-white rounded"
+            className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg"
           >
-            Add Question
+            <Plus size={20} /> Add New Question
           </button>
         </div>
 
+        {/* Questions List */}
         {questions.length === 0 ? (
-          <p>No questions added yet.</p>
+          <div className="text-center py-20 bg-emerald-900/20 border border-emerald-800/50 rounded-3xl">
+            <BookOpen size={48} className="mx-auto text-emerald-700 mb-4" />
+            <p className="text-emerald-100/50">No questions added to this exam yet.</p>
+          </div>
         ) : (
-          <ul className="space-y-4">
-            {questions.map((q) => (
-              <li
+          <div className="grid gap-4">
+            {questions.map((q, idx) => (
+              <motion.div
                 key={q._id}
-                className="p-4 bg-white shadow rounded-lg flex justify-between items-start"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="bg-emerald-900/30 border border-emerald-800/40 p-5 rounded-2xl flex justify-between items-start group hover:border-emerald-500/30 transition-all shadow-md"
               >
-                <div>
-                  <p className="font-semibold">{q.questionText}</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-emerald-800 text-emerald-300 text-xs font-bold px-2 py-1 rounded">Q{idx + 1}</span>
+                    <span className="text-emerald-500/60 text-xs font-medium uppercase tracking-wider">{q.category} • {q.marks} Marks</span>
+                  </div>
+                  <p className="text-white text-lg font-medium mb-3">{q.questionText}</p>
 
                   {exam.type === "mcq" && (
-                    <ul className="list-disc pl-5 mt-1 text-sm text-gray-700">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {q.options?.map((opt, i) => (
-                        <li
-                          key={i}
-                          className={
-                            i === q.correctOption ? "text-green-600" : ""
-                          }
-                        >
+                        <div key={i} className={`text-sm p-2 rounded-lg flex items-center gap-2 ${i === q.correctOption ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-emerald-950/40 text-emerald-100/50"}`}>
+                          {i === q.correctOption ? <CheckCircle2 size={14}/> : <div className="w-3.5 h-3.5 rounded-full border border-emerald-700"/>}
                           {opt}
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   )}
-
-                  <p className="text-xs text-gray-500">
-                    Marks: {q.marks || 1} | Category: {q.category || "-"}
-                  </p>
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    className="text-blue-600 hover:text-blue-800"
-                    onClick={() => openEdit(q)}
-                  >
-                    <Edit size={16} />
+                <div className="flex gap-2 ml-4">
+                  <button onClick={() => openEdit(q)} className="p-2 bg-emerald-800/50 text-emerald-400 hover:bg-emerald-400 hover:text-emerald-950 rounded-lg transition-all">
+                    <Edit size={18} />
                   </button>
-
-                  <button
-                    className="text-red-600 hover:text-red-800"
-                    onClick={() => handleDelete(q)}
-                  >
-                    <Trash2 size={16} />
+                  <button onClick={() => handleDelete(q)} className="p-2 bg-rose-900/30 text-rose-400 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
+                    <Trash2 size={18} />
                   </button>
                 </div>
-              </li>
+              </motion.div>
             ))}
-          </ul>
-        )}
-
-        {/* Add & Edit modals remain same */}
-        {addOpen && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
-            <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4">Add Question</h2>
-
-              <form onSubmit={handleAddSubmit} className="space-y-4">
-                {/* Question text */}
-                <div>
-                  <label className="block font-medium mb-1">
-                    Question Text
-                  </label>
-                  <textarea
-                    className="w-full p-2 border rounded"
-                    value={qText}
-                    onChange={(e) => setQText(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* MCQ options */}
-                {exam.type === "mcq" &&
-                  options.map((opt, i) => (
-                    <div key={i}>
-                      <label className="block mb-1">Option {i + 1}</label>
-                      <input
-                        className="w-full p-2 border rounded mb-1"
-                        value={opt}
-                        onChange={(e) => {
-                          const arr = [...options];
-                          arr[i] = e.target.value;
-                          setOptions(arr);
-                        }}
-                        required
-                      />
-                    </div>
-                  ))}
-
-                {exam.type === "mcq" && (
-                  <div>
-                    <label className="block mb-1">Correct Option (0–3)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={3}
-                      value={correctOption}
-                      onChange={(e) => setCorrectOption(Number(e.target.value))}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                )}
-
-                {/* Marks & Category */}
-                <div>
-                  <label className="block mb-1">Marks</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={marks}
-                    onChange={(e) => setMarks(Number(e.target.value))}
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Category</label>
-                  <select
-                    className="w-full p-2 border rounded"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <option value="">-- Select Category --</option>
-                    <option value="Math">Math</option>
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Biology">Biology</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded bg-gray-300"
-                    onClick={() => setAddOpen(false)}
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-green-600 text-white"
-                  >
-                    Add
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {editOpen && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
-            <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4">Edit Question</h2>
-
-              <form onSubmit={handleEditSubmit} className="space-y-4">
-                {/* Question text */}
-                <div>
-                  <label className="block font-medium mb-1">
-                    Question Text
-                  </label>
-                  <textarea
-                    className="w-full p-2 border rounded"
-                    value={qText}
-                    onChange={(e) => setQText(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* MCQ options */}
-                {exam.type === "mcq" &&
-                  options.map((opt, i) => (
-                    <div key={i}>
-                      <label className="block mb-1">Option {i + 1}</label>
-                      <input
-                        className="w-full p-2 border rounded mb-1"
-                        value={opt}
-                        onChange={(e) => {
-                          const arr = [...options];
-                          arr[i] = e.target.value;
-                          setOptions(arr);
-                        }}
-                        required
-                      />
-                    </div>
-                  ))}
-
-                {exam.type === "mcq" && (
-                  <div>
-                    <label className="block mb-1">Correct Option (0–3)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={3}
-                      value={correctOption}
-                      onChange={(e) => setCorrectOption(Number(e.target.value))}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                )}
-
-                {/* Marks & Category */}
-                <div>
-                  <label className="block mb-1">Marks</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={marks}
-                    onChange={(e) => setMarks(Number(e.target.value))}
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Category</label>
-                  <select
-                    className="w-full p-2 border rounded"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <option value="">-- Select Category --</option>
-                    <option value="Math">Math</option>
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Biology">Biology</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded bg-gray-300"
-                    onClick={() => setEditOpen(false)}
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-teal-600 text-white"
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
           </div>
         )}
       </div>
+
+      {/* Modal Overlay Component */}
+      <AnimatePresence>
+        {(addOpen || editOpen) && (
+          <div className="fixed inset-0 bg-emerald-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-emerald-900 border border-emerald-700 w-full max-w-xl rounded-3xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto custom-scrollbar"
+            >
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                {addOpen ? <Plus className="text-emerald-400"/> : <Edit className="text-emerald-400"/>}
+                {addOpen ? "Add Question" : "Edit Question"}
+              </h2>
+
+              <form onSubmit={addOpen ? handleAddSubmit : handleEditSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-emerald-200 text-sm font-medium">Question Text</label>
+                  <textarea
+                    className="w-full bg-emerald-950 border border-emerald-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                    rows="3"
+                    value={qText}
+                    onChange={(e) => setQText(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {exam.type === "mcq" && (
+                  <div className="space-y-3">
+                    <label className="text-emerald-200 text-sm font-medium">Options</label>
+                    <div className="grid gap-3">
+                      {options.map((opt, i) => (
+                        <div key={i} className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder={`Option ${i + 1}`}
+                            className={`flex-1 bg-emerald-950 border rounded-xl p-3 text-white outline-none transition-all ${correctOption === i ? "border-emerald-500 ring-1 ring-emerald-500" : "border-emerald-700"}`}
+                            value={opt}
+                            onChange={(e) => {
+                              const arr = [...options];
+                              arr[i] = e.target.value;
+                              setOptions(arr);
+                            }}
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setCorrectOption(i)}
+                            className={`px-3 rounded-xl transition-all ${correctOption === i ? "bg-emerald-500 text-emerald-950" : "bg-emerald-800 text-emerald-400"}`}
+                          >
+                            <CheckCircle2 size={20} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-emerald-200 text-sm font-medium">Marks</label>
+                    <input
+                      type="number"
+                      className="w-full bg-emerald-950 border border-emerald-700 rounded-xl p-3 text-white outline-none"
+                      value={marks}
+                      onChange={(e) => setMarks(Number(e.target.value))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-emerald-200 text-sm font-medium">Category</label>
+                    <select
+                      className="w-full bg-emerald-950 border border-emerald-700 rounded-xl p-3 text-white outline-none"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                    >
+                      <option value="">Select Category</option>
+                      <option value="Math">Math</option>
+                      <option value="Physics">Physics</option>
+                      <option value="Chemistry">Chemistry</option>
+                      <option value="Biology">Biology</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    className="flex-1 py-3 bg-emerald-800 text-emerald-300 rounded-xl font-bold hover:bg-emerald-700 transition-all"
+                    onClick={() => { setAddOpen(false); setEditOpen(false); }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 bg-emerald-500 text-emerald-950 rounded-xl font-bold hover:bg-emerald-400 transition-all shadow-lg"
+                  >
+                    {addOpen ? "Add Question" : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

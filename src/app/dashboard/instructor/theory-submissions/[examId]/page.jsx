@@ -1,149 +1,123 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Swal from "sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
+import { motion } from "framer-motion";
+import { 
+  BookOpen, 
+  Users, 
+  CheckCircle, 
+  Clock, 
+  ChevronRight, 
+  Mail, 
+  GraduationCap 
+} from "lucide-react";
 
-export default function InstructorTheorySubmissionsPage() {
-  const { examId } = useParams();
+export default function InstructorExamPage({ params }) {
+  const { id } = params;
+  const [exam, setExam] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!examId) return;
-
-    async function fetchSubmissions() {
+    async function fetchData() {
       try {
-        const res = await fetch(`/api/instructor/theory-submissions/${examId}`);
-        const data = await res.json();
+        const res = await fetch(`/api/exams/${id}`);
+        const examData = await res.json();
+        setExam(examData);
 
-        if (!res.ok) {
-          setError(data.message || "Failed to fetch");
-          setSubmissions([]);
-        } else {
-          setSubmissions(data.submissions || []);
-        }
-      } catch (err) {
-        setError("Network error");
-        setSubmissions([]);
+        const subRes = await fetch(`/api/exam-attempts/${id}`);
+        const subData = await subRes.json();
+        setSubmissions(subData.attempts || []);
       } finally {
         setLoading(false);
       }
     }
+    fetchData();
+  }, [id]);
 
-    fetchSubmissions();
-  }, [examId]);
-
-  if (loading) return <p className="p-6">Loading...</p>;
-  if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
+  if (loading) return <div className="min-h-screen bg-emerald-950 flex items-center justify-center text-emerald-400 animate-pulse font-bold">Loading Stats...</div>;
+  if (!exam) return <div className="min-h-screen bg-emerald-950 flex items-center justify-center text-rose-400 font-bold text-xl">Exam Not Found!</div>;
 
   return (
-    <main className="p-6 bg-primary min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
+    <main className="min-h-screen bg-emerald-950 p-6 sm:p-10 pt-24 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-      {submissions.length === 0 && <p>No submissions found.</p>}
-
-      {submissions.map((s) => (
-        <div key={s._id} className="border-8 border-teal-500 p-4 mb-4 rounded">
-          <p className="font-semibold">Student: {s.studentEmail}</p>
-
-          <div className="mt-2">
-            {Object.entries(s.answersWithMarks || {}).map(
-              ([qid, { questionText, answer, maxMarks, awarded }], idx) => (
-                <div key={qid} className="mb-4 border-b pb-3">
-                  <p className="font-medium">
-                    Q{idx + 1}: {questionText} ({maxMarks} marks)
-                  </p>
-
-                  <p className="ml-2 text-gray-700 mt-1">
-                    <strong>Student Answer:</strong> {answer}
-                  </p>
-
-                  {s.scores?.[qid] != null ? (
-                    <p className="text-green-600 mt-2">
-                      Score: {s.scores[qid]} / {maxMarks}
-                    </p>
-                  ) : (
-                    <div className="mt-2 flex gap-2">
-                      <input
-                        type="number"
-                        min={0}
-                        max={maxMarks}
-                        id={`score-${s._id}-${qid}`}
-                        className="border px-2 py-1 w-24"
-                      />
-                      <button
-                        className="bg-teal-600 text-white px-4 py-1 rounded"
-                        onClick={() =>
-                          gradeSubmission(
-                            s._id,
-                            qid,
-                            Number(
-                              document.getElementById(`score-${s._id}-${qid}`)
-                                .value,
-                            ),
-                            maxMarks,
-                          )
-                        }
-                      >
-                        Grade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ),
-            )}
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Header Header */}
+        <div className="bg-emerald-900/30 backdrop-blur-md border border-emerald-800/50 rounded-3xl p-8 mb-8 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-black uppercase tracking-widest mb-2">
+                <GraduationCap size={16} /> Instructor Control
+              </div>
+              <h1 className="text-4xl font-black text-white leading-tight">{exam.title}</h1>
+              <p className="text-emerald-100/40 text-sm mt-1">Manage and review all student responses for this exam.</p>
+            </div>
+            
+            <div className="flex gap-4">
+              <StatItem icon={<BookOpen size={18}/>} label="Questions" value={exam.questions?.length || 0} />
+              <StatItem icon={<Users size={18}/>} label="Submissions" value={submissions.length} />
+            </div>
           </div>
-
-          <p className="mt-3 font-semibold text-lg">
-            Total Score: {s.score} / {s.totalMarks}
-          </p>
         </div>
-      ))}
+
+        {/* Submissions List */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <div className="w-2 h-8 bg-emerald-500 rounded-full"></div>
+            Student Submissions
+          </h2>
+
+          <div className="grid gap-4">
+            {submissions.map((s, idx) => (
+              <motion.div
+                key={s._id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="bg-emerald-900/20 border border-emerald-800/40 rounded-2xl p-5 hover:bg-emerald-900/40 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-emerald-950 border border-emerald-800 rounded-xl flex items-center justify-center text-emerald-400 font-bold group-hover:border-emerald-500 transition-colors">
+                    {idx + 1}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 text-white font-bold text-lg">
+                      <Mail size={14} className="text-emerald-500" />
+                      {s.studentEmail}
+                    </div>
+                    <p className="text-emerald-100/30 text-xs mt-1">Attempt ID: {s._id.slice(-8).toUpperCase()}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border flex items-center gap-2 ${
+                    s.graded ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                  }`}>
+                    {s.graded ? <CheckCircle size={12} /> : <Clock size={12} />}
+                    {s.graded ? "Graded" : "Pending"}
+                  </div>
+                  
+                  <button className="p-2 bg-emerald-800/50 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-emerald-950 transition-all">
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
   );
+}
 
-  async function gradeSubmission(submissionId, qid, score, maxMarks) {
-    if (score < 0) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Score",
-        text: "Cannot be negative",
-      });
-    }
-
-    if (score > maxMarks) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Invalid Score",
-        text: `Cannot exceed ${maxMarks}`,
-      });
-    }
-
-    const res = await fetch(`/api/instructor/theory-submissions/${examId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ submissionId, qid, score }),
-    });
-
-    if (res.ok) {
-      await Swal.fire({
-        icon: "success",
-        title: "Graded Successfully",
-        text: "The score has been saved.",
-        confirmButtonColor: "#0d9488",
-      });
-      location.reload();
-    } else {
-      const data = await res.json();
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: data.message,
-      });
-    }
-  }
+function StatItem({ icon, label, value }) {
+  return (
+    <div className="bg-emerald-950/60 border border-emerald-800/50 px-5 py-3 rounded-2xl min-w-[140px] text-center">
+      <div className="text-emerald-500 mb-1 flex justify-center">{icon}</div>
+      <p className="text-emerald-100/30 text-[10px] font-black uppercase tracking-widest">{label}</p>
+      <p className="text-white text-xl font-bold">{value}</p>
+    </div>
+  );
 }

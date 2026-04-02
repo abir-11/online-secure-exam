@@ -6,6 +6,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { FcGoogle } from "react-icons/fc";
 import { IoShield } from "react-icons/io5";
+import { HiEye, HiEyeOff } from "react-icons/hi"; // আইকন যোগ করা হয়েছে
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -23,6 +24,10 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // ✅ পাসওয়ার্ড ভিজিবিলিটি স্টেট
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -64,12 +69,8 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
+        // সরাসরি সাইন ইন করানো হচ্ছে
         await signIn("credentials", { email, password, redirect: false });
-
-        const sessionRes = await fetch("/api/auth/session");
-        const sessionData = await sessionRes.json();
-        
-        const userRole = sessionData?.user?.role || role;
 
         Swal.fire({
           icon: "success",
@@ -83,7 +84,8 @@ export default function RegisterPage() {
         });
 
         setTimeout(() => {
-          window.location.href = `/dashboard/${userRole}`;
+          // ✅ আপনার রিকোয়েস্ট অনুযায়ী সরাসরি /dashboard এ পাঠানো হচ্ছে
+          window.location.href = "/dashboard";
         }, 1500);
 
       } else {
@@ -111,7 +113,6 @@ export default function RegisterPage() {
     setLoading(false);
   };
 
-  // ✅ Admin animation removed
   const getAnimationForRole = {
     instructor: learningAnimation,
     student: studentAnimation,
@@ -195,7 +196,7 @@ export default function RegisterPage() {
             </p>
           </motion.div>
 
-          {/* ✅ Role Selection - Admin Removed */}
+          {/* Role Selection */}
           <motion.div variants={itemVariants} className="flex gap-2 mb-8 bg-emerald-950/70 border border-emerald-700/60 p-1.5 rounded-2xl shadow-inner">
             {["instructor", "student"].map((item) => (
               <button
@@ -243,10 +244,6 @@ export default function RegisterPage() {
                   placeholder="+8801712345678"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  pattern="^\+[1-9]\d{7,14}$"
-                  minLength={8}
-                  maxLength={15}
-                  title="Enter a valid international phone number starting with + and country code"
                   required
                   className={inputStyles}
                 />
@@ -265,25 +262,46 @@ export default function RegisterPage() {
             </motion.div>
 
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              {/* Password Field */}
+              <div className="relative">
                 <label className="text-sm font-semibold text-white mb-2 block">Password</label>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className={inputStyles}
-                />
+                <div className="relative">
+                  <input
+                    type={showPass ? "text" : "password"}
+                    placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className={inputStyles}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-400"
+                  >
+                    {showPass ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+                  </button>
+                </div>
               </div>
-              <div>
+              
+              {/* Confirm Password Field */}
+              <div className="relative">
                 <label className="text-sm font-semibold text-white mb-2 block">Confirm Password</label>
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className={inputStyles}
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPass ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className={inputStyles}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-400"
+                  >
+                    {showConfirmPass ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+                  </button>
+                </div>
               </div>
             </motion.div>
 
@@ -295,17 +313,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full py-3.5 mt-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white font-bold text-lg hover:from-emerald-400 hover:to-teal-300 shadow-[0_4px_20px_rgb(16,185,129,0.4)] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed border border-emerald-300/30"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating Account...
-                </span>
-              ) : (
-                "Register Account"
-              )}
+              {loading ? "Creating Account..." : "Register Account"}
             </motion.button>
           </form>
 
@@ -319,9 +327,7 @@ export default function RegisterPage() {
 
           <motion.button
             variants={itemVariants}
-            whileHover={{ scale: 1.02, backgroundColor: "rgba(6, 78, 59, 0.6)" }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => signIn("google", { callbackUrl: `/dashboard/${role}` })}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-emerald-950/60 border border-emerald-600/60 transition-all duration-300 text-white font-bold shadow-sm hover:border-emerald-400/80"
           >
             <FcGoogle size={24} />

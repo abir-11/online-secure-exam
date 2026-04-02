@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Menu, X, LogOut, ChevronRight, LayoutDashboard, 
+  Home,Menu, X, LogOut, ChevronRight, LayoutDashboard, 
   User, Users, UserX, Trash2, FileText, 
   BarChart3, AlertTriangle, PlusCircle, Layers, 
   UserPlus, ClipboardList, Database, CheckSquare, 
@@ -77,9 +77,9 @@ export default function DashboardLayout({ children }) {
     <div className="flex min-h-screen bg-emerald-950 text-emerald-50">
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-emerald-900/50 backdrop-blur-md border-b border-emerald-800/50 flex items-center justify-between px-6 z-50">
-        <span className="text-xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+        <Link href={'/'} className="text-xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
           SecureExam
-        </span>
+        </Link>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 bg-emerald-800/50 rounded-xl text-emerald-400"
@@ -117,6 +117,7 @@ export default function DashboardLayout({ children }) {
         <nav className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-2 mt-12 lg:mt-0">
           <p className="text-[10px] uppercase font-bold text-emerald-100/30 ml-3 mb-2 tracking-widest">General</p>
           
+          <SidebarLink href="/" icon={Home} label="Home" active={pathname === "/"} />
           <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Overview" active={pathname === "/dashboard"} />
           <SidebarLink href="/dashboard/profile" icon={User} label="My Profile" active={pathname === "/dashboard/profile"} />
 
