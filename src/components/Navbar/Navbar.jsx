@@ -49,7 +49,7 @@ export default function Navbar() {
       name: "Pricing",
       submenu: [
         { name: "Free Plan", href: "/pricing/free" },
-        { name: "Starter Plan", href: "/pricing/starter" },
+        { name: "Basic Plan", href: "/pricing/basic" },
         { name: "Pro Plan", href: "/pricing/pro" },
         { name: "Enterprise Plan", href: "/pricing/enterprise" },
       ],
@@ -57,9 +57,8 @@ export default function Navbar() {
     {
       name: "Resources",
       submenu: [
-        { name: "Documentation", href: "/resources/docs" },
+        { name: "Documentation", href: "/resources/documentation" },
         { name: "Tutorials", href: "/resources/tutorials" },
-        { name: "API Reference", href: "/resources/api" },
       ],
     },
     {

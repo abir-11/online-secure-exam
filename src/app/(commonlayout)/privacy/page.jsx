@@ -14,6 +14,8 @@ export default function PrivacyPolicyPage() {
           Privacy Policy
         </h1>
 
+
+
         {/* Content Card */}
         <section className="space-y-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-10 shadow-lg">
           <p className="text-gray-300 leading-relaxed">

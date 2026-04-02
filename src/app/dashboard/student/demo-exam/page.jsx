@@ -2,8 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { CheckCircle2, XCircle, ArrowLeft, ShieldAlert } from "lucide-react";
+import { 
+  CheckCircle2, 
+  XCircle, 
+  ArrowLeft, 
+  ShieldAlert, 
+  RotateCcw, 
+  LayoutDashboard,
+  Trophy,
+  Target
+} from "lucide-react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import { motion, AnimatePresence } from "framer-motion";
 
 const DEMO_QUESTIONS = [
   {
@@ -35,56 +46,69 @@ export default function DemoExamPage() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [violations, setViolations] = useState(0);
 
-  // 🛡️ Security Implementation: No Copy-Paste, No Right Click
+  // 🛡️ Security Implementation
   useEffect(() => {
-    const preventCopy = (e) => {
+    const preventAction = (e) => {
       e.preventDefault();
-      toast.error("Copying is disabled during the exam!", {
-        icon: <ShieldAlert className="text-red-500" />,
-        style: { borderRadius: '10px', background: '#333', color: '#fff' }
+      toast.error("Action disabled for security!", {
+        style: { background: '#064e3b', color: '#fff', borderRadius: '12px' }
       });
     };
 
-    const preventPaste = (e) => {
-      e.preventDefault();
-      toast.error("Pasting is disabled!", {
-        icon: <ShieldAlert className="text-red-500" />
-      });
-    };
-
-    const preventRightClick = (e) => {
-      e.preventDefault();
-      toast("Right-click is disabled for security", {
-        icon: "🚫",
-        style: { borderRadius: '10px', background: '#333', color: '#fff' }
-      });
-    };
-
-    const preventKeyboardShortcuts = (e) => {
-      // Block Ctrl+C, Ctrl+V, Ctrl+U (View Source), Ctrl+Shift+I (Inspect)
+    const preventKeyboard = (e) => {
       if (
         (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's')) ||
         (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
         e.key === 'F12'
       ) {
         e.preventDefault();
-        toast.error("Standard shortcuts are disabled for this assessment.");
+        toast.error("Standard shortcuts are disabled.");
       }
     };
 
-    // Attach listeners
-    document.addEventListener("copy", preventCopy);
-    document.addEventListener("paste", preventPaste);
-    document.addEventListener("contextmenu", preventRightClick);
-    document.addEventListener("keydown", preventKeyboardShortcuts);
+    document.addEventListener("copy", preventAction);
+    document.addEventListener("paste", preventAction);
+    document.addEventListener("contextmenu", preventAction);
+    document.addEventListener("keydown", preventKeyboard);
 
-    // Cleanup
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setViolations(prev => prev + 1);
+        Swal.fire({
+          icon: "warning",
+          title: "Tab Switching Detected!",
+          text: "This may affect your exam.",
+          background: '#dc2626',
+          color: '#fff',
+          confirmButtonColor: '#064e3b'
+        });
+      }
+    };
+
+    const handleBlur = () => {
+      setViolations(prev => prev + 1);
+      Swal.fire({
+        icon: "warning",
+        title: "Focus Lost!",
+        text: "Please stay on this tab.",
+        background: '#dc2626',
+        color: '#fff',
+        confirmButtonColor: '#064e3b'
+      });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleBlur);
+
     return () => {
-      document.removeEventListener("copy", preventCopy);
-      document.removeEventListener("paste", preventPaste);
-      document.removeEventListener("contextmenu", preventRightClick);
-      document.removeEventListener("keydown", preventKeyboardShortcuts);
+      document.removeEventListener("copy", preventAction);
+      document.removeEventListener("paste", preventAction);
+      document.removeEventListener("contextmenu", preventAction);
+      document.removeEventListener("keydown", preventKeyboard);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 
@@ -102,146 +126,166 @@ export default function DemoExamPage() {
     });
     setScore(currentScore);
     setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white p-6 mt-16 select-none">
-      <div className="max-w-4xl mx-auto pt-4 font-sans">
+    <div className="min-h-screen bg-emerald-50/30 p-6 pt-28 select-none">
+      <div className="max-w-4xl mx-auto font-sans">
+        
+        {/* Header Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-teal-900 tracking-tight">Demo Practice Exam</h1>
-            <div className="flex items-center mt-1 text-teal-600">
-              <ShieldAlert className="w-4 h-4 mr-1.5" />
-              <p className="text-sm font-semibold uppercase tracking-wider">Exam Environment Secured</p>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+            <h1 className="text-4xl font-black text-emerald-950 tracking-tight">
+              Practice <span className="text-emerald-600">Module</span>
+            </h1>
+            <div className="flex items-center mt-2 text-emerald-600/70">
+              <ShieldAlert size={16} className="mr-2" />
+              <p className="text-xs font-bold uppercase tracking-[0.2em]">Secure Exam Environment Active</p>
             </div>
-          </div>
-          <Link href="/dashboard/student/my-exams" className="flex items-center text-teal-700 hover:text-teal-900 font-semibold transition-colors group px-4 py-2 rounded-lg hover:bg-teal-50">
+          </motion.div>
+          
+          <Link href="/dashboard/student/my-exams" 
+            className="flex items-center text-emerald-700 hover:text-emerald-900 font-bold transition-all px-5 py-2.5 rounded-xl hover:bg-white border border-transparent hover:border-emerald-100 group">
             <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
             Exit Practice
           </Link>
         </div>
-        
-        <div className="bg-white border-l-4 border-teal-500 p-5 rounded-r-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] mb-10">
-          <p className="text-gray-700 font-medium leading-relaxed">
-            Welcome to the secure assessment mode. This exam has <strong>no time limit</strong>. 
-            Selection, copying, and right-clicking are disabled to maintain integrity.
-          </p>
-        </div>
 
-        <div className="space-y-8">
-          {DEMO_QUESTIONS.map((q, index) => (
-            <div key={q.id} className="bg-white p-8 rounded-[2rem] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start mb-8">
-                <span className="bg-teal-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black mr-5 shrink-0 shadow-lg shadow-teal-100">
-                  {index + 1}
-                </span>
-                <h3 className="text-xl font-bold text-gray-800 pt-1 leading-relaxed">
-                  {q.question}
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 gap-5 ml-0 sm:ml-14">
-                {q.options.map((option, i) => {
-                  const isSelected = answers[q.id] === option;
-                  const isCorrect = q.correctAnswer === option;
-                  let optionClass = "relative flex items-center p-6 rounded-2xl border-2 cursor-pointer transition-all duration-500 ";
-                  
-                  if (submitted) {
-                    if (isSelected && isCorrect) optionClass += "bg-emerald-50/50 border-emerald-500 scale-[1.02] shadow-md ring-2 ring-emerald-100";
-                    else if (isSelected && !isCorrect) optionClass += "bg-rose-50/50 border-rose-500 scale-[1.02] shadow-md ring-2 ring-rose-100";
-                    else if (isCorrect) optionClass += "bg-emerald-50/20 border-emerald-200 opacity-90";
-                    else optionClass += "bg-gray-50 border-gray-100 opacity-40";
-                  } else {
-                    optionClass += isSelected 
-                      ? "bg-teal-50/50 border-teal-600 shadow-xl shadow-teal-50 scale-[1.01] ring-2 ring-teal-100" 
-                      : "hover:bg-gray-50 border-gray-100 hover:border-teal-200 hover:translate-x-1";
-                  }
-
-                  return (
-                    <div
-                      key={i}
-                      className={optionClass}
-                      onClick={() => handleOptionChange(q.id, option)}
-                    >
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-5 shrink-0 transition-all duration-300 ${
-                        isSelected ? 'border-teal-600 bg-teal-600 rotate-[360deg]' : 'border-gray-300'
-                      }`}>
-                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
-                      </div>
-                      <span className={`text-lg transition-colors ${isSelected ? 'text-teal-900 font-bold' : 'text-gray-700'}`}>
-                        {option}
-                      </span>
-                      
-                      <div className="absolute right-8">
-                        {submitted && isSelected && isCorrect && (
-                          <CheckCircle2 className="text-emerald-600 w-8 h-8 animate-in fade-in slide-in-from-right-2 duration-500" />
-                        )}
-                        {submitted && isSelected && !isCorrect && (
-                          <XCircle className="text-rose-600 w-8 h-8 animate-in fade-in slide-in-from-right-2 duration-500" />
-                        )}
-                        {submitted && !isSelected && isCorrect && (
-                          <CheckCircle2 className="text-emerald-400 w-8 h-8 opacity-60" />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-16 mb-24 flex justify-center">
+        <AnimatePresence mode="wait">
           {!submitted ? (
-            <button
-              onClick={handleSubmit}
-              disabled={Object.keys(answers).length !== DEMO_QUESTIONS.length}
-              className="group relative px-16 py-5 bg-teal-600 text-white rounded-[1.5rem] font-black text-2xl hover:bg-teal-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-500 shadow-2xl hover:shadow-teal-200 hover:-translate-y-1.5 active:translate-y-0"
+            <motion.div 
+              key="exam-body"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="space-y-8"
             >
-              Submit Responses
-              <span className="ml-3 group-hover:translate-x-2 transition-transform inline-block">&rarr;</span>
-            </button>
+              {/* Instructions */}
+              <div className="bg-emerald-900 text-emerald-50 p-6 rounded-3xl shadow-xl shadow-emerald-900/10 flex items-center gap-4">
+                <div className="w-12 h-12 bg-emerald-800 rounded-2xl flex items-center justify-center shrink-0">
+                    <Target className="text-emerald-400" />
+                </div>
+                <p className="text-sm font-medium leading-relaxed opacity-90">
+                  Welcome! This is a demo mode. Test your knowledge and get familiar with the 
+                  interface. <strong>Selection, Copying, and Right-click are disabled.</strong>
+                </p>
+              </div>
+
+              {/* Questions List */}
+              <div className="space-y-6">
+                {DEMO_QUESTIONS.map((q, index) => (
+                  <motion.div 
+                    key={q.id} 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white p-8 rounded-[2.5rem] border border-emerald-100 shadow-sm"
+                  >
+                    <div className="flex items-start mb-8 gap-4">
+                      <span className="bg-emerald-100 text-emerald-700 w-10 h-10 rounded-2xl flex items-center justify-center font-black shrink-0">
+                        {index + 1}
+                      </span>
+                      <h3 className="text-xl font-bold text-emerald-950 pt-1 leading-snug">
+                        {q.question}
+                      </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {q.options.map((option, i) => {
+                        const isSelected = answers[q.id] === option;
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => handleOptionChange(q.id, option)}
+                            className={`flex items-center p-5 rounded-2xl border-2 text-left transition-all duration-200 outline-none
+                              ${isSelected 
+                                ? "bg-emerald-50 border-emerald-500 ring-4 ring-emerald-500/5 shadow-md" 
+                                : "bg-white border-gray-100 hover:border-emerald-200 hover:bg-emerald-50/30"
+                              }`}
+                          >
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 transition-all
+                              ${isSelected ? "border-emerald-600 bg-emerald-600" : "border-gray-300"}`}>
+                              {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                            </div>
+                            <span className={`text-lg ${isSelected ? "font-bold text-emerald-900" : "text-gray-700"}`}>
+                              {option}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pb-20">
+                <button
+                  onClick={handleSubmit}
+                  disabled={Object.keys(answers).length !== DEMO_QUESTIONS.length}
+                  className="px-12 py-5 bg-emerald-600 text-white rounded-[2rem] font-black text-xl hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-xl shadow-emerald-600/20 active:scale-95"
+                >
+                  Submit Practice Set
+                </button>
+              </div>
+            </motion.div>
           ) : (
-            <div className="w-full bg-white p-12 rounded-[3rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-teal-100 relative overflow-hidden text-center">
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
-                <ShieldAlert className="w-48 h-48 text-teal-900" />
+            /* Result Screen */
+            <motion.div 
+              key="result-screen"
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white p-12 rounded-[3.5rem] shadow-2xl border border-emerald-100 text-center relative overflow-hidden"
+            >
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/5 rounded-full" />
+              
+              <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Trophy size={48} />
               </div>
-              <h2 className="text-3xl font-black text-teal-900 mb-2">Practice Result</h2>
-              <div className="inline-block relative mb-8">
-                <div className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600 py-3 tracking-tighter">
-                  {score} / {DEMO_QUESTIONS.length}
+
+              <h2 className="text-3xl font-black text-emerald-950 mb-2">Practice Completed!</h2>
+              <p className="text-emerald-600 font-bold uppercase tracking-widest text-xs mb-8">Performance Analysis</p>
+
+              <div className="flex flex-col items-center mb-10">
+                <div className="text-8xl font-black text-emerald-900 mb-4 tabular-nums">
+                  {score}<span className="text-3xl text-emerald-300"> / {DEMO_QUESTIONS.length}</span>
                 </div>
-                <div className="h-3 w-full bg-teal-50 rounded-full overflow-hidden mt-2 border border-teal-100">
-                  <div 
-                    className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-1000 ease-out"
-                    style={{ width: `${(score / DEMO_QUESTIONS.length) * 100}%` }}
-                  />
+                
+                <div className="w-full max-w-sm h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-100">
+                   <motion.div 
+                    initial={{ width: 0 }} 
+                    animate={{ width: `${(score / DEMO_QUESTIONS.length) * 100}%` }}
+                    className="h-full bg-emerald-500" 
+                   />
                 </div>
               </div>
-              <p className="text-xl text-teal-800 font-semibold mb-10 max-w-md mx-auto leading-relaxed">
-                {score === DEMO_QUESTIONS.length ? "Outstanding mastery! You've achieved a perfect score in this practice set." : "Great effort! A bit more practice will help you achieve perfection."}
+
+              <p className="text-emerald-800/70 font-medium max-w-xs mx-auto leading-relaxed mb-10">
+                {score === DEMO_QUESTIONS.length 
+                  ? "Perfect! You have solid fundamentals." 
+                  : "Good job! Review the mistakes to improve further."}
               </p>
-              <div className="flex flex-col sm:flex-row gap-5 justify-center">
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => {
                     setAnswers({});
                     setSubmitted(false);
                     setScore(0);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="px-10 py-4 bg-white border-2 border-teal-600 text-teal-600 rounded-2xl font-bold hover:bg-teal-50 transition-all shadow-sm active:scale-95"
+                  className="flex items-center justify-center gap-2 px-8 py-4 bg-emerald-950 text-white rounded-2xl font-bold hover:bg-emerald-900 transition-all active:scale-95 shadow-lg"
                 >
-                  Restart Assessment
+                  <RotateCcw size={18} /> Retry Exam
                 </button>
                 <Link
                   href="/dashboard/student/my-exams"
-                  className="px-10 py-4 bg-teal-50 text-teal-800 rounded-2xl font-bold hover:bg-teal-100 transition-all active:scale-95 flex items-center justify-center"
+                  className="flex items-center justify-center gap-2 px-8 py-4 bg-emerald-50 text-emerald-700 rounded-2xl font-bold hover:bg-emerald-100 transition-all border border-emerald-200"
                 >
-                  Dashboard
+                  <LayoutDashboard size={18} /> Back to Dashboard
                 </Link>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -220,6 +220,7 @@ export default function PricingSection() {
 
                 {/* Purchase Button */}
                 <button
+                  onClick={() => window.location.href = '/pricing'}
                   className={`w-4/5 py-3 rounded text-sm font-bold transition-colors duration-400 mb-8 ${
                     plan.isPopular
                       ? "bg-white text-[#134e36] hover:bg-gray-100"

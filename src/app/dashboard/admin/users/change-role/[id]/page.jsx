@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Shield, AlertCircle, User, Mail, Ban } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ArrowLeft, Shield, AlertCircle, User, 
+  Mail, Ban, GraduationCap, BookOpen, 
+  ChevronRight, Lock, Loader2 
+} from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -29,19 +34,14 @@ export default function ChangeRolePage() {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      console.log("📡 Fetching user with ID:", userId);
-
       const response = await axios.get(`/api/admin/users/${userId}`);
-      console.log("User data:", response.data);
-
       if (response.data.success) {
         setUser(response.data.user);
         setNewRole(response.data.user.role);
       }
     } catch (error) {
-      console.error(" Error:", error);
       toast.error(error.response?.data?.error || "Failed to load user");
-      setTimeout(() => router.push("/dashboard/admin/users"), 2000);
+      router.push("/dashboard/admin/users");
     } finally {
       setLoading(false);
     }
@@ -49,41 +49,28 @@ export default function ChangeRolePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (newRole === user.role) {
-      toast.error("New role must be different from current role");
+      toast.error("New role must be different");
       return;
     }
-
-    // Check if user is student and trying to become instructor only
     if (user.role === "student" && newRole !== "instructor") {
       toast.error("Students can only be promoted to Instructor");
       return;
     }
-
-    // Block other role changes
     if (user.role !== "student") {
-      toast.error("Role change is only allowed for students");
+      toast.error("Role change is restricted for this user");
       return;
     }
 
     setUpdating(true);
-
     try {
-      const response = await axios.put(
-        `/api/admin/users/change-role/${userId}`,
-        {
-          newRole,
-        },
-      );
-
+      const response = await axios.put(`/api/admin/users/change-role/${userId}`, { newRole });
       if (response.data.success) {
-        toast.success(`Student promoted to Instructor successfully`);
+        toast.success(`User promoted to Instructor successfully`);
         router.push("/dashboard/admin/users");
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(error.response?.data?.error || "Failed to update role");
+      toast.error(error.response?.data?.error || "Update failed");
     } finally {
       setUpdating(false);
     }
@@ -91,220 +78,157 @@ export default function ChangeRolePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
-        <p className="ml-2 text-gray-600">Loading user data...</p>
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
-  const getRoleIcon = (role) => {
-    const icons = {
-      admin: "👑",
-      instructor: "📚",
-      student: "🎓",
-    };
-    return icons[role] || "👤";
-  };
-
-  const getRoleColor = (role) => {
-    const colors = {
-      admin: "purple",
-      instructor: "blue",
-      student: "green",
-    };
-    return colors[role] || "gray";
-  };
-
-  // Check if role change is allowed for this user
-  const isRoleChangeAllowed = user.role === "student";
+  const isRoleChangeAllowed = user?.role === "student";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link
-          href="/dashboard/admin/users"
-          className="p-2 hover:bg-gray-200 rounded-xl transition"
+    <div className="min-h-screen bg-emerald-950 text-emerald-50 p-4 md:p-8 selection:bg-emerald-500/30">
+      <div className="max-w-3xl mx-auto">
+        
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-4 mb-10"
         >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800">
-          {isRoleChangeAllowed
-            ? "Promote Student to Instructor"
-            : "Role Change Not Allowed"}
-        </h1>
-      </div>
+          <Link href="/dashboard/admin/users" className="p-3 bg-emerald-900/40 border border-emerald-800/50 rounded-2xl hover:bg-emerald-800/60 transition-all group">
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-white">
+              {isRoleChangeAllowed ? "Elevation Portal" : "Access Restricted"}
+            </h1>
+            <p className="text-emerald-100/40 text-xs font-medium uppercase tracking-widest mt-1">
+              Role & Permission Management
+            </p>
+          </div>
+        </motion.div>
 
-      <div className="max-w-2xl mx-auto">
-        {/* User Info Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            User Information
-          </h2>
-
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-3">
-            <div className="w-10 h-10 rounded-full bg-[#0D7C66] flex items-center justify-center text-white font-bold">
-              {user.name.charAt(0)}
+        {/* User Profile Summary Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-emerald-900/20 backdrop-blur-xl border border-emerald-800/40 rounded-[2.5rem] p-6 md:p-8 mb-6 overflow-hidden relative shadow-2xl"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-emerald-500/20">
+                {user?.name.charAt(0)}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white leading-none">{user?.name}</h2>
+                <p className="text-emerald-100/50 text-sm mt-2 flex items-center gap-2">
+                  <Mail size={14} className="text-emerald-500" /> {user?.email}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium">{user.name}</p>
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <Mail className="w-3 h-3" />
-                {user.email}
-              </p>
+            
+            <div className="flex items-center gap-3 px-4 py-2 bg-emerald-950/60 rounded-2xl border border-emerald-800/50">
+              <span className="text-xs font-bold text-emerald-100/40 uppercase tracking-tighter">Current Role</span>
+              <div className="h-4 w-[1px] bg-emerald-800" />
+              <div className="flex items-center gap-2 text-emerald-400 font-black uppercase text-xs">
+                <GraduationCap size={16} /> {user?.role}
+              </div>
             </div>
           </div>
+          {/* Decorative background element */}
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/5 blur-3xl rounded-full" />
+        </motion.div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-gray-50 rounded-xl">
-              <p className="text-xs text-gray-500 mb-1">Current Role</p>
-              <div
-                className={`flex items-center gap-2 text-${getRoleColor(user.role)}-600`}
-              >
-                <span className="text-xl">{getRoleIcon(user.role)}</span>
-                <span className="font-medium capitalize">{user.role}</span>
-              </div>
-            </div>
-
-            {/* <div className="p-3 bg-gray-50 rounded-xl">
-              <p className="text-xs text-gray-500 mb-1">Department</p>
-              <p className="font-medium">
-                {user.department || "Not specified"}
-              </p>
-            </div> */}
-          </div>
-        </div>
-
-        {/* Change Role Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="w-5 h-5 text-[#0D7C66]" />
-            <h2 className="text-lg font-semibold text-gray-800">
-              {isRoleChangeAllowed
-                ? "Promote to Instructor"
-                : "Role Change Restricted"}
-            </h2>
-          </div>
-
-          {!isRoleChangeAllowed ? (
-            // ✅ Message for non-students
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
-              <div className="flex gap-3">
-                <Ban className="w-6 h-6 text-red-500 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-red-700 mb-2">
-                    Role Change Not Allowed
-                  </h3>
-                  <p className="text-sm text-red-600">
-                    This user is a <strong>{user.role}</strong>. Role changes
-                    are only allowed for
-                    <strong> students</strong> to be promoted to{" "}
-                    <strong>instructor</strong>.
-                  </p>
-                  <p className="text-sm text-red-600 mt-2">
-                    • Admins cannot change roles
-                  </p>
-                  <p className="text-sm text-red-600">
-                    • Instructors cannot be demoted to students
+        {/* Main Action Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-emerald-900/20 backdrop-blur-xl border border-emerald-800/40 rounded-[2.5rem] overflow-hidden shadow-2xl"
+        >
+          <div className={`h-2 w-full ${isRoleChangeAllowed ? 'bg-emerald-500' : 'bg-rose-500/50'}`} />
+          
+          <div className="p-8 md:p-12">
+            {!isRoleChangeAllowed ? (
+              <div className="text-center space-y-6">
+                <div className="mx-auto w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20">
+                  <Lock className="w-10 h-10 text-rose-500" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-black text-white">Action Restricted</h3>
+                  <p className="text-emerald-100/40 text-sm max-w-md mx-auto leading-relaxed">
+                    System security protocols only allow <span className="text-emerald-400 font-bold">Students</span> to be promoted to <span className="text-blue-400 font-bold">Instructors</span>. 
+                    Admins and current Instructors cannot change roles through this portal.
                   </p>
                 </div>
-              </div>
-            </div>
-          ) : (
-            // ✅ Student promotion form
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                  <p className="text-sm text-blue-700">
-                    <strong>Student Promotion:</strong> This student can be
-                    promoted to Instructor. Only Instructor role is available.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 mb-6">
-                {/* Only show Instructor option for students */}
-                <button
-                  type="button"
-                  onClick={() => setNewRole("instructor")}
-                  className={`p-4 rounded-xl border-2 transition ${
-                    newRole === "instructor"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">📚</span>
-                    <div className="text-left">
-                      <div className="font-medium">Instructor</div>
-                      <div className="text-sm text-gray-500">
-                        Promote student to instructor role
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-
-              {newRole !== user.role && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-                  <div className="flex gap-2">
-                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-                    <div className="text-sm text-yellow-700">
-                      <p className="font-medium mb-1">Warning: Role Change</p>
-                      <p>
-                        Promoting this student to Instructor will give them
-                        instructor privileges including creating exams and
-                        managing students.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={updating || newRole === user.role}
-                  className="flex-1 bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] text-white px-4 py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {updating ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      Updating...
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="w-5 h-5" />
-                      Promote to Instructor
-                    </>
-                  )}
-                </button>
-                <Link
-                  href="/dashboard/admin/users"
-                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-200 transition text-center"
-                >
-                  Cancel
+                <Link href="/dashboard/admin/users" className="inline-flex items-center justify-center px-8 py-4 bg-emerald-900/60 text-emerald-100 font-bold rounded-2xl hover:bg-emerald-800 transition-all border border-emerald-800/50">
+                  Return to User Directory
                 </Link>
               </div>
-            </form>
-          )}
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-black text-emerald-100/40 uppercase tracking-[0.2em] ml-1">Select Elevation Path</h3>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setNewRole("instructor")}
+                    className={`w-full group relative flex items-center justify-between p-6 rounded-3xl border-2 transition-all duration-500 ${
+                      newRole === "instructor"
+                        ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_30px_rgba(16,185,129,0.1)]"
+                        : "border-emerald-800/30 bg-emerald-950/40 hover:border-emerald-700/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-5">
+                      <div className={`p-4 rounded-2xl transition-colors ${newRole === "instructor" ? "bg-emerald-500 text-white" : "bg-emerald-900/50 text-emerald-700"}`}>
+                        <BookOpen size={24} />
+                      </div>
+                      <div className="text-left">
+                        <div className={`font-black text-lg ${newRole === "instructor" ? "text-white" : "text-emerald-100/30"}`}>Instructor</div>
+                        <p className="text-emerald-100/40 text-sm">Full teaching & exam management privileges</p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-6 h-6 transition-transform duration-500 ${newRole === "instructor" ? "text-emerald-500 translate-x-0" : "text-emerald-800 -translate-x-4 opacity-0"}`} />
+                  </button>
+                </div>
 
-          {/* Back button for non-students */}
-          {!isRoleChangeAllowed && (
-            <div className="mt-4">
-              <Link
-                href="/dashboard/admin/users"
-                className="block w-full text-center bg-gray-100 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-200 transition"
-              >
-                Back to Users List
-              </Link>
-            </div>
-          )}
-        </div>
+                <AnimatePresence>
+                  {newRole === "instructor" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-4"
+                    >
+                      <AlertCircle className="w-6 h-6 text-amber-500 shrink-0" />
+                      <div className="text-xs leading-relaxed text-amber-100/50">
+                        <span className="font-black text-amber-500 block mb-1 uppercase">Security Warning</span>
+                        Promoting this student will grant them administrative access to course materials, exam creation, and student performance data. This action is logged in the system audit.
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-emerald-800/30">
+                  <button
+                    type="submit"
+                    disabled={updating || newRole === user.role}
+                    className="flex-[2] relative group overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black py-4 rounded-2xl transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] disabled:opacity-30 disabled:grayscale"
+                  >
+                    <div className="relative z-10 flex items-center justify-center gap-2">
+                      {updating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+                      {updating ? "Processing Elevation..." : "Confirm Promotion"}
+                    </div>
+                  </button>
+                  <Link href="/dashboard/admin/users" className="flex-1 bg-emerald-900/40 text-emerald-100 font-bold py-4 rounded-2xl hover:bg-emerald-800/60 transition-all text-center border border-emerald-800/50">
+                    Discard
+                  </Link>
+                </div>
+              </form>
+            )}
+          </div>
+        </motion.div>
       </div>
     </div>
   );
