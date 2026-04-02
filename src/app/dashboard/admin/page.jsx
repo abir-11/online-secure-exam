@@ -1,88 +1,3 @@
-// "use client";
-
-// import { useSession } from "next-auth/react";
-// import Link from "next/link";
-
-// export default function AdminDashboard() {
-//   const { data: session } = useSession();
-
-//   return (
-//     <div className="p-6">
-//       {/* <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-//       <p>Welcome, {session?.user?.name}!</p>
-//       <p>Role: {session?.user?.role}</p> */}
-
-//       {/* Quick Actions - Now Clickable */}
-//       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-//         <Link href="/dashboard/admin/users">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               👥 Manage Users
-//             </h3>
-//             <p className="text-gray-600">
-//               View, add, edit, and manage all users
-//             </p>
-//           </div>
-//         </Link>
-
-//         <Link href="/dashboard/admin/deleted-users">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               👥 Deleted Users
-//             </h3>
-//             <p className="text-gray-600">
-//               View the issues reported by users and take necessary actions
-//             </p>
-//           </div>
-//         </Link>
-//         <Link href="/dashboard/admin/reports">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               👥 Reports
-//             </h3>
-//             <p className="text-gray-600">
-//               View the issues reported by users and take necessary actions
-//             </p>
-//           </div>
-//         </Link>
-//         <Link href="/dashboard/admin/analytics">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               👥 Analytics
-//             </h3>
-//             <p className="text-gray-600">
-//               View the issues reported by users and take necessary actions
-//             </p>
-//           </div>
-//         </Link>
-//         <Link href="/dashboard/admin/reportissue">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               👥 Report Issues
-//             </h3>
-//             <p className="text-gray-600">
-//               View the issues reported by users and take necessary actions
-//             </p>
-//           </div>
-//         </Link>
-
-//         {/* <Link href="/dashboard/admin/reports">
-//           <div className="p-6 bg-white shadow-lg rounded-xl hover:shadow-xl transition cursor-pointer border-2 border-transparent hover:border-[#0D7C66] group">
-//             <h3 className="text-xl font-semibold text-[#0D7C66] mb-2">
-//               📊 Reports & Analytics
-//             </h3>
-//             <p className="text-gray-600">
-//               View exam reports and system analytics
-//             </p>
-//           </div>
-//         </Link> */}
-//       </div>
-//     </div>
-//   );
-// }
-
-// icons
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -90,71 +5,31 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
-  Users,
-  BookOpen,
-  DollarSign,
-  TrendingUp,
-  Activity,
-  ArrowUp,
-  ArrowDown,
-  ChevronRight,
-  Sparkles,
-  BarChart3,
-  PieChart,
-  Clock,
-  Zap,
-  Award,
-  Calendar,
+  Users, BookOpen, DollarSign, TrendingUp, Activity,
+  ChevronRight, BarChart3, PieChart, Clock, Zap,
+  LayoutDashboard, RefreshCw, ArrowUpRight
 } from "lucide-react";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler,
-  ArcElement,
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement,
+  LineElement, Tooltip, Legend, Filler, ArcElement,
 } from "chart.js";
 import { Line, Pie } from "react-chartjs-2";
 import axios from "axios";
-import {
-  FiUsers,
-  FiTrash2,
-  FiAlertCircle,
-  FiBarChart2,
-  FiFlag,
-} from "react-icons/fi";
 
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler,
-  ArcElement
+  CategoryScale, LinearScale, PointElement, LineElement,
+  Tooltip, Legend, Filler, ArcElement
 );
 
-// Animation variants
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
+// --- Animation Config ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
-const staggerContainer = {
-  animate: { transition: { staggerChildren: 0.1 } },
-};
-
-const cardHover = {
-  hover: {
-    scale: 1.02,
-    boxShadow: "0 20px 25px -12px rgba(0,0,0,0.1)",
-    transition: { duration: 0.2 },
-  },
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
 };
 
 export default function AdminDashboard() {
@@ -171,379 +46,228 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const statsRes = await axios.get("/api/admin/analytics/stats");
+      const [statsRes, activitiesRes, revenueRes] = await Promise.all([
+        axios.get("/api/admin/analytics/stats"),
+        axios.get("/api/admin/analytics/activities"),
+        axios.get("/api/admin/analytics/revenue?period=week")
+      ]);
+      
       setStats(statsRes.data.data);
-
-      const activitiesRes = await axios.get("/api/admin/analytics/activities");
       setRecentActivities(activitiesRes.data.activities.slice(0, 5));
-
-      const revenueRes = await axios.get(
-        "/api/admin/analytics/revenue?period=week"
-      );
       setRevenueData(revenueRes.data.data);
     } catch (err) {
-      console.error(err);
+      console.error("Dashboard Fetch Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatTimeAgo = (timestamp) => {
-    const mins = Math.floor((new Date() - new Date(timestamp)) / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins} min ago`;
-    return `${Math.floor(mins / 60)} hour ago`;
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-[#0D7C66] border-t-transparent rounded-full"
+          className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]"
         />
+        <p className="text-emerald-400 font-medium animate-pulse">Syncing Analytics...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary-dark)] p-4 md:p-6 lg:p-8">
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 "
-      ></motion.div>
-
-      {/* Stats Cards Grid */}
-      <motion.div
-        variants={staggerContainer}
-        initial="initial"
-        animate="animate"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 "
-      >
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8"
+    >
+      {/* --- Admin Stats Grid --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           icon={Users}
           title="Total Users"
           value={stats?.users?.total?.toLocaleString()}
-          trend="+12%"
-          color="bg-[#0D7C66]"
-          delay={0}
+          color="from-emerald-500 to-teal-600"
+          percentage="+12.5%"
         />
         <StatsCard
           icon={BookOpen}
           title="Total Courses"
           value={stats?.courses?.total?.toLocaleString()}
-          trend="+5%"
-          color="bg-[#0D7C66]"
-          delay={0.1}
+          color="from-blue-500 to-cyan-600"
+          percentage="+4.2%"
         />
         <StatsCard
           icon={DollarSign}
           title="Total Revenue"
           value={`$${stats?.payments?.totalRevenue}`}
-          trend="+23%"
-          color="bg-[#0D7C66]"
-          delay={0.2}
+          color="from-amber-500 to-orange-600"
+          percentage="+18.7%"
         />
         <StatsCard
           icon={Activity}
-          title="Active Today"
+          title="Active Users"
           value={stats?.activity?.activeToday?.toLocaleString()}
-          trend="+8%"
-          color="bg-[#0D7C66]"
-          delay={0.3}
+          color="from-rose-500 to-pink-600"
+          percentage="+9.1%"
         />
-      </motion.div>
+      </div>
 
-      {/* Charts Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8"
-      >
-        {/* Revenue Chart Card */}
-        <motion.div
-          whileHover="hover"
-          variants={cardHover}
-          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
-        >
-          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-[#0D7C66]" />
-                </div>
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Revenue Trend
-                </h2>
+      {/* --- Charts Row --- */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Revenue Line Chart */}
+        <motion.div variants={itemVariants} className="xl:col-span-2 bg-emerald-900/20 backdrop-blur-md border border-emerald-800/40 p-6 rounded-[2rem]">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
+                <TrendingUp size={20} />
               </div>
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="text-xs text-[#0D7C66] bg-[#0D7C66]/10 px-3 py-1 rounded-full"
-              >
-                Last 7 days
-              </motion.div>
+              <h2 className="text-lg font-bold text-white">Revenue Performance</h2>
             </div>
+            <select className="bg-emerald-950 border border-emerald-800 text-xs text-emerald-400 rounded-lg px-3 py-1 outline-none">
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+            </select>
           </div>
-          <div className="p-5 h-72">
+          <div className="h-[300px]">
             {revenueData && (
               <Line
                 data={{
                   labels: revenueData.labels,
-                  datasets: [
-                    {
-                      data: revenueData.values,
-                      borderColor: "#0D7C66",
-                      backgroundColor: "rgba(13,124,102,0.05)",
-                      fill: true,
-                      tension: 0.4,
-                      pointBackgroundColor: "#0D7C66",
-                      pointBorderColor: "white",
-                      pointBorderWidth: 2,
-                      pointRadius: 4,
-                      pointHoverRadius: 6,
-                    },
-                  ],
+                  datasets: [{
+                    label: 'Revenue',
+                    data: revenueData.values,
+                    borderColor: "#10b981",
+                    backgroundColor: "rgba(16, 185, 129, 0.1)",
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                  }]
                 }}
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
                   plugins: { legend: { display: false } },
                   scales: {
-                    y: {
-                      grid: { color: "#f0f0f0" },
-                      ticks: { callback: (v) => `$${v}` },
-                    },
-                    x: { grid: { display: false } },
-                  },
+                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#64748b" } },
+                    x: { grid: { display: false }, ticks: { color: "#64748b" } }
+                  }
                 }}
               />
             )}
           </div>
         </motion.div>
 
-        {/* User Distribution Card */}
-        <motion.div
-          whileHover="hover"
-          variants={cardHover}
-          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-        >
-          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center">
-                <PieChart className="w-5 h-5 text-purple-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-800">
-                User Distribution
-              </h2>
-            </div>
-          </div>
-          <div className="p-5 h-72 flex items-center justify-center">
+        {/* User Distribution Pie */}
+        <motion.div variants={itemVariants} className="bg-emerald-900/20 backdrop-blur-md border border-emerald-800/40 p-6 rounded-[2rem]">
+          <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <PieChart size={20} className="text-emerald-400" /> User Distribution
+          </h2>
+          <div className="h-[250px] flex items-center justify-center">
             <Pie
               data={{
                 labels: ["Students", "Instructors", "Admins"],
-                datasets: [
-                  {
-                    data: [
-                      stats?.users?.students || 0,
-                      stats?.users?.instructors || 0,
-                      stats?.users?.admins || 0,
-                    ],
-                    backgroundColor: ["#10B981", "#3B82F6", "#8B5CF6"],
-                    borderWidth: 0,
-                    hoverOffset: 10,
-                  },
-                ],
+                datasets: [{
+                  data: [stats?.users?.students, stats?.users?.instructors, stats?.users?.admins],
+                  backgroundColor: ["#10b981", "#3b82f6", "#f59e0b"],
+                  borderWidth: 0,
+                }]
               }}
               options={{
                 responsive: true,
-                maintainAspectRatio: true,
                 plugins: {
-                  legend: {
-                    position: "bottom",
-                    labels: { usePointStyle: true, boxWidth: 10 },
-                  },
-                  tooltip: {
-                    backgroundColor: "#1F2937",
-                    titleColor: "#F3F4F6",
-                  },
-                },
+                  legend: { position: 'bottom', labels: { color: '#94a3b8', usePointStyle: true } }
+                }
               }}
             />
           </div>
         </motion.div>
-      </motion.div>
+      </div>
 
-      {/* Action & Activity Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-      >
-        {/* Quick Actions Card */}
-        <motion.div
-          whileHover="hover"
-          variants={cardHover}
-          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-        >
-          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-[#0D7C66]/10 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-[#0D7C66]" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-800">
-                Quick Actions
-              </h2>
-            </div>
+      {/* --- Quick Actions & Recent Activity --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Quick Actions */}
+        <motion.div variants={itemVariants} className="bg-emerald-900/20 backdrop-blur-md border border-emerald-800/40 p-6 rounded-[2.5rem]">
+          <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <Zap size={20} className="text-yellow-400" /> Management Tools
+          </h2>
+          <div className="grid grid-cols-1 gap-3">
+            <ActionLink icon={Users} label="User Management" href="/dashboard/admin/users" color="bg-blue-500" />
+            <ActionLink icon={BarChart3} label="Financial Reports" href="/dashboard/admin/reports" color="bg-emerald-500" />
+            <ActionLink icon={RefreshCw} label="System Analytics" href="/dashboard/admin/analytics" color="bg-purple-500" />
           </div>
-          <div className="p-4 space-y-2">
-            {[
-              {
-                label: "Manage Users",
-                link: "/dashboard/admin/users",
-                icon: Users,
-                color: "text-blue-600",
-              },
-              {
-                label: "Inactive Users",
-                link: "/dashboard/admin/inactive-users",
-                icon: Activity,
-                color: "text-red-600",
-              },
-              {
-                label: "Reports",
-                link: "/dashboard/admin/reports",
-                icon: BarChart3,
-                color: "text-purple-600",
-              },
-              {
-                label: "Analytics",
-                link: "/dashboard/admin/analytics",
-                icon: TrendingUp,
-                color: "text-green-600",
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + i * 0.1 }}
-              >
-                <Link href={item.link}>
-                  <motion.div
-                    whileHover={{ x: 8, backgroundColor: "#F9FAFB" }}
-                    className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-lg ${item.color.replace(
-                          "text",
-                          "bg"
-                        )}/10 flex items-center justify-center`}
-                      >
-                        <item.icon className={`w-4 h-4 ${item.color}`} />
-                      </div>
-                      <span className="text-gray-700 font-medium">
-                        {item.label}
-                      </span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#0D7C66] transition-colors" />
-                  </motion.div>
-                </Link>
-              </motion.div>
+        </motion.div>
+
+        {/* Activity Feed */}
+        <motion.div variants={itemVariants} className="lg:col-span-2 bg-emerald-900/20 backdrop-blur-md border border-emerald-800/40 p-6 rounded-[2.5rem]">
+          <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <Clock size={20} className="text-emerald-400" /> System Activity
+          </h2>
+          <div className="space-y-4">
+            {recentActivities.map((act, i) => (
+              <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/30 hover:border-emerald-500/30 transition-all group">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold border border-emerald-500/20">
+                    {act.userName?.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-50 group-hover:text-emerald-400 transition-colors">{act.userName}</p>
+                    <p className="text-xs text-emerald-100/40">{act.details}</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-medium text-emerald-500/60 bg-emerald-500/5 px-2 py-1 rounded-md border border-emerald-500/10">
+                  {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
             ))}
           </div>
         </motion.div>
-
-        {/* Recent Activities Card */}
-        <motion.div
-          whileHover="hover"
-          variants={cardHover}
-          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden lg:col-span-2"
-        >
-          <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-blue-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-800">
-                Recent Activities
-              </h2>
-            </div>
-          </div>
-          <div className="p-5">
-            <div className="space-y-3">
-              {recentActivities.map((act, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 + i * 0.1 }}
-                  whileHover={{ x: 5, backgroundColor: "#F9FAFB" }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] flex items-center justify-center text-white text-xs font-bold">
-                      {act.userName?.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {act.userName}
-                      </p>
-                      <p className="text-xs text-gray-500">{act.details}</p>
-                    </div>
-                  </div>
-                  <motion.span
-                    className="text-xs text-gray-400 bg-white px-2 py-1 rounded-full shadow-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    {formatTimeAgo(act.timestamp)}
-                  </motion.span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 }
 
-/* Stats Card Component with Animation */
-function StatsCard({ icon: Icon, title, value, trend, color, delay }) {
-  const isPositive = trend?.startsWith("+");
+// --- Helper Components ---
 
+function StatsCard({ icon: Icon, title, value, color, percentage }) {
   return (
     <motion.div
-      variants={fadeInUp}
-      transition={{ delay }}
-      whileHover={{ scale: 1.02, y: -4 }}
-      className="bg-gradient-to-br from-teal-100 via-teal-50 to-white shadow-lg border border-gray-200 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 transition-transform duration-300 ease-in-out"
+      variants={itemVariants}
+      whileHover={{ y: -5 }}
+      className="bg-emerald-900/20 backdrop-blur-md border border-emerald-800/40 p-6 rounded-[2rem] relative overflow-hidden group"
     >
+      <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-5 blur-3xl group-hover:opacity-10 transition-opacity`} />
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-sm text-gray-500 mb-1">{title}</p>
-          <motion.h2
-            className="text-2xl md:text-3xl font-bold text-gray-800"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: delay + 0.2, type: "spring" }}
-          >
-            {value || 0}
-          </motion.h2>
+          <p className="text-emerald-100/40 text-xs font-bold uppercase tracking-wider mb-1">{title}</p>
+          <h3 className="text-2xl font-black text-white tracking-tight">{value || "0"}</h3>
+          <div className="flex items-center gap-1 mt-2">
+            <span className="text-[10px] text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded font-bold">{percentage}</span>
+            <span className="text-[10px] text-emerald-100/20 font-medium">vs last month</span>
+          </div>
         </div>
-        <motion.div
-          whileHover={{ rotate: 12, scale: 1.1 }}
-          className={`w-12 h-12 rounded-xl bg-gradient-to-r ${color} flex items-center justify-center shadow-md`}
-        >
-          <Icon className="w-6 h-6 text-white" />
-        </motion.div>
+        <div className={`p-3 rounded-2xl bg-gradient-to-br ${color} text-white shadow-lg`}>
+          <Icon size={20} />
+        </div>
       </div>
     </motion.div>
+  );
+}
+
+function ActionLink({ icon: Icon, label, href, color }) {
+  return (
+    <Link href={href}>
+      <div className="flex items-center justify-between p-4 rounded-2xl bg-emerald-950/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:bg-emerald-900/40 transition-all group">
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center text-white`}>
+            <Icon size={16} />
+          </div>
+          <span className="text-sm font-bold text-emerald-100/70 group-hover:text-emerald-50 transition-colors">{label}</span>
+        </div>
+        <ArrowUpRight size={16} className="text-emerald-800 group-hover:text-emerald-400 transition-all" />
+      </div>
+    </Link>
   );
 }

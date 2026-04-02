@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 // Previous events (no register button)
 const previousEvents = [
@@ -58,74 +59,143 @@ const upcomingEventsData = [
   },
 ];
 
+// --- Framer Motion Variants ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { type: "spring", stiffness: 100, damping: 15 } 
+  },
+};
+
+// --- Components ---
+
 const EventCard = ({ event }) => (
-  <div className="relative overflow-hidden rounded-xl shadow-lg group">
+  <motion.div 
+    variants={cardVariants}
+    whileHover={{ y: -8 }}
+    className="relative overflow-hidden rounded-2xl shadow-lg group border border-emerald-700/50"
+  >
     <img
       src={event.image}
       alt={event.title}
-      className="w-full h-48 object-cover brightness-75 group-hover:brightness-90 transition"
+      className="w-full h-56 object-cover brightness-75 group-hover:brightness-100 transition duration-500 group-hover:scale-105"
     />
-    <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/50">
-      <h3 className="text-xl font-semibold text-green-200">{event.title}</h3>
-      <p className="text-gray-300 text-sm">
+    <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-emerald-950/90 via-emerald-950/40 to-transparent">
+      <h3 className="text-xl font-bold text-emerald-300 drop-shadow-md">{event.title}</h3>
+      <p className="text-emerald-100/80 text-sm mt-1 font-medium">
         {event.date} | {event.location}
       </p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const UpcomingEventCard = ({ event }) => {
   const [interested, setInterested] = useState(false);
+  
   return (
-    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-transform duration-300 hover:scale-105">
-      <img
-        src={event.image}
-        alt={event.title}
-        className="w-full h-48 object-cover brightness-90"
-      />
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-green-400 mb-2">
+    <motion.div 
+      variants={cardVariants}
+      whileHover={{ y: -8 }}
+      className="bg-emerald-900/40 backdrop-blur-lg border border-emerald-700/50 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgb(0,0,0,0.3)] flex flex-col"
+    >
+      <div className="overflow-hidden">
+        <img
+          src={event.image}
+          alt={event.title}
+          className="w-full h-48 object-cover brightness-90 hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-emerald-300 mb-2">
           {event.title}
         </h3>
-        <p className="text-gray-300 text-sm mb-4">
+        <p className="text-emerald-100/70 text-sm mb-6 flex-grow font-medium">
           {event.date} | {event.location}
         </p>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setInterested(!interested)}
-          className={`px-4 py-2 rounded font-medium transition ${
+          className={`w-full py-3 rounded-xl font-bold transition-all duration-300 shadow-md ${
             interested
-              ? "bg-gray-600 text-white hover:bg-gray-500"
-              : "bg-green-600 text-white hover:bg-green-700"
+              ? "bg-emerald-800/60 text-emerald-200 border border-emerald-600/50"
+              : "bg-gradient-to-r from-emerald-500 to-teal-400 text-white hover:from-emerald-400 hover:to-teal-300 border border-emerald-400/50"
           }`}
         >
-          {interested ? "Interested ✅" : "I'm Interested"}
-        </button>
+          {interested ? "✅ Interested" : "I'm Interested"}
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const EventsPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#022c22] text-white px-4 sm:px-6 lg:px-12 py-16">
-      <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-4xl font-extrabold text-green-400 mb-12">
-          Previous Events
-        </h1>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
+    <div className="min-h-screen bg-emerald-950 text-white px-4 sm:px-6 lg:px-12 py-20 relative overflow-hidden">
+      {/* Background Glow Effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Previous Events Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200 mb-10 text-center drop-shadow-sm">
+            Previous Events
+          </h1>
+        </motion.div>
+        
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-24"
+        >
           {previousEvents.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
-        </div>
+        </motion.div>
 
-        <h1 className="text-4xl font-extrabold text-green-400 mb-12">
-          Upcoming Events
-        </h1>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Upcoming Events Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200 mb-10 text-center drop-shadow-sm">
+            Upcoming Events
+          </h1>
+        </motion.div>
+
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+        >
           {upcomingEventsData.map((event) => (
             <UpcomingEventCard key={event.id} event={event} />
           ))}
-        </div>
+        </motion.div>
+        
       </div>
     </div>
   );
