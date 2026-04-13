@@ -33,21 +33,27 @@ export default function MyExamsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen p-6 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-teal-900 mb-6">My Exams</h1>
+    <main className="min-h-screen bg-emerald-950 relative overflow-hidden">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-4xl mx-auto relative z-10 px-4 sm:px-6 lg:px-0 py-6">
+        <h1 className="text-3xl font-bold text-white mb-6">My Exams</h1>
 
         {/* Static Demo Exam Widget */}
-        <div className="bg-white shadow-md hover:shadow-lg rounded-xl p-5 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-teal-500 transition-all duration-200">
+        <div className="bg-emerald-900/30 backdrop-blur-md hover:bg-emerald-800/40 shadow-lg rounded-xl p-5 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-emerald-400 transition-all duration-200 border border-emerald-700/50">
           <div className="flex flex-col gap-1">
-            <h2 className="font-bold text-teal-900 text-xl">Demo Exam</h2>
-            <p className="text-gray-600">Duration: No time limit</p>
-            <p className="text-sm text-teal-600">Static practice questions to get you started</p>
+            <h2 className="font-bold text-white text-xl">Demo Exam</h2>
+            <p className="text-emerald-200/70">Duration: No time limit</p>
+            <p className="text-sm text-emerald-300">
+              Static practice questions to get you started
+            </p>
           </div>
           <div className="mt-3 sm:mt-0">
             <a
               href="/dashboard/student/demo-exam"
-              className="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors duration-200 inline-block shadow-sm"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold transition-colors duration-200 inline-block shadow-[0_0_15px_rgb(16,185,129,0.2)]"
             >
               Start Demo
             </a>
@@ -55,7 +61,7 @@ export default function MyExamsPage() {
         </div>
 
         {exams.length === 0 ? (
-          <div className="p-6 bg-teal-100 border-l-4 border-teal-400 text-teal-800 rounded shadow-md">
+          <div className="p-6 bg-emerald-900/30 border-l-4 border-emerald-400 text-emerald-100/90 rounded shadow-md backdrop-blur-md border border-emerald-700/50">
             No exam published yet.
           </div>
         ) : (
@@ -71,41 +77,41 @@ export default function MyExamsPage() {
               return (
                 <li
                   key={exam._id}
-                  className="bg-white shadow-md hover:shadow-lg rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center transition-shadow duration-200 border-l-4"
+                  className="bg-emerald-900/30 backdrop-blur-md hover:bg-emerald-800/40 shadow-lg rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center transition-all duration-200 border-l-4 border border-emerald-700/50"
                   style={{
-                    borderColor: hasSubmitted
-                      ? "#9CA3AF" // gray
+                    borderLeftColor: hasSubmitted
+                      ? "#10B981" // emerald
                       : canAttend
-                        ? "#14B8A6" // teal
+                        ? "#34D399" // emerald light
                         : "#FBBF24", // yellow for not available yet
                   }}
                 >
                   <div className="flex flex-col gap-1">
-                    <h2 className="font-semibold text-teal-900 text-lg">
+                    <h2 className="font-semibold text-white text-lg">
                       {exam.title}
                     </h2>
-                    <p className="text-gray-700 text-sm">
+                    <p className="text-emerald-200/70 text-sm">
                       Starts: {start.toLocaleString()}
                     </p>
-                    <p className="text-gray-700 text-sm">
+                    <p className="text-emerald-200/70 text-sm">
                       Ends: {end.toLocaleString()}
                     </p>
                   </div>
 
                   <div className="mt-3 sm:mt-0">
                     {hasSubmitted ? (
-                      <span className="bg-gray-400 text-white px-4 py-2 rounded-xl font-semibold">
+                      <span className="bg-emerald-700/50 text-white px-4 py-2 rounded-xl font-semibold border border-emerald-600/50">
                         Attended
                       </span>
                     ) : canAttend ? (
                       <a
                         href={`/dashboard/student/exam/${exam._id}`}
-                        className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors duration-200"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-semibold transition-colors duration-200 shadow-[0_0_15px_rgb(16,185,129,0.2)]"
                       >
                         Attend
                       </a>
                     ) : (
-                      <span className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-xl font-semibold">
+                      <span className="bg-yellow-500/30 border border-yellow-500/50 text-yellow-200 px-4 py-2 rounded-xl font-semibold backdrop-blur-sm">
                         Not available
                       </span>
                     )}

@@ -37,7 +37,6 @@ export default function InstructorAnalyticsPage() {
 
   const [examPerformance, setExamPerformance] = useState([]);
 
-  // Fetch exams and prepare overall performance
   useEffect(() => {
     if (!session) return;
 
@@ -90,7 +89,6 @@ export default function InstructorAnalyticsPage() {
     fetchExams();
   }, [session]);
 
-  // Fetch analytics for selected exam
   const fetchAnalytics = async (examId) => {
     if (!examId) return;
 
@@ -99,31 +97,25 @@ export default function InstructorAnalyticsPage() {
     setAnalyticsLoading(true);
 
     try {
-      const res = await fetch(`/api/instructor/analytics/${examId.toString()}`);
+      const res = await fetch(`/api/instructor/analytics/${examId}`);
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("Analytics fetch failed:", data);
-
         Swal.fire({
           icon: "error",
           title: "Analytics Error",
           text: data.message || "Failed to fetch analytics",
         });
-
         setAnalytics(null);
       } else {
         setAnalytics(data);
       }
-    } catch (err) {
-      console.error("Error fetching analytics:", err);
-
+    } catch {
       Swal.fire({
         icon: "error",
         title: "Request Failed",
         text: "Failed to fetch analytics",
       });
-
       setAnalytics(null);
     } finally {
       setAnalyticsLoading(false);
@@ -132,54 +124,35 @@ export default function InstructorAnalyticsPage() {
 
   if (loading)
     return (
-      // <div className="p-8 text-center text-gray-500">Loading exams...</div>
-      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
-        <svg
-          className="w-6 h-6 animate-spin text-teal-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-          ></path>
-        </svg>
-        <span className="text-teal-700 animate-pulse tracking-wide">
-          Loading Exams...
-        </span>
+      <div className="flex items-center justify-center min-h-screen text-emerald-400 text-lg font-semibold">
+        Loading Exams...
       </div>
     );
 
   return (
-    <main className="bg-primary min-h-screen">
-      <div className="p-8 max-w-7xl mx-auto">
+    <main className="bg-slate-950 min-h-screen relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-emerald-500/20 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-[350px] h-[350px] bg-teal-500/20 blur-[100px] rounded-full"></div>
+
+      <div className="p-8 max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <BarChart3 className="text-teal-600" size={28} />
-          <h1 className="text-3xl font-bold text-gray-800">
+          <BarChart3 className="text-emerald-400" size={28} />
+          <h1 className="text-3xl font-bold text-white">
             Instructor Analytics
           </h1>
         </div>
 
-        {/* GENERAL PERFORMANCE HORIZONTAL CHART */}
-        <div className="bg-white p-6 rounded-xl shadow-lg mb-10 max-w-4xl mx-auto">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Activity className="text-teal-600" size={20} />
+        {/* Overall Chart */}
+        <div className="bg-slate-900 p-6 rounded-xl border border-slate-700 shadow-lg mb-10 max-w-4xl mx-auto">
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <Activity className="text-emerald-400" size={20} />
             Overall Exam Score Rate (%)
           </h2>
 
           {examPerformance.length === 0 ? (
-            <p className="text-gray-500">No exam analytics available.</p>
+            <p className="text-slate-400">No exam analytics available.</p>
           ) : (
             <ResponsiveContainer width="100%" height={400}>
               <BarChart
@@ -188,15 +161,27 @@ export default function InstructorAnalyticsPage() {
                 margin={{ top: 20, right: 30, left: 120, bottom: 20 }}
                 barSize={20}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis
                   type="number"
                   domain={[0, 100]}
                   tickFormatter={(val) => `${val}%`}
+                  stroke="#94a3b8"
                 />
-                <YAxis type="category" dataKey="exam" tick={{ fontSize: 14 }} />
-                <Tooltip formatter={(value) => `${value}%`} />
-                <Bar dataKey="score" fill="#0f766e" radius={[6, 6, 0, 0]} />
+                <YAxis
+                  type="category"
+                  dataKey="exam"
+                  tick={{ fill: "#cbd5f5", fontSize: 14 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#020617",
+                    border: "1px solid #334155",
+                    color: "#fff",
+                  }}
+                  formatter={(value) => `${value}%`}
+                />
+                <Bar dataKey="score" fill="#10b981" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -207,23 +192,23 @@ export default function InstructorAnalyticsPage() {
           {exams.map((exam) => (
             <div
               key={exam._id}
-              className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-2xl transition transform hover:-translate-y-1"
+              className="bg-slate-900 border border-slate-700 rounded-xl p-6 hover:border-emerald-500 transition"
             >
               <div className="flex items-center gap-2 mb-3">
-                <ClipboardList size={18} className="text-teal-600" />
-                <h2 className="text-lg font-semibold text-gray-800">
+                <ClipboardList size={18} className="text-emerald-400" />
+                <h2 className="text-lg font-semibold text-white">
                   {exam.title}
                 </h2>
               </div>
 
-              <p className="text-gray-600 text-sm">
+              <p className="text-slate-300 text-sm">
                 Type:{" "}
                 <span className="font-medium">
                   {exam.type?.toUpperCase() || "-"}
                 </span>
               </p>
 
-              <p className="text-gray-600 text-sm">
+              <p className="text-slate-300 text-sm">
                 Duration:{" "}
                 <span className="font-medium">
                   {exam.duration || "-"} minutes
@@ -231,8 +216,8 @@ export default function InstructorAnalyticsPage() {
               </p>
 
               <button
-                onClick={() => fetchAnalytics(exam._id.toString())}
-                className="mt-5 flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg shadow-md transition"
+                onClick={() => fetchAnalytics(exam._id)}
+                className="mt-5 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg transition"
               >
                 <Eye size={16} />
                 View Analytics
@@ -243,78 +228,43 @@ export default function InstructorAnalyticsPage() {
 
         {/* Analytics Loading */}
         {analyticsLoading && (
-          <div className="text-center text-gray-500">Loading analytics...</div>
+          <div className="text-center text-slate-400">Loading analytics...</div>
         )}
 
-        {/* Selected Exam Analytics */}
+        {/* Stats */}
         {analytics && !analyticsLoading && (
           <div className="space-y-8">
-            {/* Stats Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
-                <TrendingUp className="text-green-600" size={30} />
+              <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 flex items-center gap-4">
+                <TrendingUp className="text-emerald-400" size={30} />
                 <div>
-                  <p className="text-gray-500 text-sm">Average Score</p>
-                  <p className="text-2xl font-bold text-gray-800">
+                  <p className="text-slate-400 text-sm">Average Score</p>
+                  <p className="text-2xl font-bold text-white">
                     {analytics.averageScore}
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
-                <Trophy className="text-yellow-500" size={30} />
+              <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 flex items-center gap-4">
+                <Trophy className="text-yellow-400" size={30} />
                 <div>
-                  <p className="text-gray-500 text-sm">Highest Score</p>
-                  <p className="text-2xl font-bold text-gray-800">
+                  <p className="text-slate-400 text-sm">Highest Score</p>
+                  <p className="text-2xl font-bold text-white">
                     {analytics.highestScore}
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
-                <TrendingDown className="text-red-500" size={30} />
+              <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 flex items-center gap-4">
+                <TrendingDown className="text-red-400" size={30} />
                 <div>
-                  <p className="text-gray-500 text-sm">Lowest Score</p>
-                  <p className="text-2xl font-bold text-gray-800">
+                  <p className="text-slate-400 text-sm">Lowest Score</p>
+                  <p className="text-2xl font-bold text-white">
                     {analytics.lowestScore}
                   </p>
                 </div>
               </div>
             </div>
-
-            {/* Question Accuracy Chart (kept exactly as your original commented code) */}
-            {/* 
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <BarChart3 size={20} className="text-teal-600" />
-                Question Accuracy
-              </h2>
-
-              {analytics.questionAccuracy.length === 0 ? (
-                <p className="text-gray-500">
-                  No questions or submissions available for this exam.
-                </p>
-              ) : (
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={analytics.questionAccuracy}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="question"
-                      tick={{ fontSize: 12 }}
-                      interval={0}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar
-                      dataKey="accuracy"
-                      fill="#0f766e"
-                      radius={[6, 6, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-            */}
           </div>
         )}
       </div>

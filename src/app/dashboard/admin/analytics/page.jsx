@@ -188,7 +188,7 @@ export default function AdminAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-6">
+    <div className="min-h-screen bg-emerald-950 p-4 md:p-6 space-y-6">
       {/* Header with Time Filter */}
       <div className="bg-gradient-to-r from-[#0D7C66] to-[#41B3A2] rounded-2xl p-6 text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

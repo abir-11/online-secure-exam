@@ -29,8 +29,11 @@ export default function ProfilePage() {
 
   if (status === "loading") {
     return (
-      <div className="p-6 mt-20 text-center text-teal-700">
-        Loading profile...
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto"></div>
+          <p className="mt-4 text-emerald-100/70">Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -197,11 +200,15 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-primary">
-      <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="min-h-screen bg-emerald-950 relative overflow-hidden px-4 sm:px-6 lg:px-0 py-6">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-3xl mx-auto bg-emerald-900/30 backdrop-blur-md rounded-3xl shadow-xl border border-emerald-700/50 overflow-hidden relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-teal-100 border-b border-teal-200">
-          <h2 className="text-2xl font-bold text-teal-900 flex items-center gap-2">
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-emerald-600/40 to-teal-500/40 border-b border-emerald-700/50 backdrop-blur-sm">
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <FaUser /> My Profile
           </h2>
 
@@ -212,9 +219,9 @@ export default function ProfilePage() {
               alt="Profile"
               width={60}
               height={60}
-              className="rounded-full border-2 border-teal-600 object-cover"
+              className="rounded-full border-2 border-emerald-400 object-cover"
             />
-            <label className="absolute -bottom-1 -right-1 bg-teal-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-teal-700 flex items-center gap-1">
+            <label className="absolute -bottom-1 -right-1 bg-emerald-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-emerald-500 flex items-center gap-1 transition-colors">
               <FaCamera />
               Edit
               <input
@@ -231,19 +238,19 @@ export default function ProfilePage() {
           {selectedImage && (
             <button
               onClick={handleSaveImage}
-              className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold flex justify-center items-center gap-2"
+              className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold flex justify-center items-center gap-2 transition-colors shadow-[0_0_15px_rgb(16,185,129,0.2)]"
             >
               <FaCamera /> Save Profile Picture
             </button>
           )}
 
           {/* Name */}
-          <div className="bg-teal-50 p-4 rounded-xl flex justify-between items-center shadow-sm border border-teal-100">
+          <div className="bg-emerald-900/20 border border-emerald-700/50 p-4 rounded-xl flex justify-between items-center shadow-sm backdrop-blur-sm">
             <div className="flex items-center gap-2">
-              <FaUser className="text-teal-600" />
+              <FaUser className="text-emerald-400" />
               <div>
-                <p className="text-sm text-teal-600">Name</p>
-                <p className="text-lg font-semibold text-teal-900">
+                <p className="text-sm text-emerald-300">Name</p>
+                <p className="text-lg font-semibold text-white">
                   {session.user.name}
                 </p>
               </div>
@@ -253,23 +260,23 @@ export default function ProfilePage() {
                 setIsEditingName(!isEditingName);
                 setNewName(session.user.name || "");
               }}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm transition-colors"
             >
               Edit
             </button>
           </div>
 
           {isEditingName && (
-            <div className="border rounded-xl p-4 space-y-3 bg-teal-50">
+            <div className="border border-emerald-700/50 rounded-xl p-4 space-y-3 bg-emerald-900/20 backdrop-blur-sm">
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full border px-3 py-2 rounded-lg"
+                className="w-full border border-emerald-700/50 bg-emerald-950/50 text-white px-3 py-2 rounded-lg placeholder-emerald-500/50 focus:outline-none focus:border-emerald-500"
               />
               <button
                 onClick={handleSaveName}
-                className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold"
+                className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition-colors shadow-[0_0_15px_rgb(16,185,129,0.2)]"
               >
                 Save Name
               </button>
@@ -277,57 +284,57 @@ export default function ProfilePage() {
           )}
 
           {/* Email */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex items-center gap-2 border border-teal-100">
-            <FaEnvelope className="text-teal-600" />
+          <div className="bg-emerald-900/20 border border-emerald-700/50 p-4 rounded-xl shadow-sm flex items-center gap-2 backdrop-blur-sm">
+            <FaEnvelope className="text-emerald-400" />
             <div>
-              <p className="text-sm text-teal-600">Email</p>
-              <p className="text-lg font-semibold text-teal-900">
+              <p className="text-sm text-emerald-300">Email</p>
+              <p className="text-lg font-semibold text-white">
                 {session.user.email}
               </p>
             </div>
           </div>
 
           {/* Role */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex items-center gap-2 border border-teal-100">
-            <FaUserShield className="text-teal-600" />
+          <div className="bg-emerald-900/20 border border-emerald-700/50 p-4 rounded-xl shadow-sm flex items-center gap-2 backdrop-blur-sm">
+            <FaUserShield className="text-emerald-400" />
             <div>
-              <p className="text-sm text-teal-600">Role</p>
-              <p className="text-lg font-semibold text-teal-900">
+              <p className="text-sm text-emerald-300">Role</p>
+              <p className="text-lg font-semibold text-white">
                 {session.user.role}
               </p>
             </div>
           </div>
 
           {/* Password */}
-          <div className="bg-teal-50 p-4 rounded-xl shadow-sm flex justify-between items-center border border-teal-100">
+          <div className="bg-emerald-900/20 border border-emerald-700/50 p-4 rounded-xl shadow-sm flex justify-between items-center backdrop-blur-sm">
             <div className="flex items-center gap-2">
-              <FaLock className="text-teal-600" />
+              <FaLock className="text-emerald-400" />
               <div>
-                <p className="text-sm text-teal-600">Password</p>
-                <p>Change your password</p>
+                <p className="text-sm text-emerald-300">Password</p>
+                <p className="text-emerald-100/70">Change your password</p>
               </div>
             </div>
             <button
               onClick={() => setIsEditingPassword(!isEditingPassword)}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm transition-colors"
             >
               Change
             </button>
           </div>
 
           {isEditingPassword && (
-            <div className="border rounded-xl p-4 space-y-3 bg-teal-50">
+            <div className="border border-emerald-700/50 rounded-xl p-4 space-y-3 bg-emerald-900/20 backdrop-blur-sm">
               <div className="flex justify-between items-center gap-2">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Current password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg"
+                  className="w-full border border-emerald-700/50 bg-emerald-950/50 text-white px-3 py-2 rounded-lg placeholder-emerald-500/50 focus:outline-none focus:border-emerald-500"
                 />
                 <button
                   onClick={() => setShowPassword(!showPassword)}
-                  className="px-3 py-1 text-sm bg-teal-200 rounded-lg"
+                  className="px-3 py-1 text-sm bg-emerald-700/50 hover:bg-emerald-700 text-emerald-100 rounded-lg transition-colors"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -339,11 +346,11 @@ export default function ProfilePage() {
                   placeholder="New password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg"
+                  className="w-full border border-emerald-700/50 bg-emerald-950/50 text-white px-3 py-2 rounded-lg placeholder-emerald-500/50 focus:outline-none focus:border-emerald-500"
                 />
                 <button
                   onClick={() => setShowPassword(!showPassword)}
-                  className="px-3 py-1 text-sm bg-teal-200 rounded-lg"
+                  className="px-3 py-1 text-sm bg-emerald-700/50 hover:bg-emerald-700 text-emerald-100 rounded-lg transition-colors"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -351,7 +358,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={handleChangePassword}
-                className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold"
+                className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition-colors shadow-[0_0_15px_rgb(16,185,129,0.2)]"
               >
                 Update Password
               </button>

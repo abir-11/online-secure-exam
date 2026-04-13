@@ -56,7 +56,7 @@ export default function ExamListPage() {
       text: "Students will be notified and MCQs cannot be edited after publishing.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#6366f1",
+      confirmButtonColor: "#06b6d4", // teal/blue confirm button
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, publish it!",
     });
@@ -131,9 +131,9 @@ export default function ExamListPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
+      <div className="flex items-center justify-center gap-2 p-8 text-center text-white font-semibold text-lg min-h-screen bg-emerald-950">
         <svg
-          className="w-6 h-6 animate-spin text-teal-500"
+          className="w-6 h-6 animate-spin text-white"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -152,18 +152,18 @@ export default function ExamListPage() {
             d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
           ></path>
         </svg>
-        <span className="text-teal-700 animate-pulse tracking-wide">
+        <span className="text-white animate-pulse tracking-wide">
           Loading Exams...
         </span>
       </div>
     );
 
   return (
-    <main className="p-8 bg-primary max-w-full mx-auto min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Exam Management</h1>
+    <main className="p-8 bg-emerald-950 min-h-screen">
+      <h1 className="text-3xl font-bold mb-8 text-white">Exam Management</h1>
 
       {exams.length === 0 ? (
-        <p className="text-gray-500">No exams found.</p>
+        <p className="text-white/80">No exams found.</p>
       ) : (
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {exams.map((exam) => {
@@ -176,42 +176,42 @@ export default function ExamListPage() {
             return (
               <div
                 key={exam._id}
-                className="bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 p-6"
+                className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 p-6"
               >
                 {/* Title */}
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <BookOpen size={20} className="text-indigo-600" />
+                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <BookOpen size={20} className="text-cyan-400" />
                   {exam.title || "-"}
                 </h2>
 
                 {/* Info */}
-                <div className="space-y-2 text-gray-700 text-sm">
+                <div className="space-y-2 text-white text-sm">
                   <div className="flex items-center gap-2">
-                    <FileText size={16} className="text-indigo-500" />
+                    <FileText size={16} className="text-cyan-300" />
                     <span className="font-medium">Type:</span>
                     {exam.type?.toUpperCase() || "-"}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-indigo-500" />
+                    <Clock size={16} className="text-cyan-300" />
                     <span className="font-medium">Duration:</span>
                     {exam.duration ?? "-"} minutes
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <ListChecks size={16} className="text-indigo-500" />
+                    <ListChecks size={16} className="text-cyan-300" />
                     <span className="font-medium">Total Questions:</span>
                     {exam.questionsCount ?? "-"}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <BookOpen size={16} className="text-indigo-500" />
+                    <BookOpen size={16} className="text-cyan-300" />
                     <span className="font-medium">Total Marks:</span>
                     {calculatedTotalMarks}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Users size={16} className="text-indigo-500" />
+                    <Users size={16} className="text-cyan-300" />
                     <span className="font-medium">Batches:</span>
                     {exam.batchNames && exam.batchNames.length > 0
                       ? exam.batchNames.join(", ")
@@ -219,7 +219,7 @@ export default function ExamListPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-indigo-500" />
+                    <Calendar size={16} className="text-cyan-300" />
                     <span className="font-medium">Start:</span>
                     {exam.startTime
                       ? new Date(exam.startTime).toLocaleString()
@@ -227,7 +227,7 @@ export default function ExamListPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-indigo-500" />
+                    <Calendar size={16} className="text-cyan-300" />
                     <span className="font-medium">End:</span>
                     {exam.endTime
                       ? new Date(exam.endTime).toLocaleString()
@@ -241,7 +241,7 @@ export default function ExamListPage() {
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
                       exam.published
                         ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        : "bg-cyan-100 text-cyan-700"
                     }`}
                   >
                     {exam.published ? "Published" : "Draft"}
@@ -251,7 +251,7 @@ export default function ExamListPage() {
                     {!exam.published && (
                       <button
                         onClick={() => handlePublish(exam._id)}
-                        className="flex items-center gap-1 bg-teal-400 hover:bg-green-200 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="flex items-center gap-1 bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded-md text-sm transition"
                       >
                         <Send size={14} />
                         Publish
@@ -260,7 +260,7 @@ export default function ExamListPage() {
 
                     <button
                       onClick={() => handleViewQuestions(exam._id)}
-                      className="flex items-center gap-1 bg-teal-700 hover:bg-green-300 text-white px-3 py-1 rounded-md text-sm transition"
+                      className="flex items-center gap-1 bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm transition"
                     >
                       <Eye size={14} />
                       {questionLoading && selectedExam?._id === exam._id
@@ -268,6 +268,7 @@ export default function ExamListPage() {
                         : "View"}
                     </button>
 
+                    {/* VIEW TO EDIT button */}
                     <button
                       onClick={() => {
                         if (exam?.status === "published") {
@@ -278,13 +279,12 @@ export default function ExamListPage() {
                           });
                           return;
                         }
-
                         window.open(
                           `/dashboard/instructor/exam/${exam._id}/questions`,
                           "_blank",
                         );
                       }}
-                      className="flex items-center gap-1 bg-teal-700 hover:bg-green-300 text-white px-3 py-1 rounded-md text-sm transition"
+                      className="flex items-center gap-1 bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm transition"
                     >
                       View to edit
                     </button>
@@ -293,36 +293,34 @@ export default function ExamListPage() {
 
                 {/* Questions */}
                 {selectedExam && selectedExam._id === exam._id && (
-                  <div className="mt-5 pt-4 border-t">
-                    <h3 className="font-semibold mb-3 text-gray-800">
-                      Questions
-                    </h3>
+                  <div className="mt-5 pt-4 border-t border-white/20">
+                    <h3 className="font-semibold mb-3 text-white">Questions</h3>
 
                     {selectedExam.questions?.length === 0 ? (
-                      <p className="text-gray-500 text-sm">
+                      <p className="text-white/80 text-sm">
                         No questions added yet.
                       </p>
                     ) : (
                       <>
-                        <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                        <ul className="list-disc pl-5 space-y-2 text-sm text-white/90">
                           {selectedExam.questions?.map((q) => (
                             <li key={q._id}>
                               {q.questionText || "-"}{" "}
-                              <span className="text-green-700 text-xs">
+                              <span className="text-green-400 text-xs">
                                 (Answer:{" "}
                                 {exam.type === "mcq"
                                   ? (q.correctOption ?? "-")
                                   : "Answers not available"}
                                 )
                               </span>{" "}
-                              <span className="text-indigo-600 text-xs">
+                              <span className="text-cyan-300 text-xs">
                                 — Marks: {q.marks ?? 1}
                               </span>
                             </li>
                           ))}
                         </ul>
 
-                        <div className="mt-4 font-semibold text-gray-800">
+                        <div className="mt-4 font-semibold text-white">
                           Total Marks:{" "}
                           {selectedExam.questions?.reduce(
                             (sum, q) => sum + (q.marks || 1),

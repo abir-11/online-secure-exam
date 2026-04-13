@@ -42,7 +42,6 @@ export default function ExamReportsPage() {
       const res = await axios.get("/api/admin/reports/exam-reports");
       const examList = res.data.exams || [];
       setAllExams(examList);
-      // Show only 5 exams initially
       setExams(examList.slice(0, 5));
     } catch (error) {
       toast.error("Failed to load exams");
@@ -84,18 +83,13 @@ export default function ExamReportsPage() {
     const filtered = allExams.filter((exam) =>
       exam.title?.toLowerCase().includes(term.toLowerCase()),
     );
-    if (showAllExams) {
-      setExams(filtered);
-    } else {
-      setExams(filtered.slice(0, 5));
-    }
+    if (showAllExams) setExams(filtered);
+    else setExams(filtered.slice(0, 5));
   };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    if (selectedExam) {
-      fetchExamDetail(selectedExam);
-    }
+    if (selectedExam) fetchExamDetail(selectedExam);
   };
 
   const getScoreBgColor = (percentage) => {
@@ -116,18 +110,18 @@ export default function ExamReportsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#0D7C66] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-emerald-950 p-4 md:p-6">
       {/* Back Button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-600 hover:text-[#0D7C66] mb-4 md:mb-6 transition-colors"
+        className="flex items-center gap-2 text-white/80 hover:text-white mb-4 md:mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to Reports</span>
@@ -142,35 +136,35 @@ export default function ExamReportsPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 mb-6">
+      <div className="bg-gray-800/90 rounded-xl shadow-sm p-3 md:p-4 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4 md:w-5 md:h-5" />
           <input
             type="text"
             placeholder="Search exams..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
+            className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm text-white bg-gray-800 border border-emerald-700 rounded-lg placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
           />
         </div>
       </div>
 
       {/* Exam List */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="divide-y">
+      <div className="bg-gray-800/90 text-white rounded-xl shadow-sm overflow-hidden mb-6">
+        <div className="divide-y divide-emerald-700">
           {exams.map((exam) => (
             <div
               key={exam.id}
-              className={`p-4 md:p-5 hover:bg-gray-50 transition-all cursor-pointer ${
-                selectedExam === exam.id ? "bg-[#0D7C66]/5" : ""
+              className={`p-4 md:p-5 hover:bg-emerald-700/50 transition-all cursor-pointer rounded ${
+                selectedExam === exam.id ? "bg-emerald-700/40" : ""
               }`}
               onClick={() => fetchExamDetail(exam.id)}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <FileText className="w-5 h-5 text-[#0D7C66]" />
-                    <h2 className="font-semibold text-gray-800 text-base md:text-lg">
+                    <FileText className="w-5 h-5 text-white" />
+                    <h2 className="font-semibold text-white text-base md:text-lg">
                       {exam.title}
                     </h2>
                     <span
@@ -183,29 +177,29 @@ export default function ExamReportsPage() {
                       {exam.type === "mcq" ? "MCQ" : "Theoretical"}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm text-gray-500">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm text-white/80">
                     <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                      <Calendar className="w-3 h-3 text-white/80" />
                       <span>
                         {new Date(exam.startTime).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
+                      <Users className="w-3 h-3 text-white/80" />
                       <span>{exam.totalStudents} students</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" />
+                      <TrendingUp className="w-3 h-3 text-white/80" />
                       <span>Avg: {exam.averageScore}%</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Award className="w-3 h-3" />
+                      <Award className="w-3 h-3 text-white/80" />
                       <span>Pass: {exam.passRate}%</span>
                     </div>
                   </div>
                 </div>
                 <ChevronRight
-                  className={`w-5 h-5 text-gray-400 transition-transform ${
+                  className={`w-5 h-5 text-white/70 transition-transform ${
                     selectedExam === exam.id ? "rotate-90" : ""
                   }`}
                 />
@@ -214,33 +208,31 @@ export default function ExamReportsPage() {
           ))}
         </div>
 
-        {/* View All / Show Less Button */}
+        {/* View All / Show Less */}
         {!showAllExams && allExams.length > 5 && (
-          <div className="p-3 border-t text-center">
+          <div className="p-3 border-t border-emerald-700 text-center">
             <button
               onClick={handleShowAll}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+              className="text-white hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
             >
               View All ({allExams.length} exams)
               <Eye className="w-4 h-4" />
             </button>
           </div>
         )}
-
         {showAllExams && allExams.length > 5 && (
-          <div className="p-3 border-t text-center">
+          <div className="p-3 border-t border-emerald-700 text-center">
             <button
               onClick={handleShowLess}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+              className="text-white hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
             >
               Show Less
               <ChevronRight className="w-4 h-4 rotate-90" />
             </button>
           </div>
         )}
-
         {exams.length === 0 && (
-          <div className="p-8 text-center text-gray-500">No exams found</div>
+          <div className="p-8 text-center text-white/70">No exams found</div>
         )}
       </div>
 
@@ -310,7 +302,7 @@ export default function ExamReportsPage() {
                 return (
                   <div key={i}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">
+                      <span className="text-gray-700">
                         {item.range} ({item.label})
                       </span>
                       <span className="text-gray-500">
@@ -370,10 +362,13 @@ export default function ExamReportsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBgColor(student.percentage)} ${getScoreColor(student.percentage)}`}
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBgColor(
+                            student.percentage,
+                          )} ${getScoreColor(student.percentage)}`}
                         >
                           {student.score}/{student.totalMarks} (
-                          {student.percentage}%)
+                          {student.percentage}
+                          %)
                         </span>
                       </td>
                       <td className="px-4 py-3">

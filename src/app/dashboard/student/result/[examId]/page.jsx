@@ -31,43 +31,47 @@ export default function ExamDetailPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
-        <svg
-          className="w-6 h-6 animate-spin text-teal-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-          ></path>
-        </svg>
-        <span className="text-teal-700 animate-pulse tracking-wide">
-          Loading Exam Details...
-        </span>
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
+        <div className="text-center">
+          <svg
+            className="w-8 h-8 animate-spin text-emerald-400 mx-auto"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <p className="text-emerald-100/70 mt-4 animate-pulse tracking-wide">
+            Loading Exam Details...
+          </p>
+        </div>
       </div>
     );
 
   if (!result)
     return (
-      <div className="p-6 text-center text-gray-500">
-        Result not found.
-        <button
-          className="ml-4 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-          onClick={() => router.back()}
-        >
-          Go Back
-        </button>
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-emerald-100/70 mb-4">Result not found.</p>
+          <button
+            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors"
+            onClick={() => router.back()}
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
 
@@ -80,12 +84,16 @@ export default function ExamDetailPage() {
   const passed = percentage >= passBoundary;
 
   return (
-    <main className="bg-primary min-h-screen">
-      <div className="p-6 max-w-5xl mx-auto">
+    <main className="bg-emerald-950 min-h-screen relative overflow-hidden">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-5xl mx-auto relative z-10 px-4 sm:px-6 lg:px-0 py-6">
         {/* Header Card */}
-        <div className="bg-gradient-to-r from-teal-50 to-teal-100 shadow-lg rounded-xl p-6 mb-8">
-          <h1 className="text-2xl font-bold text-teal-900">{result.title}</h1>
-          <p className="text-teal-700 mt-1">
+        <div className="bg-gradient-to-r from-emerald-600/40 to-teal-500/40 backdrop-blur-md shadow-lg rounded-xl p-6 mb-8 border border-emerald-700/50">
+          <h1 className="text-2xl font-bold text-white">{result.title}</h1>
+          <p className="text-emerald-300 mt-1">
             Exam Type:{" "}
             <span className="font-medium">
               {result.examCategory ||
@@ -93,33 +101,33 @@ export default function ExamDetailPage() {
                 "Unknown"}
             </span>
           </p>
-          <p className="text-teal-700 mt-1">
+          <p className="text-emerald-300 mt-1">
             Submitted At:{" "}
             <span className="font-medium">
               {new Date(result.submittedAt).toLocaleString()}
             </span>
           </p>
-          <p className="text-teal-700 mt-1">
+          <p className="text-emerald-300 mt-1">
             Marks Obtained:{" "}
-            <span className="font-semibold text-green-600">
+            <span className="font-semibold text-emerald-400">
               {result.marksObtained}
             </span>{" "}
             / {result.totalMarks}
           </p>
-          <p className="text-teal-700 mt-1">
+          <p className="text-emerald-300 mt-1">
             Percentage: <span className="font-semibold">{percentage}%</span>
           </p>
-          <p className="text-teal-700 mt-1">
+          <p className="text-emerald-300 mt-1">
             Status:{" "}
             <span
               className={`font-semibold ${
-                passed ? "text-green-600" : "text-red-600"
+                passed ? "text-emerald-400" : "text-red-400"
               }`}
             >
               {passed ? "PASS" : "FAIL"} (Pass boundary: {passBoundary}%)
             </span>
           </p>
-          <p className="text-teal-700 mt-1">
+          <p className="text-emerald-300 mt-1">
             Grading Status:{" "}
             <span className="font-semibold">
               {result.status === "graded" ? "Graded" : "Pending"}
@@ -136,39 +144,39 @@ export default function ExamDetailPage() {
             return (
               <div
                 key={qid}
-                className="bg-white shadow-md rounded-xl p-4 border-l-4"
+                className="bg-emerald-900/30 backdrop-blur-md shadow-md rounded-xl p-4 border-l-4 border border-emerald-700/50"
                 style={{
-                  borderColor: isCorrect
-                    ? "#14B8A6" // teal for full marks
+                  borderLeftColor: isCorrect
+                    ? "#34D399" // emerald for full marks
                     : partial
                       ? "#F59E0B" // yellow for partial
                       : "#EF4444", // red for zero
                 }}
               >
-                <h2 className="text-teal-900 font-semibold mb-1">
+                <h2 className="text-white font-semibold mb-1">
                   {ans.questionText}
                 </h2>
-                <p className="text-gray-700 mb-1">
+                <p className="text-emerald-200/90 mb-1">
                   <span className="font-semibold">Your Answer:</span>{" "}
                   {ans.answer}
                 </p>
 
                 {result.examType === "mcq" && ans.correctAnswer && (
-                  <p className="text-gray-700 mb-1">
+                  <p className="text-emerald-200/90 mb-1">
                     <span className="font-semibold">Correct Answer:</span>{" "}
                     {ans.correctAnswer}
                   </p>
                 )}
 
-                <p className="text-gray-700">
+                <p className="text-emerald-200/90">
                   <span className="font-semibold">Marks Obtained:</span>{" "}
                   <span
                     className={`font-semibold ${
                       isCorrect
-                        ? "text-green-600"
+                        ? "text-emerald-400"
                         : partial
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                          ? "text-yellow-400"
+                          : "text-red-400"
                     }`}
                   >
                     {ans.awarded} / {ans.maxMarks}
@@ -183,7 +191,7 @@ export default function ExamDetailPage() {
         <div className="mt-6">
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 shadow-md"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-[0_0_15px_rgb(16,185,129,0.2)] transition-colors"
           >
             Back to Results
           </button>

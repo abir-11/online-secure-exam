@@ -11,6 +11,14 @@
   --color-secondary: #0f766e;
 }
 
+/* ✅ Reset default margins and padding */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 /* ✅ Custom class outside daisy theme */
 .gradient-badge {
   background: linear-gradient(135deg, #d7c3f1 0%, #bde8ca 100%);

@@ -41,28 +41,28 @@ export default function RegistrationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-emerald-950 p-6 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-emerald-950 p-6">
       {/* Header */}
       <div className="mb-6">
         <Link
           href="/dashboard/admin/analytics"
-          className="inline-flex items-center text-gray-600 hover:text-[#0D7C66] mb-4 transition-colors"
+          className="inline-flex items-center text-white hover:text-[#0D7C66] mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Analytics
         </Link>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
+        <h1 className="text-2xl md:text-3xl text-white font-bold text-gray-800 flex items-center gap-2">
           <UserPlus className="w-8 h-8 text-purple-600" />
           New Registrations
         </h1>
-        <p className="text-gray-500 mt-1">All users who joined the platform</p>
+        <p className="text-white mt-1">All users who joined the platform</p>
       </div>
 
       {/* Registrations List */}

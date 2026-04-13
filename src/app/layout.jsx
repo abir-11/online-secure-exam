@@ -24,13 +24,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased m-0 p-0`}
       >
         <Providers>
           {/* Navbar must be inside SessionProvider */}
           <NavbarWrapper />
 
-          <div className="">{children}</div>
+          <div className="m-0 p-0">{children}</div>
 
           <Footer />
         </Providers>

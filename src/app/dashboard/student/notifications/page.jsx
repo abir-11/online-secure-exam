@@ -60,17 +60,21 @@ export default function NotificationsPage() {
   }, [session]);
 
   return (
-    <main className="min-h-screen p-6 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-emerald-950 relative overflow-hidden">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-4xl mx-auto relative z-10 px-4 sm:px-6 lg:px-0 py-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <FiBell className="text-teal-700 w-8 h-8" />
-          <h1 className="text-3xl font-bold text-teal-900">Notifications</h1>
+          <FiBell className="text-emerald-400 w-8 h-8" />
+          <h1 className="text-3xl font-bold text-white">Notifications</h1>
         </div>
 
         {/* Notifications List */}
         {messages.length === 0 ? (
-          <div className="p-6 bg-teal-100 border-l-4 border-teal-400 text-teal-800 rounded shadow-md flex items-center gap-3">
+          <div className="p-6 bg-emerald-900/30 border-l-4 border-emerald-400 text-emerald-100/90 rounded shadow-md flex items-center gap-3 backdrop-blur-md border border-emerald-700/50">
             <FiBell className="w-6 h-6" />
             <span>No notifications yet</span>
           </div>
@@ -79,22 +83,20 @@ export default function NotificationsPage() {
             {messages.map((msg) => (
               <li
                 key={msg._id}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition-shadow duration-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-l-4"
+                className="bg-emerald-900/30 backdrop-blur-md p-4 rounded-xl shadow hover:shadow-lg transition-shadow duration-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-l-4 border border-emerald-700/50"
                 style={{
-                  borderColor: msg.type === "exam" ? "#14B8A6" : "#0D9488",
+                  borderLeftColor: msg.type === "exam" ? "#34D399" : "#10B981",
                 }}
               >
                 <div className="flex items-center gap-2">
                   {msg.type === "exam" ? (
-                    <FiCalendar className="text-teal-500 w-5 h-5" />
+                    <FiCalendar className="text-emerald-400 w-5 h-5" />
                   ) : (
-                    <FiBell className="text-teal-500 w-5 h-5" />
+                    <FiBell className="text-emerald-400 w-5 h-5" />
                   )}
-                  <span className="text-gray-800 font-medium">
-                    {msg.message}
-                  </span>
+                  <span className="text-white font-medium">{msg.message}</span>
                 </div>
-                <span className="text-gray-500 text-sm mt-1 sm:mt-0">
+                <span className="text-emerald-300/70 text-sm mt-1 sm:mt-0">
                   {new Date(msg.createdAt).toLocaleString()}
                 </span>
               </li>

@@ -1,3 +1,4 @@
+//after final presentation
 "use client";
 
 import React, { useState } from "react";
@@ -10,7 +11,7 @@ const pricingData = {
       id: 1,
       name: "Basic",
       billing: "Billed Every Month, Cancel Every Time.",
-      price: "$35",
+      price: "$9",
       period: "/Month",
       features: [
         "Access to 50+ basic courses",
@@ -25,7 +26,7 @@ const pricingData = {
       id: 2,
       name: "Standard",
       billing: "Billed Every 3 Months, Cancel Every Time.",
-      price: "$85",
+      price: "$15",
       period: "/Month",
       features: [
         "0% transaction fees on platform*",
@@ -40,7 +41,7 @@ const pricingData = {
       id: 3,
       name: "Premium",
       billing: "Billed Every 6 Months, Cancel Every Time.",
-      price: "$250",
+      price: "$19",
       period: "/Month",
       features: [
         "Unlimited access to all courses",
@@ -122,7 +123,6 @@ export default function PricingSection() {
   return (
     <section className="bg-white py-20 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
-        
         {/* Header Title Section */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-4 mb-4">
@@ -133,7 +133,15 @@ export default function PricingSection() {
             <span className="h-[1px] w-12 bg-gray-400"></span>
           </div>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-            View Our <span className="text-[#134e36] underline decoration-[#134e36] decoration-4 underline-offset-8">Course</span> <span className="text-[#134e36] underline decoration-[#134e36] decoration-4 underline-offset-8">Offerings</span> And Our<br className="hidden md:block" /> Planned Fee Schedule
+            View Our{" "}
+            <span className="text-[#134e36] underline decoration-[#134e36] decoration-4 underline-offset-8">
+              Course
+            </span>{" "}
+            <span className="text-[#134e36] underline decoration-[#134e36] decoration-4 underline-offset-8">
+              Offerings
+            </span>{" "}
+            And Our
+            <br className="hidden md:block" /> Planned Fee Schedule
           </h2>
         </div>
 
@@ -143,7 +151,9 @@ export default function PricingSection() {
             <button
               onClick={() => setIsAnnual(false)}
               className={`flex-1 text-sm font-semibold py-2.5 rounded-full transition-colors duration-300 ${
-                !isAnnual ? "bg-[#134e36] text-white" : "text-gray-900 hover:bg-gray-100"
+                !isAnnual
+                  ? "bg-[#134e36] text-white"
+                  : "text-gray-900 hover:bg-gray-100"
               }`}
             >
               Monthly
@@ -151,7 +161,9 @@ export default function PricingSection() {
             <button
               onClick={() => setIsAnnual(true)}
               className={`flex-1 text-sm font-semibold py-2.5 rounded-full transition-colors duration-300 ${
-                isAnnual ? "bg-[#134e36] text-white" : "text-gray-900 hover:bg-gray-100"
+                isAnnual
+                  ? "bg-[#134e36] text-white"
+                  : "text-gray-900 hover:bg-gray-100"
               }`}
             >
               Annual
@@ -175,7 +187,9 @@ export default function PricingSection() {
               whileHover={!plan.isPopular ? "hover" : "rest"}
               animate="rest"
               className={`relative overflow-hidden rounded-md border-t-8 border-t-[#134e36] shadow-[0_4px_20px_rgb(0,0,0,0.05)] flex flex-col group ${
-                plan.isPopular ? "bg-[#134e36] text-white" : "bg-white border-x border-b border-gray-100"
+                plan.isPopular
+                  ? "bg-[#134e36] text-white"
+                  : "bg-white border-x border-b border-gray-100"
               }`}
             >
               {/* Framer Motion Background Slide Effect (For non-popular cards) */}
@@ -194,25 +208,41 @@ export default function PricingSection() {
               <div className="relative z-10 p-10 flex flex-col flex-grow">
                 {/* Plan Header */}
                 <div className="mb-8 border-b border-gray-200/30 pb-8">
-                  <h3 className={`text-3xl font-bold mb-4 transition-colors duration-400 ${
-                    plan.isPopular ? "text-white" : "text-gray-900 group-hover:text-white"
-                  }`}>
+                  <h3
+                    className={`text-3xl font-bold mb-4 transition-colors duration-400 ${
+                      plan.isPopular
+                        ? "text-white"
+                        : "text-gray-900 group-hover:text-white"
+                    }`}
+                  >
                     {plan.name}
                   </h3>
-                  <p className={`text-xs mb-6 transition-colors duration-400 ${
-                    plan.isPopular ? "text-gray-200" : "text-gray-500 group-hover:text-gray-200"
-                  }`}>
+                  <p
+                    className={`text-xs mb-6 transition-colors duration-400 ${
+                      plan.isPopular
+                        ? "text-gray-200"
+                        : "text-gray-500 group-hover:text-gray-200"
+                    }`}
+                  >
                     {plan.billing}
                   </p>
                   <div className="flex items-baseline gap-1">
-                    <span className={`text-6xl font-extrabold transition-colors duration-400 ${
-                      plan.isPopular ? "text-white" : "text-gray-900 group-hover:text-white"
-                    }`}>
+                    <span
+                      className={`text-6xl font-extrabold transition-colors duration-400 ${
+                        plan.isPopular
+                          ? "text-white"
+                          : "text-gray-900 group-hover:text-white"
+                      }`}
+                    >
                       {plan.price}
                     </span>
-                    <span className={`text-sm font-medium transition-colors duration-400 ${
-                      plan.isPopular ? "text-white" : "text-gray-900 group-hover:text-white"
-                    }`}>
+                    <span
+                      className={`text-sm font-medium transition-colors duration-400 ${
+                        plan.isPopular
+                          ? "text-white"
+                          : "text-gray-900 group-hover:text-white"
+                      }`}
+                    >
                       {plan.period}
                     </span>
                   </div>
@@ -220,6 +250,7 @@ export default function PricingSection() {
 
                 {/* Purchase Button */}
                 <button
+                  onClick={() => (window.location.href = "/pricing")}
                   className={`w-4/5 py-3 rounded text-sm font-bold transition-colors duration-400 mb-8 ${
                     plan.isPopular
                       ? "bg-white text-[#134e36] hover:bg-gray-100"
@@ -233,12 +264,20 @@ export default function PricingSection() {
                 <ul className="flex flex-col gap-4 flex-grow">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors duration-400 ${
-                        plan.isPopular ? "bg-white" : "bg-gray-400 group-hover:bg-white"
-                      }`}></span>
-                      <span className={`text-sm leading-relaxed transition-colors duration-400 ${
-                        plan.isPopular ? "text-gray-100" : "text-gray-600 group-hover:text-gray-100"
-                      }`}>
+                      <span
+                        className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors duration-400 ${
+                          plan.isPopular
+                            ? "bg-white"
+                            : "bg-gray-400 group-hover:bg-white"
+                        }`}
+                      ></span>
+                      <span
+                        className={`text-sm leading-relaxed transition-colors duration-400 ${
+                          plan.isPopular
+                            ? "text-gray-100"
+                            : "text-gray-600 group-hover:text-gray-100"
+                        }`}
+                      >
                         {feature}
                       </span>
                     </li>
@@ -251,13 +290,28 @@ export default function PricingSection() {
 
         {/* Footer Text */}
         <div className="mt-16 text-center max-w-4xl mx-auto text-xs text-gray-500 leading-relaxed">
-          <p>*Pro, Pro+, and course plan have 0% transaction fees with any payment gateway (i.e. online: pay Monthly or Yearly via Gateway).</p>
-          <p>All plans will automatically renew until canceled. Recurring charges may be subject to changes.</p>
           <p>
-            Plans can be canceled any time. <a href="#" className="underline hover:text-gray-800">Standard Processing fees apply.</a> Have questions? Contact <a href="mailto:support@example.com" className="underline hover:text-gray-800">support@example.com</a>
+            *Pro, Pro+, and course plan have 0% transaction fees with any
+            payment gateway (i.e. online: pay Monthly or Yearly via Gateway).
+          </p>
+          <p>
+            All plans will automatically renew until canceled. Recurring charges
+            may be subject to changes.
+          </p>
+          <p>
+            Plans can be canceled any time.{" "}
+            <a href="#" className="underline hover:text-gray-800">
+              Standard Processing fees apply.
+            </a>{" "}
+            Have questions? Contact{" "}
+            <a
+              href="mailto:support@example.com"
+              className="underline hover:text-gray-800"
+            >
+              support@example.com
+            </a>
           </p>
         </div>
-
       </div>
     </section>
   );

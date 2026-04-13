@@ -227,7 +227,7 @@ export default function ExamQuestionsPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg">
+      <div className="flex items-center justify-center gap-2 p-8 text-center text-teal-600 font-semibold text-lg min-h-screen bg-emerald-950">
         <svg
           className="w-6 h-6 animate-spin text-teal-500"
           xmlns="http://www.w3.org/2000/svg"
@@ -248,39 +248,41 @@ export default function ExamQuestionsPage() {
             d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
           ></path>
         </svg>
-        <span className="text-teal-700 animate-pulse tracking-wide">
+        <span className="text-teal-400 animate-pulse tracking-wide">
           Loading Exams...
         </span>
       </div>
     );
 
   return (
-    <main className="bg-primary min-h-screen">
+    <main className="bg-emerald-950 min-h-screen">
       <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        <h1 className="text-3xl font-bold mb-6 text-white">
           Exam: {exam?.title || "-"}
         </h1>
 
         <div className="mb-4">
           <button
             onClick={openAdd}
-            className="px-4 py-2 bg-teal-600 text-white rounded"
+            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded transition"
           >
             Add Question
           </button>
         </div>
 
         {questions.length === 0 ? (
-          <p>No questions added yet.</p>
+          <p className="text-white/80">No questions added yet.</p>
         ) : (
           <ul className="space-y-4">
             {questions.map((q) => (
               <li
                 key={q._id}
-                className="p-4 bg-white shadow rounded-lg flex justify-between items-start"
+                className="p-4 bg-white/90 shadow rounded-lg flex justify-between items-start"
               >
                 <div>
-                  <p className="font-semibold">{q.questionText}</p>
+                  <p className="font-semibold text-gray-800">
+                    {q.questionText}
+                  </p>
 
                   {exam.type === "mcq" && (
                     <ul className="list-disc pl-5 mt-1 text-sm text-gray-700">
@@ -288,7 +290,9 @@ export default function ExamQuestionsPage() {
                         <li
                           key={i}
                           className={
-                            i === q.correctOption ? "text-green-600" : ""
+                            i === q.correctOption
+                              ? "text-green-700 font-semibold"
+                              : ""
                           }
                         >
                           {opt}
@@ -297,14 +301,14 @@ export default function ExamQuestionsPage() {
                     </ul>
                   )}
 
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-600">
                     Marks: {q.marks || 1} | Category: {q.category || "-"}
                   </p>
                 </div>
 
                 <div className="flex gap-2">
                   <button
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-teal-600 hover:text-teal-800"
                     onClick={() => openEdit(q)}
                   >
                     <Edit size={16} />
@@ -322,12 +326,11 @@ export default function ExamQuestionsPage() {
           </ul>
         )}
 
-        {/* Add & Edit modals remain same */}
+        {/* Add & Edit modals remain same, button colors updated */}
         {addOpen && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto p-6">
             <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
               <h2 className="text-xl font-bold mb-4">Add Question</h2>
-
               <form onSubmit={handleAddSubmit} className="space-y-4">
                 {/* Question text */}
                 <div>
@@ -374,7 +377,6 @@ export default function ExamQuestionsPage() {
                   </div>
                 )}
 
-                {/* Marks & Category */}
                 <div>
                   <label className="block mb-1">Marks</label>
                   <input
@@ -412,7 +414,7 @@ export default function ExamQuestionsPage() {
 
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-green-600 text-white"
+                    className="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Add
                   </button>
@@ -428,7 +430,6 @@ export default function ExamQuestionsPage() {
               <h2 className="text-xl font-bold mb-4">Edit Question</h2>
 
               <form onSubmit={handleEditSubmit} className="space-y-4">
-                {/* Question text */}
                 <div>
                   <label className="block font-medium mb-1">
                     Question Text
@@ -441,7 +442,6 @@ export default function ExamQuestionsPage() {
                   />
                 </div>
 
-                {/* MCQ options */}
                 {exam.type === "mcq" &&
                   options.map((opt, i) => (
                     <div key={i}>
@@ -473,7 +473,6 @@ export default function ExamQuestionsPage() {
                   </div>
                 )}
 
-                {/* Marks & Category */}
                 <div>
                   <label className="block mb-1">Marks</label>
                   <input
@@ -511,7 +510,7 @@ export default function ExamQuestionsPage() {
 
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-teal-600 text-white"
+                    className="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Save
                   </button>

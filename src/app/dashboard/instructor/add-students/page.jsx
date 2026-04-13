@@ -97,16 +97,20 @@ export default function AddStudentsPage() {
   };
 
   return (
-    <div className="min-h-screen  p-6 bg-primary dark:bg-gray-900">
+    <div className="bg-emerald-950 min-h-screen relative overflow-hidden p-6">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
       {/* CENTERED CARD */}
-      <div className="max-w-2xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg">
+      <div className="max-w-2xl mx-auto bg-slate-800/50 backdrop-blur-md border border-emerald-700/50 p-8 rounded-2xl shadow-lg relative z-10">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-8">
-          <Users className="w-10 h-10 text-teal-600 mb-2" />
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+          <Users className="w-10 h-10 text-emerald-400 mb-2" />
+          <h1 className="text-3xl font-bold text-emerald-50">
             Add Students to Batch
           </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-emerald-300 text-sm">
             Assign students to a specific batch using their email addresses
           </p>
         </div>
@@ -114,14 +118,12 @@ export default function AddStudentsPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Batch Dropdown */}
           <div>
-            <label className="block mb-2 font-medium text-gray-700 dark:text-gray-200">
+            <label className="block mb-2 font-medium text-emerald-200">
               Select Batch
             </label>
 
             <select
-              className="w-full border border-gray-300 dark:border-gray-700 rounded-xl p-3 
-              focus:outline-none focus:ring-2 focus:ring-teal-400 
-              dark:bg-gray-800 dark:text-gray-100 transition"
+              className="w-full border border-emerald-700/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-800/50 text-emerald-50 placeholder:text-emerald-400 transition"
               value={selectedBatch}
               onChange={(e) => setSelectedBatch(e.target.value)}
             >
@@ -137,29 +139,21 @@ export default function AddStudentsPage() {
 
           {/* Emails Input */}
           <div>
-            <label className="block mb-2 font-medium text-gray-700 dark:text-gray-200">
+            <label className="block mb-2 font-medium text-emerald-200">
               Student Emails (comma separated)
             </label>
 
             <input
               type="text"
               placeholder="ronita@gmail.com, dina@gmail.com"
-              className="w-full border border-gray-300 dark:border-gray-700 rounded-xl p-3 
-              focus:outline-none focus:ring-2 focus:ring-teal-400 
-              dark:bg-gray-800 dark:text-gray-100 transition"
+              className="w-full border border-emerald-700/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-800/50 text-emerald-50 placeholder:text-emerald-400 transition"
               value={emails}
               onChange={(e) => setEmails(e.target.value)}
             />
           </div>
 
           {/* Submit Button */}
-          <button
-            className="w-full flex items-center justify-center gap-2 
-            bg-[#0D7C66] hover:bg-[#0b6b58] 
-            text-white font-semibold px-6 py-3 rounded-xl 
-            shadow-md hover:shadow-lg 
-            transition-all duration-200"
-          >
+          <button className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
             <UserPlus className="w-5 h-5" />
             Add Students
           </button>

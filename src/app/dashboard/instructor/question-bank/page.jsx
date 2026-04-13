@@ -109,17 +109,23 @@ export default function QuestionBankPage() {
   };
 
   return (
-    <main className="bg-primary min-h-screen p-6">
-      <div className="p-6 rounded-2xl max-w-3xl mx-auto bg-white">
-        <h1 className="text-3xl font-bold mb-6 text-[#0D7C66]">
+    <div className="bg-emerald-950 min-h-screen relative overflow-hidden p-6">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="p-6 rounded-2xl max-w-3xl mx-auto bg-slate-800/50 backdrop-blur-md border border-emerald-700/50 relative z-10">
+        <h1 className="text-3xl font-bold mb-6 text-emerald-50">
           Question Bank
         </h1>
 
         {/* Exam Selector */}
         <div className="mb-6">
-          <label className="block font-medium mb-1">Select Exam</label>
+          <label className="block font-medium mb-1 text-emerald-200">
+            Select Exam
+          </label>
           <select
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             onChange={(e) => {
               const exam = exams.find((x) => x._id === e.target.value);
               setSelectedExam(exam || null);
@@ -137,7 +143,7 @@ export default function QuestionBankPage() {
 
         {/* Exam Status */}
         {selectedExam && (
-          <div className="mb-4 text-sm text-gray-600">
+          <div className="mb-4 text-sm text-emerald-300">
             Status: {selectedExam.published ? "Published" : "Draft"}
           </div>
         )}
@@ -256,6 +262,6 @@ export default function QuestionBankPage() {
           </p>
         )}
       </div>
-    </main>
+    </div>
   );
 }

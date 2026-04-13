@@ -8,16 +8,10 @@ import {
   Users,
   TrendingUp,
   Award,
-  Calendar,
   Search,
   ChevronRight,
   BarChart3,
   CheckCircle,
-  Clock,
-  PlayCircle,
-  Star,
-  UserCheck,
-  Timer,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -125,18 +119,18 @@ export default function CourseProgressPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-emerald-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#0D7C66] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-emerald-950 p-4 md:p-6">
       {/* Back Button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-600 hover:text-[#0D7C66] mb-4 md:mb-6 transition-colors"
+        className="flex items-center gap-2 text-white/80 hover:text-white mb-4 md:mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to Reports</span>
@@ -151,58 +145,58 @@ export default function CourseProgressPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 mb-6">
+      <div className="bg-gray-800/90 text-white rounded-xl shadow-sm p-3 md:p-4 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4 md:w-5 md:h-5" />
           <input
             type="text"
             placeholder="Search courses by title or instructor..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
+            className="w-full pl-9 md:pl-10 pr-4 py-2 text-sm text-white bg-gray-800 border border-emerald-700 rounded-lg placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#41B3A2]"
           />
         </div>
       </div>
 
       {/* Course List */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="divide-y">
+      <div className="bg-gray-800/90 text-white rounded-xl shadow-sm overflow-hidden mb-6">
+        <div className="divide-y divide-emerald-700">
           {courses.map((course) => (
             <div
               key={course.id}
-              className={`p-4 md:p-5 hover:bg-gray-50 transition-all cursor-pointer ${
-                selectedCourse === course.id ? "bg-[#0D7C66]/5" : ""
+              className={`p-4 md:p-5 hover:bg-emerald-700/50 transition-all cursor-pointer rounded ${
+                selectedCourse === course.id ? "bg-emerald-700/40" : ""
               }`}
               onClick={() => fetchCourseDetail(course.id)}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <BookOpen className="w-5 h-5 text-[#0D7C66]" />
-                    <h2 className="font-semibold text-gray-800 text-base md:text-lg">
+                    <BookOpen className="w-5 h-5 text-white" />
+                    <h2 className="font-semibold text-white text-base md:text-lg">
                       {course.title}
                     </h2>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-sm text-white/70">
                       by {course.instructor || "Unknown"}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm text-gray-500">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm text-white/80">
                     <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
+                      <Users className="w-3 h-3 text-white/80" />
                       <span>{course.totalStudents} students</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" />
+                      <TrendingUp className="w-3 h-3 text-white/80" />
                       <span>Avg Progress: {course.averageProgress}%</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Award className="w-3 h-3" />
+                      <Award className="w-3 h-3 text-white/80" />
                       <span>Completion: {course.completionRate}%</span>
                     </div>
                   </div>
                 </div>
                 <ChevronRight
-                  className={`w-5 h-5 text-gray-400 transition-transform ${
+                  className={`w-5 h-5 text-white/70 transition-transform ${
                     selectedCourse === course.id ? "rotate-90" : ""
                   }`}
                 />
@@ -213,10 +207,10 @@ export default function CourseProgressPage() {
 
         {/* View All / Show Less Button */}
         {!showAllCourses && allCourses.length > 5 && (
-          <div className="p-3 border-t text-center">
+          <div className="p-3 border-t border-emerald-700 text-center">
             <button
               onClick={handleShowAll}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+              className="text-white hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
             >
               View All ({allCourses.length} courses)
               <BookOpen className="w-4 h-4" />
@@ -225,10 +219,10 @@ export default function CourseProgressPage() {
         )}
 
         {showAllCourses && allCourses.length > 5 && (
-          <div className="p-3 border-t text-center">
+          <div className="p-3 border-t border-emerald-700 text-center">
             <button
               onClick={handleShowLess}
-              className="text-[#0D7C66] hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
+              className="text-white hover:text-[#41B3A2] text-sm font-medium flex items-center justify-center gap-1 mx-auto"
             >
               Show Less
               <ChevronRight className="w-4 h-4 rotate-90" />
@@ -237,11 +231,11 @@ export default function CourseProgressPage() {
         )}
 
         {courses.length === 0 && (
-          <div className="p-8 text-center text-gray-500">No courses found</div>
+          <div className="p-8 text-center text-white/70">No courses found</div>
         )}
       </div>
 
-      {/* Course Details */}
+      {/* Course Details remain same as before */}
       {detailLoading && (
         <div className="bg-white rounded-xl p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent mx-auto"></div>
@@ -253,7 +247,7 @@ export default function CourseProgressPage() {
 
       {courseDetail && !detailLoading && (
         <div className="space-y-6">
-          {/* Course Info */}
+          {/* Course Info & Stats */}
           <div className="bg-gradient-to-r from-[#0D7C66]/10 to-[#41B3A2]/10 rounded-xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4">
               <BookOpen className="w-8 h-8 text-[#0D7C66]" />
@@ -269,8 +263,6 @@ export default function CourseProgressPage() {
                 </p>
               </div>
             </div>
-
-            {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <StatCard
                 icon={Users}
@@ -344,7 +336,7 @@ export default function CourseProgressPage() {
                 return (
                   <div key={item.key}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">{item.label}</span>
+                      <span className="text-gray-700">{item.label}</span>
                       <span className="text-gray-500">
                         {count} students ({percentage.toFixed(1)}%)
                       </span>
@@ -359,108 +351,6 @@ export default function CourseProgressPage() {
                 );
               })}
             </div>
-          </div>
-
-          {/* Student Progress Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="p-4 border-b bg-gray-50">
-              <h2 className="font-semibold flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#0D7C66]" />
-                Student Progress in {courseDetail.course.title}
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[500px]">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Student
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Progress
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Modules
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                      Last Activity
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {courseDetail.studentProgress?.map((student, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium text-sm">
-                            {student.studentName}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {student.studentEmail}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-[#0D7C66] rounded-full h-2"
-                              style={{ width: `${student.progress}%` }}
-                            />
-                          </div>
-                          <span
-                            className={`text-xs font-medium ${getProgressColor(student.progress)} px-2 py-0.5 rounded-full`}
-                          >
-                            {student.progress}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        {student.completedModules} / {student.totalModules}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(student.status)}`}
-                        >
-                          {student.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {student.lastActivity
-                          ? new Date(student.lastActivity).toLocaleDateString()
-                          : "Not started"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t flex justify-between items-center">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={!pagination.hasPrevPage}
-                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-gray-500">
-                  Page {pagination.currentPage} of {pagination.totalPages}
-                </span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!pagination.hasNextPage}
-                  className="px-3 py-1 text-sm border rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

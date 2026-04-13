@@ -116,20 +116,26 @@ export default function CreateExamPage() {
   };
 
   return (
-    <main className="p-6 bg-primary flex justify-center">
+    <div className="bg-emerald-950 min-h-screen relative overflow-hidden p-6 flex justify-center">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-2xl space-y-6"
+        className="bg-slate-800/50 backdrop-blur-md border border-emerald-700/50 shadow-2xl rounded-2xl p-8 w-full max-w-2xl space-y-6 relative z-10"
       >
-        <h1 className="text-3xl font-bold text-center text-[#0D7C66]">
+        <h1 className="text-3xl font-bold text-center text-emerald-50">
           Create Exam
         </h1>
 
         {/* Exam Title */}
         <div>
-          <label className="block font-medium mb-1">Exam Title</label>
+          <label className="block font-medium mb-1 text-emerald-200">
+            Exam Title
+          </label>
           <input
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-emerald-400"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -138,9 +144,11 @@ export default function CreateExamPage() {
 
         {/* Exam Type */}
         <div>
-          <label className="block font-medium mb-1">Exam Type</label>
+          <label className="block font-medium mb-1 text-emerald-200">
+            Exam Type
+          </label>
           <select
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
@@ -152,13 +160,13 @@ export default function CreateExamPage() {
         {/* MCQ Only */}
         {type === "mcq" && (
           <div>
-            <label className="block font-medium mb-1">
+            <label className="block font-medium mb-1 text-emerald-200">
               Total MCQ Questions
             </label>
             <input
               type="number"
               min={1}
-              className="w-full p-3 border rounded-lg"
+              className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-emerald-400"
               value={totalQuestions}
               onChange={(e) => setTotalQuestions(e.target.value)}
               required
@@ -168,11 +176,13 @@ export default function CreateExamPage() {
 
         {/* Duration */}
         <div>
-          <label className="block font-medium mb-1">Duration (minutes)</label>
+          <label className="block font-medium mb-1 text-emerald-200">
+            Duration (minutes)
+          </label>
           <input
             type="number"
             min={1}
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-emerald-400"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             required
@@ -182,10 +192,12 @@ export default function CreateExamPage() {
         {/* Time */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium mb-1">Start Time</label>
+            <label className="block font-medium mb-1 text-emerald-200">
+              Start Time
+            </label>
             <input
               type="datetime-local"
-              className="w-full p-3 border rounded-lg"
+              className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
               min={getMinDateTime()}
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
@@ -193,10 +205,12 @@ export default function CreateExamPage() {
             />
           </div>
           <div>
-            <label className="block font-medium mb-1">End Time</label>
+            <label className="block font-medium mb-1 text-emerald-200">
+              End Time
+            </label>
             <input
               type="datetime-local"
-              className="w-full p-3 border rounded-lg bg-gray-100"
+              className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
               value={endTime}
               readOnly
             />
@@ -205,10 +219,12 @@ export default function CreateExamPage() {
 
         {/* Batches */}
         <div>
-          <label className="block font-medium mb-1">Assign Batches</label>
+          <label className="block font-medium mb-1 text-emerald-200">
+            Assign Batches
+          </label>
           <select
             multiple
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-emerald-700/50 rounded-lg bg-slate-800/50 text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             value={selectedBatches}
             onChange={(e) =>
               setSelectedBatches(
@@ -224,10 +240,10 @@ export default function CreateExamPage() {
           </select>
         </div>
 
-        <button className="w-full bg-[#0D7C66] text-white py-3 rounded-xl font-semibold hover:bg-[#41B3A2]">
+        <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-semibold transition-all duration-200">
           Create Exam
         </button>
       </form>
-    </main>
+    </div>
   );
 }

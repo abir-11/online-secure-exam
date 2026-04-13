@@ -435,7 +435,11 @@ export default function RegisterPage() {
 
           {/* Google */}
           <button
-            onClick={() => signIn("google")}
+            onClick={() =>
+              signIn("google", {
+                callbackUrl: "/dashboard",
+              })
+            }
             className="w-full mt-6 flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-300 text-gray-700 font-semibold"
           >
             <FcGoogle size={24} />

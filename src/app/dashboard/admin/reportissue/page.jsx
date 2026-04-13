@@ -23,37 +23,39 @@ export default function AdminReportIssuePage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        User Report Issues
-      </h1>
+    <div className="min-h-screen p-8 bg-emerald-950">
+      {/* Page Header */}
+      <h1 className="text-3xl font-bold mb-6 text-white">User Report Issues</h1>
 
       {loading ? (
-        <p>Loading report issues...</p>
+        <p className="text-white/80">Loading report issues...</p>
       ) : reportissues.length === 0 ? (
-        <p>No report issues submitted yet.</p>
+        <p className="text-white/80">No report issues submitted yet.</p>
       ) : (
         <div className="space-y-4">
           {reportissues.map((report) => (
             <div
               key={report._id}
-              className="bg-white p-4 rounded-xl shadow border border-gray-200"
+              className="bg-gray-800 p-4 rounded-xl shadow-md border border-emerald-300"
             >
+              {/* User Info */}
               <div className="flex justify-between items-center mb-2">
-                <h2 className="font-semibold text-lg text-gray-700">
+                <h2 className="font-semibold text-lg text-white">
                   {report.name} ({report.email})
                 </h2>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-white">
                   {new Date(report.createdAt).toLocaleString()}
                 </span>
               </div>
-              <p className="text-gray-600 mb-1">
+
+              {/* Report Details */}
+              <p className="text-white mb-1">
                 <strong>Category:</strong> {report.category}
               </p>
-              <p className="text-gray-600 mb-1">
+              <p className="text-white mb-1">
                 <strong>Priority:</strong> {report.priority}
               </p>
-              <p className="text-gray-700 mt-2">{report.message}</p>
+              <p className="text-white mt-2">{report.message}</p>
             </div>
           ))}
         </div>

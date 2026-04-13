@@ -49,6 +49,7 @@ export default function LoginContent() {
         redirect: false,
         email,
         password,
+        role,
       });
 
       if (!result || result.error) {
@@ -301,7 +302,7 @@ export default function LoginContent() {
           <button
             onClick={() =>
               signIn("google", {
-                callbackUrl: callbackUrl || "/dashboard/student",
+                callbackUrl: "/dashboard",
               })
             }
             className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 text-gray-700 font-semibold"

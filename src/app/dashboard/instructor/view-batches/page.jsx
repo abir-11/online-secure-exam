@@ -226,16 +226,20 @@ export default function ViewBatchesPage() {
   };
 
   return (
-    <main className="min-h-screen p-4 sm:p-6 md:p-8 bg-primary dark:bg-gray-900">
+    <div className="bg-emerald-950 min-h-screen relative overflow-hidden p-4 sm:p-6 md:p-8">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-0 left-0 w-[40rem] h-[40rem] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-teal-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
       {/* CENTERED WHITE CONTAINER */}
-      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-900 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
+      <div className="max-w-6xl mx-auto bg-slate-800/50 backdrop-blur-md border border-emerald-700/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg relative z-10">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-10">
-          <Layers className="w-12 h-12 sm:w-10 sm:h-10 text-teal-600 mb-2" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+          <Layers className="w-12 h-12 sm:w-10 sm:h-10 text-emerald-400 mb-2" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-emerald-50">
             Batch Management
           </h1>
-          <p className="text-gray-500 text-sm sm:text-base">
+          <p className="text-emerald-300 text-sm sm:text-base">
             View and manage students inside each batch
           </p>
         </div>
@@ -245,18 +249,18 @@ export default function ViewBatchesPage() {
           {batches.map((batch) => (
             <div
               key={batch._id}
-              className="flex flex-col justify-between bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 dark:border-gray-700"
+              className="flex flex-col justify-between bg-slate-700/50 rounded-xl shadow-sm hover:shadow-md transition border border-emerald-700/30"
             >
               {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 gap-2 sm:gap-0">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-emerald-700/30 gap-2 sm:gap-0">
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-teal-600" />
-                  <h2 className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base">
+                  <Users className="w-5 h-5 text-emerald-400" />
+                  <h2 className="font-semibold text-emerald-50 text-sm sm:text-base">
                     {batch.name}
                   </h2>
                 </div>
 
-                <span className="text-xs sm:text-sm bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300 px-2 py-1 rounded-full mt-1 sm:mt-0">
+                <span className="text-xs sm:text-sm bg-emerald-900/50 text-emerald-300 px-2 py-1 rounded-full mt-1 sm:mt-0 border border-emerald-700/50">
                   {batch.students?.length || 0} Students
                 </span>
               </div>
@@ -267,9 +271,9 @@ export default function ViewBatchesPage() {
                   batch.students.map((studentEmail) => (
                     <div
                       key={studentEmail}
-                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg gap-2 sm:gap-0"
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-600/50 px-3 py-2 rounded-lg gap-2 sm:gap-0 border border-emerald-700/20"
                     >
-                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 break-all">
+                      <div className="flex items-center gap-2 text-sm text-emerald-200 break-all">
                         <Mail size={16} />
                         {studentEmail}
                       </div>
@@ -278,7 +282,7 @@ export default function ViewBatchesPage() {
                         onClick={() =>
                           handleDeleteStudent(batch._id, studentEmail)
                         }
-                        className="flex items-center gap-1 text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition w-full sm:w-auto justify-center mt-2 sm:mt-0"
+                        className="flex items-center gap-1 text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition w-full sm:w-auto justify-center mt-2 sm:mt-0"
                       >
                         <Trash2 size={14} />
                         Remove
@@ -286,7 +290,7 @@ export default function ViewBatchesPage() {
                     </div>
                   ))
                 ) : (
-                  <div className="flex items-center gap-2 text-sm text-gray-400 justify-center">
+                  <div className="flex items-center gap-2 text-sm text-emerald-400 justify-center">
                     <User size={16} />
                     No students yet
                   </div>
@@ -296,6 +300,6 @@ export default function ViewBatchesPage() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

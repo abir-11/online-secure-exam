@@ -36,72 +36,111 @@ export default function InstructorTheorySubmissionsPage() {
     fetchSubmissions();
   }, [examId]);
 
-  if (loading) return <p className="p-6">Loading...</p>;
-  if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-emerald-400 text-lg font-semibold">
+        Loading submissions...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-400">
+        Error: {error}
+      </div>
+    );
 
   return (
-    <main className="p-6 bg-primary min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Theory Submissions</h1>
+    <main className="min-h-screen bg-emerald-950 border border-slate-700 p-8 rounded-2xl shadow-xl relative z-10">
+      {/* Background glow */}
+      {/* <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-emerald-500/20 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-[350px] h-[350px] bg-teal-500/20 blur-[100px] rounded-full"></div> */}
 
-      {submissions.length === 0 && <p>No submissions found.</p>}
+      <h1 className="text-2xl font-bold mb-6 text-white relative z-10">
+        Theory Submissions
+      </h1>
 
-      {submissions.map((s) => (
-        <div key={s._id} className="border-8 border-teal-500 p-4 mb-4 rounded">
-          <p className="font-semibold">Student: {s.studentEmail}</p>
+      {submissions.length === 0 && (
+        <p className="text-slate-400 relative z-10">No submissions found.</p>
+      )}
 
-          <div className="mt-2">
-            {Object.entries(s.answersWithMarks || {}).map(
-              ([qid, { questionText, answer, maxMarks, awarded }], idx) => (
-                <div key={qid} className="mb-4 border-b pb-3">
-                  <p className="font-medium">
-                    Q{idx + 1}: {questionText} ({maxMarks} marks)
-                  </p>
+      <div className="space-y-6 relative z-10">
+        {submissions.map((s) => (
+          <div
+            key={s._id}
+            className="bg-slate-900 border border-slate-700 p-5 rounded-xl shadow"
+          >
+            <p className="font-semibold text-white">
+              Student:{" "}
+              <span className="text-emerald-400">{s.studentEmail}</span>
+            </p>
 
-                  <p className="ml-2 text-gray-700 mt-1">
-                    <strong>Student Answer:</strong> {answer}
-                  </p>
-
-                  {s.scores?.[qid] != null ? (
-                    <p className="text-green-600 mt-2">
-                      Score: {s.scores[qid]} / {maxMarks}
+            <div className="mt-4">
+              {Object.entries(s.answersWithMarks || {}).map(
+                ([qid, { questionText, answer, maxMarks }], idx) => (
+                  <div
+                    key={qid}
+                    className="mb-4 border-b border-slate-700 pb-3"
+                  >
+                    <p className="font-medium text-white">
+                      Q{idx + 1}: {questionText}{" "}
+                      <span className="text-emerald-400">
+                        ({maxMarks} marks)
+                      </span>
                     </p>
-                  ) : (
-                    <div className="mt-2 flex gap-2">
-                      <input
-                        type="number"
-                        min={0}
-                        max={maxMarks}
-                        id={`score-${s._id}-${qid}`}
-                        className="border px-2 py-1 w-24"
-                      />
-                      <button
-                        className="bg-teal-600 text-white px-4 py-1 rounded"
-                        onClick={() =>
-                          gradeSubmission(
-                            s._id,
-                            qid,
-                            Number(
-                              document.getElementById(`score-${s._id}-${qid}`)
-                                .value,
-                            ),
-                            maxMarks,
-                          )
-                        }
-                      >
-                        Grade
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ),
-            )}
-          </div>
 
-          <p className="mt-3 font-semibold text-lg">
-            Total Score: {s.score} / {s.totalMarks}
-          </p>
-        </div>
-      ))}
+                    <p className="ml-2 text-slate-300 mt-1">
+                      <strong className="text-emerald-400">
+                        Student Answer:
+                      </strong>{" "}
+                      {answer}
+                    </p>
+
+                    {s.scores?.[qid] != null ? (
+                      <p className="text-emerald-400 mt-2">
+                        Score: {s.scores[qid]} / {maxMarks}
+                      </p>
+                    ) : (
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          type="number"
+                          min={0}
+                          max={maxMarks}
+                          id={`score-${s._id}-${qid}`}
+                          className="bg-slate-800 border border-slate-600 text-white px-2 py-1 w-24 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <button
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1 rounded transition"
+                          onClick={() =>
+                            gradeSubmission(
+                              s._id,
+                              qid,
+                              Number(
+                                document.getElementById(`score-${s._id}-${qid}`)
+                                  .value,
+                              ),
+                              maxMarks,
+                            )
+                          }
+                        >
+                          Grade
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ),
+              )}
+            </div>
+
+            <p className="mt-4 font-semibold text-lg text-white">
+              Total Score:{" "}
+              <span className="text-emerald-400">
+                {s.score} / {s.totalMarks}
+              </span>
+            </p>
+          </div>
+        ))}
+      </div>
     </main>
   );
 
@@ -133,7 +172,7 @@ export default function InstructorTheorySubmissionsPage() {
         icon: "success",
         title: "Graded Successfully",
         text: "The score has been saved.",
-        confirmButtonColor: "#0d9488",
+        confirmButtonColor: "#10b981",
       });
       location.reload();
     } else {

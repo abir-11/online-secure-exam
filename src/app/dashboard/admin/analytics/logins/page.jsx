@@ -35,59 +35,60 @@ export default function LoginsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#0D7C66] border-t-transparent"></div>
+      <div className="min-h-screen bg-emerald-950 p-6 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#41B3A2] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-emerald-950 p-6">
       <div className="mb-6">
         <Link
           href="/dashboard/admin/analytics"
-          className="inline-flex items-center text-gray-600 hover:text-[#0D7C66] mb-4 transition-colors"
+          className="inline-flex items-center text-white/80 hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Analytics
         </Link>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
-          <LogIn className="w-8 h-8 text-blue-600" />
+        <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+          <LogIn className="w-8 h-8 text-yellow-400" />
           Recent Logins
         </h1>
-        <p className="text-gray-500 mt-1">All user login activities</p>
+        <p className="text-white/70 mt-1">All user login activities</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-gray-800/90 rounded-2xl shadow-sm border border-emerald-700 overflow-hidden">
         {logins.length === 0 ? (
           <div className="text-center py-12">
-            <LogIn className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-            <p className="text-gray-500">No logins yet today</p>
+            <LogIn className="w-12 h-12 mx-auto text-white/50 mb-3" />
+            <p className="text-white/70">No logins yet today</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-emerald-700">
             {logins.map((login, i) => (
-              <div key={i} className="p-4 hover:bg-gray-50 transition-colors">
+              <div
+                key={i}
+                className="p-4 hover:bg-emerald-700/50 transition-colors rounded"
+              >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <span className="text-yellow-700 font-semibold">
                       {login.userName?.charAt(0)}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-800">
-                      {login.userName}
-                    </p>
-                    <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
-                      <Mail className="w-4 h-4" />
+                    <p className="font-semibold text-white">{login.userName}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2 mt-1">
+                      <Mail className="w-4 h-4 text-white/80" />
                       {login.userEmail}
                     </p>
-                    <p className="text-xs text-gray-400 flex items-center gap-1 mt-2">
-                      <Clock className="w-3 h-3" />
+                    <p className="text-xs text-white/60 flex items-center gap-1 mt-2">
+                      <Clock className="w-3 h-3 text-white/60" />
                       {formatDate(login.timestamp)}
                     </p>
                   </div>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
                     {login.userRole}
                   </span>
                 </div>
