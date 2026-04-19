@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SecureExam
 
-## Getting Started
+Online examination platform with role-based dashboards, analytics, and secure authentication.
 
-First, run the development server:
+---
+
+## Overview
+
+SecureExam is a full-stack exam management system with **Admin, Instructor, and Student roles**.
+It supports exam creation, user management, analytics, and secure authentication.
+
+ <img src="https://i.postimg.cc/1zZXnBLp/exam.png" alt="secureexam" width="400px" />
+
+ ## Live
+
+https://online-secure-exam-one.vercel.app/
+
+---
+
+## Features
+
+* Role-based dashboards (Admin / Instructor / Student)
+* User management with status control (Active, Inactive, Deleted)
+* Exam creation and participation system
+* Analytics & reports (performance, exams, batches, courses)
+* Secure authentication (JWT + OAuth)
+* Payment integration (Stripe)
+* Email notifications (password reset, alerts)
+* Fully responsive UI
+
+---
+
+## Tech Stack
+
+**Frontend**
+
+* Next.js
+* React
+* Tailwind CSS
+
+**Backend**
+
+* Next.js API Routes
+* MongoDB
+* NextAuth.js
+* JWT, Bcrypt
+
+**Services**
+
+* Stripe
+* Cloudinary
+* Resend / Nodemailer
+* Vercel
+
+---
+
+## ⚙️ Setup
 
 ```bash
+git clone https://github.com/abir-11/online-secure-exam.git
+cd online-secure-exam
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create `.env.local` and add:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```env
+MONGODB_URI=your_mongodb_uri
+NEXTAUTH_SECRET=your_secret
+JWT_SECRET=your_jwt_secret
+STRIPE_SECRET_KEY=your_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+⭐ Star the repo if you find it useful
