@@ -9,7 +9,7 @@ Online examination platform with role-based dashboards, analytics, and secure au
 SecureExam is a full-stack exam management system with **Admin, Instructor, and Student roles**.
 It supports exam creation, user management, analytics, and secure authentication.
 
- <img src="https://i.postimg.cc/1zZXnBLp/exam.png" alt="secureexam" width="400px" />
+ <img src="https://i.postimg.cc/1zZXnBLp/exam.png" alt="secureexam" width="50%" />
 
  ## Live
 
